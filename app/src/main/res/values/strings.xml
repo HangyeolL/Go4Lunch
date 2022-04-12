@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Go4Lunch</string>
+    <string name="connection_succeed">Log in succeeded!</string>
+    <string name="error_authentication_canceled">Log in failed</string>
+    <string name="error_no_internet">No internet conncection</string>
+    <string name="error_unknown_error">Unknown error occured</string>
+</resources>
