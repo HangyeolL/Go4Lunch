@@ -4,4 +4,7 @@
     <string name="error_authentication_canceled">Log in failed</string>
     <string name="error_no_internet">No internet conncection</string>
     <string name="error_unknown_error">Unknown error occured</string>
+
+    <string name="facebook_application_id">205701438038321</string>
+    <string name="fb_login_protocol_scheme">fb205701438038321</string>
 </resources>
