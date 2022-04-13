@@ -8,8 +8,14 @@ import androidx.annotation.Nullable;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -22,6 +28,8 @@ import com.hangyeollee.go4lunch.databinding.ActivityMainBinding;
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     private GoogleSignInClient mGoogleSignInClient;
+    private CallbackManager mCallbackManager;
+
     private ActivityResultLauncher<Intent> mActivityResultLauncher;
 
     @Override
@@ -33,38 +41,41 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mActivityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        onGoogleSignInResult(result);
-                    }
-                });
+        mActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                onGoogleLogInResult(result);
+            }
+        });
 
-        binding.buttonLogin.setOnClickListener(view -> googleSignIn());
+        binding.ButtonGoogleLogIn.setOnClickListener(view -> googleLogIn());
+
+        Drawable facebookLogo = getDrawable(R.drawable.ic_facebook_logo);
+        binding.ButtonFacebookLogIn.setCompoundDrawablesWithIntrinsicBounds(facebookLogo, null, null, null);
+        // Todo : Facebook Login method onclick
     }
 
-    private void showSnackBar(String message){
+    private void showSnackBar(String message) {
         Snackbar.make(binding.constraintLayoutParentLayout, message, Snackbar.LENGTH_SHORT).show();
     }
 
-    private void googleSignIn() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
+    private void googleLogIn() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         mActivityResultLauncher.launch(mGoogleSignInClient.getSignInIntent());
     }
 
-    private void onGoogleSignInResult(ActivityResult result) {
+    private void onGoogleLogInResult(ActivityResult result) {
         Intent data = result.getData();
         IdpResponse response = IdpResponse.fromResultIntent(data);
 
         // Google sign in success
         if (result.getResultCode() == Activity.RESULT_OK) {
             showSnackBar(getString(R.string.connection_succeed));
+
+            //ToDo : Start Second Activity. Should I use ActivityResultLauncher again to retrieve login account data ?
+
         } else {
             // ERRORS
             if (response == null) {
@@ -79,5 +90,24 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         }
     }
 
+    private void onFacebookLogInResult() {
+        mCallbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                // App code
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
+    }
 
 }

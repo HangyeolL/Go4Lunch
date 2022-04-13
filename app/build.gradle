@@ -55,10 +55,8 @@ dependencies {
 
     // Facebook SDK
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
-    // Google play service
+    // Google play service(Google Sign-in)
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
-
-
 
     testImplementation 'junit:junit:4.+'
 
