@@ -15,24 +15,27 @@ public abstract class BaseFragment<T extends ViewBinding> extends Fragment {
     abstract T getViewBinding();
     protected T binding;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initBinding();
-    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+        return initBinding();
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     /**
      * Initialise the binding object and the layout of the activity
      */
-    private void initBinding(){
+    private View initBinding(){
         binding = getViewBinding();
         View view = binding.getRoot();
+        return view;
     }
+
 }
