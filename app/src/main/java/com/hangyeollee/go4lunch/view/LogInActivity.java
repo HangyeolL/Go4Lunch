@@ -114,7 +114,7 @@ public class LogInActivity extends BaseActivity<ActivityLogInBinding> {
     }
 
     /**
-     * Lunch google log in activity for result via ActivityResultLauncher
+     * Launch google log in activity for result via ActivityResultLauncher
      */
     private void googleLogIn() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.firebase_web_client_id)).requestEmail().build();
@@ -124,7 +124,6 @@ public class LogInActivity extends BaseActivity<ActivityLogInBinding> {
 
     /**
      * Retrieve the result of google log in activity
-     *
      * @param result
      */
     private void onGoogleLogInResult(ActivityResult result) {
@@ -133,7 +132,6 @@ public class LogInActivity extends BaseActivity<ActivityLogInBinding> {
             Intent data = result.getData();
             // Get signed accounts from the google log in activity
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-
             // Try to get the logged in accounts and if fails catch the exception
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
@@ -153,8 +151,7 @@ public class LogInActivity extends BaseActivity<ActivityLogInBinding> {
     }
 
     /**
-     * Link with firebase and google log in
-     *
+     * Link firebase and google log in
      * @param account
      */
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
@@ -188,7 +185,7 @@ public class LogInActivity extends BaseActivity<ActivityLogInBinding> {
     }
 
     /**
-     * Link with firebase and facebook log in
+     * Link firebase and facebook log in
      * @param accessToken
      */
     private void firebaseAuthWithFacebook(AccessToken accessToken) {

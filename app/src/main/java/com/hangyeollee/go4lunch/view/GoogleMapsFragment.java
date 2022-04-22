@@ -1,13 +1,23 @@
 package com.hangyeollee.go4lunch.view;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,10 +27,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hangyeollee.go4lunch.R;
 
-public class GoogleMapsFragment extends Fragment {
+public class GoogleMapsFragment extends Fragment implements LocationListener {
+
+    private ActivityResultLauncher<String> requestPermissionLauncher;
+
+    private double latitude, longitude;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
-
         /**
          * Manipulates the map once available.
          * This callback is triggered when the map is ready to be used.
@@ -32,11 +45,47 @@ public class GoogleMapsFragment extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            LatLng sydney = new LatLng(-34, 151);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            LatLng currentLocation = new LatLng(latitude, longitude);
+            googleMap.addMarker(new MarkerOptions().position(currentLocation).title("Marker in current Location"));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
         }
     };
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted) {
+                // Permission is granted now
+            } else {
+                // Explain to the user that the feature is unavailable because the
+                // features requires a permission that the user has denied. At the
+                // same time, respect the user's decision. Don't link to system
+                // settings in an effort to convince the user to change their
+                // decision.
+            }
+        });
+
+        LocationManager mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        // Launch requestPermissionLauncher if location permission is not already granted
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        } else {
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        }
+        // Handles the user's response to the system permissions dialog.
+
+
+    }
 
     @Nullable
     @Override
@@ -52,4 +101,6 @@ public class GoogleMapsFragment extends Fragment {
             mapFragment.getMapAsync(callback);
         }
     }
+
+
 }

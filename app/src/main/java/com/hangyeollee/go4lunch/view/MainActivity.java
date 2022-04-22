@@ -1,15 +1,19 @@
 package com.hangyeollee.go4lunch.view;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.navigation.NavigationBarView;
+import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainBinding;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> {
+public class MainActivity extends BaseActivity<ActivityMainBinding> implements NavigationBarView.OnItemSelectedListener {
     /**
      * The number of pages
      */
@@ -39,6 +43,22 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         mFragmentStateAdapter = new ScreenSlidePagerAdapter(this);
 
         mViewPager2.setAdapter(mFragmentStateAdapter);
+        mViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationBar_menu_mapView).setChecked(true);
+                        break;
+                    case 1:
+                        binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationBar_menu_listView).setChecked(true);
+                        break;
+                    case 2:
+                        binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationBar_menu_workMates).setChecked(true);
+                        break;
+                }
+            }
+        });
     }
 
     @Override
@@ -53,9 +73,24 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         }
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.bottomNavigationBar_menu_mapView:
+                mViewPager2.setCurrentItem(0);
+                break;
+            case R.id.bottomNavigationBar_menu_listView:
+                mViewPager2.setCurrentItem(1);
+                break;
+            case R.id.bottomNavigationBar_menu_workMates:
+                mViewPager2.setCurrentItem(2);
+                break;
+        }
+        return true;
+    }
+
     /**
-     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
-     * sequence.
+     * ViewPagerAdapter
      */
     private class ScreenSlidePagerAdapter extends FragmentStateAdapter {
         public ScreenSlidePagerAdapter(FragmentActivity fa) {
@@ -64,12 +99,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
         @Override
         public Fragment createFragment(int position) {
-            switch(position) {
-                case 0 :
+            switch (position) {
+                case 0:
                     return new GoogleMapsFragment();
-                case 1 :
+                case 1:
                     return new RestaurantsListFragment();
-                case 2 :
+                case 2:
                     return new WorkMatesFragment();
             }
             return null;
