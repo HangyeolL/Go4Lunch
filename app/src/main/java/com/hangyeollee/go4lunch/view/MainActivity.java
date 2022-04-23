@@ -40,9 +40,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements N
 
         // Instantiate a ViewPager2 and a FragmentStateAdapter.
         mViewPager2 = binding.viewPager;
-        mFragmentStateAdapter = new ScreenSlidePagerAdapter(this);
-
+        mFragmentStateAdapter = new ViewPagerAdapter(this);
         mViewPager2.setAdapter(mFragmentStateAdapter);
+
         mViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -59,6 +59,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements N
                 }
             }
         });
+
+        binding.bottomNavigationView.setOnItemSelectedListener(this);
     }
 
     @Override
@@ -92,8 +94,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements N
     /**
      * ViewPagerAdapter
      */
-    private class ScreenSlidePagerAdapter extends FragmentStateAdapter {
-        public ScreenSlidePagerAdapter(FragmentActivity fa) {
+    private class ViewPagerAdapter extends FragmentStateAdapter {
+        public ViewPagerAdapter(FragmentActivity fa) {
             super(fa);
         }
 

@@ -57,11 +57,13 @@ public class GoogleMapsFragment extends Fragment implements LocationListener {
         longitude = location.getLongitude();
     }
 
+
     @SuppressLint("MissingPermission")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Handles the user's response to the system permissions dialog.
         requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
             if (isGranted) {
                 // Permission is granted now
@@ -81,8 +83,9 @@ public class GoogleMapsFragment extends Fragment implements LocationListener {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         } else {
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
         }
-        // Handles the user's response to the system permissions dialog.
+
 
 
     }
