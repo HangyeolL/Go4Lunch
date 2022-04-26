@@ -3,6 +3,9 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
 android {
     compileSdk 31
 
@@ -16,9 +19,14 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         resConfigs "en","fr","kr"
+
     }
 
     buildTypes {
+        debug {
+            resValue("string", "facebook_client_token", localProperties['FACEBOOK_CLIENT_TOKEN'])
+            resValue("string", "facebook_application_id", localProperties['FACEBOOK_APPLICATION_ID'])
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -54,12 +62,12 @@ dependencies {
     // Add the dependency for the Firebase SDK for Google Analytics
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics'
-    // FIREBASE UI
-    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+    // Firebase Auth
+    implementation 'com.google.firebase:firebase-auth'
     // Firestore
     implementation 'com.google.firebase:firebase-firestore'
     // Facebook SDK
-    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
+    implementation 'com.facebook.android:facebook-android-sdk:12.3.0'
     // Google Auth
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
     // Google Maps

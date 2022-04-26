@@ -2,8 +2,10 @@ package com.hangyeollee.go4lunch.view;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -12,10 +14,15 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.navigation.NavigationBarView;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainBinding;
+import com.hangyeollee.go4lunch.view.fragments.GoogleMapsFragment;
+import com.hangyeollee.go4lunch.view.fragments.RestaurantsListFragment;
+import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> implements NavigationBarView.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
+
+    private ActivityMainBinding binding;
     /**
-     * The number of pages
+     * The number of pages(Fragments)
      */
     private static final int NUM_PAGES = 3;
 
@@ -30,13 +37,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements N
     private FragmentStateAdapter mFragmentStateAdapter;
 
     @Override
-    ActivityMainBinding getViewBinding() {
-        return ActivityMainBinding.inflate(getLayoutInflater());
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
         // Instantiate a ViewPager2 and a FragmentStateAdapter.
         mViewPager2 = binding.viewPager;

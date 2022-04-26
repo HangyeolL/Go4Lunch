@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -13,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import com.facebook.AccessToken;
@@ -40,9 +42,10 @@ import com.hangyeollee.go4lunch.databinding.ActivityLogInBinding;
 
 import java.util.Collections;
 
-public class LogInActivity extends BaseActivity<ActivityLogInBinding> {
+public class LogInActivity extends AppCompatActivity {
     // Todo : I wanna show SnackBar at MainActivity to inform users, should I code here or in MainActivity ?
     // Todo : When pressing back button from the phone either the one from the activity, it should go back to previous activity
+    private ActivityLogInBinding binding;
 
     private FirebaseAuth mFirebaseAuth;
     private CallbackManager mCallbackManager;
@@ -50,13 +53,12 @@ public class LogInActivity extends BaseActivity<ActivityLogInBinding> {
     private ActivityResultLauncher<Intent> mActivityResultLauncher;
 
     @Override
-    ActivityLogInBinding getViewBinding() {
-        return ActivityLogInBinding.inflate(getLayoutInflater());
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        binding = ActivityLogInBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mCallbackManager = CallbackManager.Factory.create();

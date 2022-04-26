@@ -1,11 +1,11 @@
-package com.hangyeollee.go4lunch.model;
+package com.hangyeollee.go4lunch.model.neaerbyserachpojo;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Restaurant {
+public class Result {
     @SerializedName("business_status")
     @Expose
     private String businessStatus;

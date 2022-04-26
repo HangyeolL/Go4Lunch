@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.model;
+package com.hangyeollee.go4lunch.model.neaerbyserachpojo;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -14,7 +14,7 @@ public class MyNearBySearchData {
     private String nextPageToken;
     @SerializedName("results")
     @Expose
-    private List<Restaurant> results = null;
+    private List<Result> results = null;
     @SerializedName("status")
     @Expose
     private String status;
@@ -35,11 +35,11 @@ public class MyNearBySearchData {
         this.nextPageToken = nextPageToken;
     }
 
-    public List<Restaurant> getResults() {
+    public List<Result> getResults() {
         return results;
     }
 
-    public void setResults(List<Restaurant> results) {
+    public void setResults(List<Result> results) {
         this.results = results;
     }
 

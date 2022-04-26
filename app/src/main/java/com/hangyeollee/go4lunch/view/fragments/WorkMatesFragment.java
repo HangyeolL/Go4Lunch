@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view;
+package com.hangyeollee.go4lunch.view.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view;
+package com.hangyeollee.go4lunch.view.fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -8,6 +8,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,7 @@ public class GoogleMapsFragment extends Fragment implements LocationListener {
     public void onLocationChanged(@NonNull Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
+        Log.i("My Location", latitude + ", " + longitude);
     }
 
 
@@ -73,6 +75,7 @@ public class GoogleMapsFragment extends Fragment implements LocationListener {
                 // same time, respect the user's decision. Don't link to system
                 // settings in an effort to convince the user to change their
                 // decision.
+
             }
         });
 
@@ -83,10 +86,7 @@ public class GoogleMapsFragment extends Fragment implements LocationListener {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         } else {
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-
         }
-
-
 
     }
 
