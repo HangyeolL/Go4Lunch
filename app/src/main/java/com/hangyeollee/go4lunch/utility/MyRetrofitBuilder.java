@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MyRetrofitBuilder {
 
-    public static final String GOOGLE_NEARBY_SEARCH_URL = "https://maps.googleapis.com";
+    public static final String GOOGLE_NEARBY_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/";
 
     public static Retrofit mRetrofit = null;
 
@@ -18,11 +18,5 @@ public class MyRetrofitBuilder {
         }
         return mRetrofit;
     }
-//
-//    /**
-//     * Singleton
-//     */
-//    public static NearbySearchApi getNearbySearchApi() {
-//        return mRetrofit.create(NearbySearchApi.class);
-//    }
+
 }

@@ -20,12 +20,14 @@ android {
 
         resConfigs "en","fr","kr"
 
+        resValue 'string', 'facebook_application_id', FACEBOOK_APPLICATION_ID
+        resValue 'string', 'facebook_client_token', FACEBOOK_CLIENT_TOKEN
     }
 
     buildTypes {
         debug {
-            resValue("string", "facebook_client_token", localProperties['FACEBOOK_CLIENT_TOKEN'])
-            resValue("string", "facebook_application_id", localProperties['FACEBOOK_APPLICATION_ID'])
+//            resValue("string", "facebook_client_token", localProperties['FACEBOOK_CLIENT_TOKEN'])
+//            resValue("string", "facebook_application_id", localProperties['FACEBOOK_APPLICATION_ID'])
         }
         release {
             minifyEnabled false

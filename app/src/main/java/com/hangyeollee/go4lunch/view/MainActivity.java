@@ -54,13 +54,13 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
             public void onPageSelected(int position) {
                 switch (position) {
                     case 0:
-                        binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationBar_menu_mapView).setChecked(true);
+                        binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationView_menu_mapView).setChecked(true);
                         break;
                     case 1:
-                        binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationBar_menu_listView).setChecked(true);
+                        binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationView_menu_listView).setChecked(true);
                         break;
                     case 2:
-                        binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationBar_menu_workMates).setChecked(true);
+                        binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationView_menu_workMates).setChecked(true);
                         break;
                 }
             }
@@ -84,13 +84,13 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.bottomNavigationBar_menu_mapView:
+            case R.id.bottomNavigationView_menu_mapView:
                 mViewPager2.setCurrentItem(0);
                 break;
-            case R.id.bottomNavigationBar_menu_listView:
+            case R.id.bottomNavigationView_menu_listView:
                 mViewPager2.setCurrentItem(1);
                 break;
-            case R.id.bottomNavigationBar_menu_workMates:
+            case R.id.bottomNavigationView_menu_workMates:
                 mViewPager2.setCurrentItem(2);
                 break;
         }

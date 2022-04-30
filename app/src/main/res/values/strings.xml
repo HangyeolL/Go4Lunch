@@ -7,11 +7,6 @@
 
     <string name="fb_login_protocol_scheme">fb3320128438266102</string>
 
-
-    <string name="facebook_application_id">3320128438266102</string>
-    <string name="facebook_client_token">c35310e55dd9378b987ca70925f8975c</string>
-
-
     <string name="firebase_web_client_id">863376647598-4ermgeses0stnoccfgch1bs0v4d8sagf.apps.googleusercontent.com</string>
     <string name="app_description">Find a nice restaurants and invite your co-workers for lunch !</string>
 </resources>

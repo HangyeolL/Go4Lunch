@@ -10,10 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.api.NearbySearchApi;
@@ -50,21 +52,7 @@ public class RestaurantsListFragment extends Fragment implements LocationListene
         LocationManager mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
-        mNearbySearchApi = MyRetrofitBuilder.getRetrofit().create(NearbySearchApi.class);
 
-        Call<MyNearBySearchData> call = mNearbySearchApi.getNearbySearchData(location,radius, type, key);
-        call.enqueue(new Callback<MyNearBySearchData>() {
-            @Override
-            public void onResponse(Call<MyNearBySearchData> call, Response<MyNearBySearchData> response) {
-                MyNearBySearchData myNearBySearchData = response.body();
-                List<Result> resultList =  myNearBySearchData.getResults();
-            }
-
-            @Override
-            public void onFailure(Call<MyNearBySearchData> call, Throwable t) {
-
-            }
-        });
 
     }
 
@@ -72,8 +60,27 @@ public class RestaurantsListFragment extends Fragment implements LocationListene
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentListViewBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
-        return view;
+
+        mNearbySearchApi = MyRetrofitBuilder.getRetrofit().create(NearbySearchApi.class);
+
+        Call<MyNearBySearchData> call = mNearbySearchApi.getNearbySearchData(location,radius, type, key);
+        call.enqueue(new Callback<MyNearBySearchData>() {
+            @Override
+            public void onResponse(Call<MyNearBySearchData> call, Response<MyNearBySearchData> response) {
+                MyNearBySearchData myNearBySearchData = response.body();
+                Log.d("ListViewFragment", response.body().getResults().toString());
+                List<Result> resultList =  myNearBySearchData.getResults();
+                binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(resultList, getActivity()));
+                binding.recyclerViewRestaurantList.setLayoutManager(new LinearLayoutManager(getActivity()));
+            }
+
+            @Override
+            public void onFailure(Call<MyNearBySearchData> call, Throwable t) {
+                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return binding.getRoot();
     }
 
     @Override
@@ -84,8 +91,8 @@ public class RestaurantsListFragment extends Fragment implements LocationListene
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        Log.i("My Location", latitude + ", " + longitude);
+//        latitude = location.getLatitude();
+//        longitude = location.getLongitude();
+//        Log.i("My Location", latitude + ", " + longitude);
     }
 }
