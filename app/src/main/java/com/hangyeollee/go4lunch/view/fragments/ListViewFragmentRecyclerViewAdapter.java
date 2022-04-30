@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.databinding.ListViewItemBinding;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 
@@ -45,20 +44,25 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
         Result mResult = mResultList.get(position);
 
         holder.binding.textViewName.setText(mResult.getName());
-//        holder.binding.textViewAddress.setText(mResult.);
-        holder.binding.textViewType.setText(mResult.getTypes().get(position));
-        Glide.with(mContext).load(mResult.getPhotos()).into(holder.binding.imageViewRestaurant);
-//        holder.binding.textViewOpeningHours.setText();
-       if(mResult.getRating() <= 2.5 ) {
-           holder.binding.imageViewStar3.setVisibility(View.VISIBLE);
-       } else if (mResult.getRating() <= 4 && mResult.getRating() > 2.5) {
-           holder.binding.imageViewStar3.setVisibility(View.VISIBLE);
-           holder.binding.imageViewStar2.setVisibility(View.VISIBLE);
-       } else if (mResult.getRating() > 4 ) {
-           holder.binding.imageViewStar3.setVisibility(View.VISIBLE);
-           holder.binding.imageViewStar2.setVisibility(View.VISIBLE);
-           holder.binding.imageViewStar1.setVisibility(View.VISIBLE);
-       }
+        holder.binding.textViewAddress.setText(mResult.getVicinity());
+
+        //        Glide.with(mContext).load(mResult.getPhotos()).into(holder.binding.imageViewRestaurant);
+        if (mResult.getOpeningHours().getOpenNow()) {
+            holder.binding.textViewIsOpenNow.setText("OPEN");
+        } else {
+            holder.binding.textViewIsOpenNow.setText("CLOSED");
+        }
+
+        if (mResult.getRating() <= 2.5) {
+            holder.binding.imageViewStar3.setVisibility(View.VISIBLE);
+        } else if (mResult.getRating() <= 4 && mResult.getRating() > 2.5) {
+            holder.binding.imageViewStar3.setVisibility(View.VISIBLE);
+            holder.binding.imageViewStar2.setVisibility(View.VISIBLE);
+        } else if (mResult.getRating() > 4) {
+            holder.binding.imageViewStar3.setVisibility(View.VISIBLE);
+            holder.binding.imageViewStar2.setVisibility(View.VISIBLE);
+            holder.binding.imageViewStar1.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view;
+package com.hangyeollee.go4lunch.view.activities;
 
 import static android.content.ContentValues.TAG;
 

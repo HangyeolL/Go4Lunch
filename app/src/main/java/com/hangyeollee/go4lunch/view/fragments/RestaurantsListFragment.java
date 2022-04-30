@@ -15,7 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.api.NearbySearchApi;
@@ -36,9 +35,8 @@ public class RestaurantsListFragment extends Fragment implements LocationListene
     private FragmentListViewBinding binding;
 
     NearbySearchApi mNearbySearchApi;
-
-    double latitude = 48.404675;
-    double longitude = 2.701620;
+    double latitude = 48.8596639461606;
+    double longitude = 2.2954959212058954;
     String location = latitude + "," + longitude;
     int radius = 1500;
     String type = "restaurant";
@@ -51,9 +49,6 @@ public class RestaurantsListFragment extends Fragment implements LocationListene
 
         LocationManager mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-
-
-
     }
 
     @Nullable
@@ -67,11 +62,11 @@ public class RestaurantsListFragment extends Fragment implements LocationListene
         call.enqueue(new Callback<MyNearBySearchData>() {
             @Override
             public void onResponse(Call<MyNearBySearchData> call, Response<MyNearBySearchData> response) {
+                Log.d("Retrofit", call.request().toString());
                 MyNearBySearchData myNearBySearchData = response.body();
-                Log.d("ListViewFragment", response.body().getResults().toString());
+                Log.d("ListViewFragment", response.body().getResults().get(0).getName() + "");
                 List<Result> resultList =  myNearBySearchData.getResults();
                 binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(resultList, getActivity()));
-                binding.recyclerViewRestaurantList.setLayoutManager(new LinearLayoutManager(getActivity()));
             }
 
             @Override

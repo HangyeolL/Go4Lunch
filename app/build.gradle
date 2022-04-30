@@ -76,6 +76,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     // What the heck is this ?
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    // Intercepter
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
 
     // TEST implementations start
     testImplementation 'junit:junit:4.+'

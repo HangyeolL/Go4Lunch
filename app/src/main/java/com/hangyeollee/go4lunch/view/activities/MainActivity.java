@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view;
+package com.hangyeollee.go4lunch.view.activities;
 
 import android.os.Bundle;
 import android.view.MenuItem;

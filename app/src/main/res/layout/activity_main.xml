@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".view.MainActivity">
+    tools:context=".view.activities.MainActivity">
 
     <FrameLayout
         android:layout_width="wrap_content"
@@ -19,7 +19,8 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:paddingBottom="56dp"/>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
@@ -32,7 +33,7 @@
 
     <com.google.android.material.navigation.NavigationView
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="56dp"
         android:layout_gravity="start"
         app:headerLayout="@layout/main_activity_header_navigation_view"
         app:menu="@menu/main_activity_navigation_view" />
