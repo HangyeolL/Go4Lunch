@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +20,7 @@ import com.hangyeollee.go4lunch.api.NearbySearchApi;
 import com.hangyeollee.go4lunch.databinding.FragmentListViewBinding;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
+import com.hangyeollee.go4lunch.repository.NearBySearchRepository;
 import com.hangyeollee.go4lunch.utility.MyRetrofitBuilder;
 
 import java.util.List;
@@ -30,14 +30,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class RestaurantsListFragment extends Fragment implements LocationListener {
+public class ListViewFragment extends Fragment implements LocationListener {
 
     private FragmentListViewBinding binding;
 
     NearbySearchApi mNearbySearchApi;
+    String mLocation;
+
     double latitude = 48.8596639461606;
     double longitude = 2.2954959212058954;
-    String location = latitude + "," + longitude;
     int radius = 1500;
     String type = "restaurant";
     String key = BuildConfig.MAPS_API_KEY;
@@ -56,22 +57,39 @@ public class RestaurantsListFragment extends Fragment implements LocationListene
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentListViewBinding.inflate(inflater, container, false);
 
-        mNearbySearchApi = MyRetrofitBuilder.getRetrofit().create(NearbySearchApi.class);
+//        mNearbySearchApi = MyRetrofitBuilder.getRetrofit().create(NearbySearchApi.class);
+//
+//        Call<MyNearBySearchData> call = mNearbySearchApi.getNearbySearchData(mLocation,radius, type, key);
+//        call.enqueue(new Callback<MyNearBySearchData>() {
+//            @Override
+//            public void onResponse(Call<MyNearBySearchData> call, Response<MyNearBySearchData> response) {
+//                Log.d("Retrofit", call.request().toString());
+//                MyNearBySearchData myNearBySearchData = response.body();
+//                Log.d("ListViewFragment", response.body().getResults().get(0).getName() + "");
+//                List<Result> resultList =  myNearBySearchData.getResults();
+//                binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(resultList, getActivity()));
+//            }
+//
+//            @Override
+//            public void onFailure(Call<MyNearBySearchData> call, Throwable t) {
+//                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
-        Call<MyNearBySearchData> call = mNearbySearchApi.getNearbySearchData(location,radius, type, key);
+        mNearbySearchApi = MyRetrofitBuilder.getNearBySearchApi();
+        NearBySearchRepository mNearbySearchRepo = new NearBySearchRepository(mLocation, mNearbySearchApi);
+        Call<MyNearBySearchData> call = mNearbySearchRepo.getNearbySearchData();
         call.enqueue(new Callback<MyNearBySearchData>() {
             @Override
             public void onResponse(Call<MyNearBySearchData> call, Response<MyNearBySearchData> response) {
                 Log.d("Retrofit", call.request().toString());
-                MyNearBySearchData myNearBySearchData = response.body();
-                Log.d("ListViewFragment", response.body().getResults().get(0).getName() + "");
-                List<Result> resultList =  myNearBySearchData.getResults();
-                binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(resultList, getActivity()));
+                List<Result> resultList = response.body().getResults();
+                binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(resultList));
             }
 
             @Override
             public void onFailure(Call<MyNearBySearchData> call, Throwable t) {
-                Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -86,8 +104,15 @@ public class RestaurantsListFragment extends Fragment implements LocationListene
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-//        latitude = location.getLatitude();
-//        longitude = location.getLongitude();
-//        Log.i("My Location", latitude + ", " + longitude);
+        mLocation = location.getLatitude() + "," + location.getLongitude();
+        Log.d("My location is", location.toString());
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
     }
 }

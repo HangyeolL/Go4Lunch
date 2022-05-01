@@ -1,6 +1,5 @@
 package com.hangyeollee.go4lunch.view.fragments;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +15,10 @@ import java.util.List;
 public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<ListViewFragmentRecyclerViewAdapter.myViewHolder> {
 
     private List<Result> mResultList;
-    private Context mContext;
 
-    public ListViewFragmentRecyclerViewAdapter(List<Result> resultList, Context context) {
+
+    public ListViewFragmentRecyclerViewAdapter(List<Result> resultList) {
         mResultList = resultList;
-        mContext = context;
     }
 
     public static class myViewHolder extends RecyclerView.ViewHolder {
@@ -46,7 +44,6 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
         holder.binding.textViewName.setText(mResult.getName());
         holder.binding.textViewAddress.setText(mResult.getVicinity());
 
-        //        Glide.with(mContext).load(mResult.getPhotos()).into(holder.binding.imageViewRestaurant);
         if (mResult.getOpeningHours().getOpenNow()) {
             holder.binding.textViewIsOpenNow.setText("OPEN");
         } else {

@@ -15,7 +15,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainBinding;
 import com.hangyeollee.go4lunch.view.fragments.GoogleMapsFragment;
-import com.hangyeollee.go4lunch.view.fragments.RestaurantsListFragment;
+import com.hangyeollee.go4lunch.view.fragments.ListViewFragment;
 import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                 case 0:
                     return new GoogleMapsFragment();
                 case 1:
-                    return new RestaurantsListFragment();
+                    return new ListViewFragment();
                 case 2:
                     return new WorkMatesFragment();
             }

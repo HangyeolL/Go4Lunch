@@ -1,5 +1,7 @@
 package com.hangyeollee.go4lunch.utility;
 
+import com.hangyeollee.go4lunch.api.NearbySearchApi;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -26,5 +28,8 @@ public class MyRetrofitBuilder {
         return mRetrofit;
     }
 
+    public static NearbySearchApi getNearBySearchApi() {
+       return getRetrofit().create(NearbySearchApi.class);
+    }
 
 }
