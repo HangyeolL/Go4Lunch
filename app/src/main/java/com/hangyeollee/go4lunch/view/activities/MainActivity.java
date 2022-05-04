@@ -1,9 +1,12 @@
 package com.hangyeollee.go4lunch.view.activities;
 
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -18,19 +21,17 @@ import com.hangyeollee.go4lunch.view.fragments.GoogleMapsFragment;
 import com.hangyeollee.go4lunch.view.fragments.ListViewFragment;
 import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
 
-public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener, LocationListener {
 
     private ActivityMainBinding binding;
+
+    private ActivityResultLauncher<String> requestPermissionLauncher;
+
+    private LocationManager mLocationManager;
     /**
      * The number of pages(Fragments)
      */
     private static final int NUM_PAGES = 3;
-
-    /**
-     * The ViewPager which handles animation and allows swiping horizontally to access previous
-     */
-    private ViewPager2 mViewPager2;
-
     /**
      * The ViewPager adapter, which provides the pages to the view pager widget.
      */
@@ -41,15 +42,36 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
+        setContentView(binding.getRoot());
 
-        // Instantiate a ViewPager2 and a FragmentStateAdapter.
-        mViewPager2 = binding.viewPager;
+//        mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+//
+//        // Handles the user's response to the system permissions dialog.
+//        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+//            if (isGranted) {
+//                // Permission is granted now
+//                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+//            } else {
+//                // Explain to the user that the feature is unavailable because the
+//                // features requires a permission that the user has denied. At the
+//                // same time, respect the user's decision. Don't link to system
+//                // settings in an effort to convince the user to change their
+//                // decision.
+//                //Todo : Alert Dialog builder
+//            }
+//        });
+//
+//        // Launch requestPermissionLauncher if mLocation permission is not already granted
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+//        } else {
+//            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+//        }
+
         mFragmentStateAdapter = new ViewPagerAdapter(this);
-        mViewPager2.setAdapter(mFragmentStateAdapter);
+        binding.viewPager.setAdapter(mFragmentStateAdapter);
 
-        mViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+        binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 switch (position) {
@@ -70,14 +92,29 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     }
 
     @Override
+    public void onProviderEnabled(@NonNull String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+
+    }
+
+    @Override
     public void onBackPressed() {
-        if (mViewPager2.getCurrentItem() == 0) {
+        if (binding.viewPager.getCurrentItem() == 0) {
             // If the user is currently looking at the first step, allow the system to handle the
             // Back button. This calls finish() on this activity and pops the back stack.
             super.onBackPressed();
         } else {
             // Otherwise, select the previous step.
-            mViewPager2.setCurrentItem(mViewPager2.getCurrentItem() - 1);
+            binding.viewPager.setCurrentItem(binding.viewPager.getCurrentItem() - 1);
         }
     }
 
@@ -85,13 +122,13 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.bottomNavigationView_menu_mapView:
-                mViewPager2.setCurrentItem(0);
+                binding.viewPager.setCurrentItem(0);
                 break;
             case R.id.bottomNavigationView_menu_listView:
-                mViewPager2.setCurrentItem(1);
+                binding.viewPager.setCurrentItem(1);
                 break;
             case R.id.bottomNavigationView_menu_workMates:
-                mViewPager2.setCurrentItem(2);
+                binding.viewPager.setCurrentItem(2);
                 break;
         }
         return true;

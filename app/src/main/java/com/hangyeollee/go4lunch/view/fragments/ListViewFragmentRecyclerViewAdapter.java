@@ -44,11 +44,12 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
         holder.binding.textViewName.setText(mResult.getName());
         holder.binding.textViewAddress.setText(mResult.getVicinity());
 
-        if (mResult.getOpeningHours().getOpenNow()) {
-            holder.binding.textViewIsOpenNow.setText("OPEN");
-        } else {
-            holder.binding.textViewIsOpenNow.setText("CLOSED");
-        }
+        // Was working not working anymore
+//        if (mResult.getOpeningHours().getOpenNow()) {
+//            holder.binding.textViewIsOpenNow.setText("OPEN");
+//        } else {
+//            holder.binding.textViewIsOpenNow.setText("CLOSED");
+//        }
 
         if (mResult.getRating() <= 2.5) {
             holder.binding.imageViewStar3.setVisibility(View.VISIBLE);

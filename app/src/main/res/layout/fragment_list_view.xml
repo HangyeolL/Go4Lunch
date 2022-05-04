@@ -5,7 +5,7 @@
     android:id="@+id/recyclerView_restaurant_list"
     android:name="com.hangyeollee.go4lunch.view.RestaurantsListFragment"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"

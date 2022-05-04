@@ -9,8 +9,7 @@
 
     <FrameLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <Toolbar
             android:layout_width="match_parent"
@@ -19,7 +18,7 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:paddingBottom="56dp"/>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
