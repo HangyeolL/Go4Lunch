@@ -8,13 +8,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.LocationServices;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
-import com.hangyeollee.go4lunch.repository.NearBySearchRepository;
+import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.utility.MyRetrofitBuilder;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
+    private NearbySearchDataRepository mNearbySearchDataRepository;
     private LocationRepository mLocationRepository;
-    private NearBySearchRepository mNearBySearchRepository;
 
     private static ViewModelFactory mViewModelFactory;
 
@@ -32,16 +32,16 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     }
 
     private ViewModelFactory(Context context) {
-        mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(context));
-        mNearBySearchRepository = new NearBySearchRepository(MyRetrofitBuilder.getNearBySearchApi());
+        mNearbySearchDataRepository = new NearbySearchDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
+        mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(context.getApplicationContext()));
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
 
-        if (modelClass.isAssignableFrom(ListAndMapViewFragmentViewModel.class)) {
-            return (T) new ListAndMapViewFragmentViewModel(mLocationRepository, mNearBySearchRepository);
+        if (modelClass.isAssignableFrom(GoogleMapsFragmentViewModel.class)) {
+            return (T) new GoogleMapsFragmentViewModel(mNearbySearchDataRepository, mLocationRepository);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

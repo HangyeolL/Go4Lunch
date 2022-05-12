@@ -14,22 +14,25 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.hangyeollee.go4lunch.databinding.FragmentListViewBinding;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
-import com.hangyeollee.go4lunch.viewmodel.ListAndMapViewFragmentViewModel;
+import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
+import com.hangyeollee.go4lunch.viewmodel.GoogleMapsFragmentViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
+import java.util.List;
 
 public class ListViewFragment extends Fragment {
 
+    private String mLocation;
+    String testLocation = "48.402957725552795,2.699456359957351";
+
     private FragmentListViewBinding binding;
 
-    private ListAndMapViewFragmentViewModel mViewModel;
+    private GoogleMapsFragmentViewModel mViewModel;
 
-
-    @SuppressLint("MissingPermission")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getActivity())).get(ListAndMapViewFragmentViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getActivity())).get(GoogleMapsFragmentViewModel.class);
     }
 
     @SuppressLint("MissingPermission")
@@ -38,10 +41,12 @@ public class ListViewFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentListViewBinding.inflate(inflater, container, false);
 
-        mViewModel.getNearBySearchLiveData("48.40281714766752,2.696511784119264").observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
+        mViewModel.getNearBySearchLiveData("48.402957725552795,2.699456359957351").observe(getActivity(), new Observer<MyNearBySearchData>() {
             @Override
             public void onChanged(MyNearBySearchData myNearBySearchData) {
-                binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(myNearBySearchData.getResults()));
+                if (myNearBySearchData != null) {
+                    updateRecyclerViewList(myNearBySearchData.getResults());
+                }
             }
         });
         return binding.getRoot();
@@ -51,5 +56,9 @@ public class ListViewFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void updateRecyclerViewList(List<Result> resultList) {
+        binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(resultList));
     }
 }

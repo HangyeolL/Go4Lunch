@@ -9,4 +9,6 @@
 
     <string name="firebase_web_client_id">863376647598-4ermgeses0stnoccfgch1bs0v4d8sagf.apps.googleusercontent.com</string>
     <string name="app_description">Find a nice restaurants and invite your co-workers for lunch !</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

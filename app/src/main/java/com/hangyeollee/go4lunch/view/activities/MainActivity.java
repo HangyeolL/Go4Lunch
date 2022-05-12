@@ -1,7 +1,6 @@
 package com.hangyeollee.go4lunch.view.activities;
 
-import android.location.Location;
-import android.location.LocationListener;
+import android.annotation.SuppressLint;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -21,32 +20,28 @@ import com.hangyeollee.go4lunch.view.fragments.GoogleMapsFragment;
 import com.hangyeollee.go4lunch.view.fragments.ListViewFragment;
 import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
 
-public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener, LocationListener {
+public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener{
 
     private ActivityMainBinding binding;
 
     private ActivityResultLauncher<String> requestPermissionLauncher;
 
     private LocationManager mLocationManager;
-    /**
-     * The number of pages(Fragments)
-     */
+
     private static final int NUM_PAGES = 3;
-    /**
-     * The ViewPager adapter, which provides the pages to the view pager widget.
-     */
     private FragmentStateAdapter mFragmentStateAdapter;
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-//        mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 //
-//        // Handles the user's response to the system permissions dialog.
+//        mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        // Handles the user's response to the system permissions dialog.
 //        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
 //            if (isGranted) {
 //                // Permission is granted now
@@ -65,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 //        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 //            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
 //        } else {
-//            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+//            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 //        }
 
         mFragmentStateAdapter = new ViewPagerAdapter(this);
@@ -92,21 +87,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     }
 
     @Override
-    public void onProviderEnabled(@NonNull String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(@NonNull String provider) {
-
-    }
-
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-
-    }
-
-    @Override
     public void onBackPressed() {
         if (binding.viewPager.getCurrentItem() == 0) {
             // If the user is currently looking at the first step, allow the system to handle the
@@ -118,6 +98,9 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         }
     }
 
+    /**
+     * On Item Selected Listener
+     */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -135,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     }
 
     /**
-     * ViewPagerAdapter
+     * ViewPagerAdapter for MainActivity
      */
     private class ViewPagerAdapter extends FragmentStateAdapter {
         public ViewPagerAdapter(FragmentActivity fa) {
