@@ -1,6 +1,7 @@
 package com.hangyeollee.go4lunch.view.fragments;
 
 import android.annotation.SuppressLint;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +24,6 @@ import java.util.List;
 public class ListViewFragment extends Fragment {
 
     private String mLocation;
-    String testLocation = "48.402957725552795,2.699456359957351";
 
     private FragmentListViewBinding binding;
 
@@ -32,7 +32,6 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getActivity())).get(GoogleMapsFragmentViewModel.class);
     }
 
     @SuppressLint("MissingPermission")
@@ -41,20 +40,44 @@ public class ListViewFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentListViewBinding.inflate(inflater, container, false);
 
-        mViewModel.getNearBySearchLiveData("48.402957725552795,2.699456359957351").observe(getActivity(), new Observer<MyNearBySearchData>() {
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getActivity())).get(GoogleMapsFragmentViewModel.class);
+
+        mViewModel.startLocationRequest();
+
+        mViewModel.getLocationLiveData().observe(getActivity(), new Observer<Location>() {
             @Override
-            public void onChanged(MyNearBySearchData myNearBySearchData) {
-                if (myNearBySearchData != null) {
-                    updateRecyclerViewList(myNearBySearchData.getResults());
+            public void onChanged(Location location) {
+                String mLocation = location.getLatitude() + "," + location.getLongitude();
+
+                mViewModel.getNearBySearchLiveData(mLocation);
+
+                mViewModel.getNearBySearchLiveData(mLocation).observe(getActivity(), new Observer<MyNearBySearchData>() {
+                    @Override
+                    public void onChanged(MyNearBySearchData myNearBySearchData) {
+                        updateRecyclerViewList(myNearBySearchData.getResults());
+                    }
+                });
+            }
+        });
+
+        mViewModel.getIsLoadingLiveData().observe(getActivity(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean) {
+                    binding.progressBar.setVisibility(View.VISIBLE);
+                } else {
+                    binding.progressBar.setVisibility(View.GONE);
                 }
             }
         });
+
         return binding.getRoot();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        mViewModel.stopLocationRequest();
         binding = null;
     }
 

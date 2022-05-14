@@ -37,22 +37,27 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
             binding.textViewName.setText(result.getName());
             binding.textViewAddress.setText(result.getVicinity());
 
-            if (result.getOpeningHours().getOpenNow()) {
-                binding.textViewIsOpenNow.setText("OPEN");
-            } else {
-                binding.textViewIsOpenNow.setText("CLOSED");
+            if (result.getOpeningHours() != null) {
+                if (result.getOpeningHours().getOpenNow()) {
+                    binding.textViewIsOpenNow.setText("OPEN");
+                } else {
+                    binding.textViewIsOpenNow.setText("CLOSED");
+                }
             }
 
-            if (result.getRating() <= 2.5) {
-                binding.imageViewStar3.setVisibility(View.VISIBLE);
-            } else if (result.getRating() <= 4 && result.getRating() > 2.5) {
-                binding.imageViewStar3.setVisibility(View.VISIBLE);
-                binding.imageViewStar2.setVisibility(View.VISIBLE);
-            } else if (result.getRating() > 4) {
-                binding.imageViewStar3.setVisibility(View.VISIBLE);
-                binding.imageViewStar2.setVisibility(View.VISIBLE);
-                binding.imageViewStar1.setVisibility(View.VISIBLE);
+            if (result.getRating() != null) {
+                if (result.getRating() <= 2.5) {
+                    binding.imageViewStar3.setVisibility(View.VISIBLE);
+                } else if (result.getRating() <= 4 && result.getRating() > 2.5) {
+                    binding.imageViewStar3.setVisibility(View.VISIBLE);
+                    binding.imageViewStar2.setVisibility(View.VISIBLE);
+                } else if (result.getRating() > 4) {
+                    binding.imageViewStar3.setVisibility(View.VISIBLE);
+                    binding.imageViewStar2.setVisibility(View.VISIBLE);
+                    binding.imageViewStar1.setVisibility(View.VISIBLE);
+                }
             }
+
             if (result.getPhotos() != null) {
                 for (int i = 0; i < result.getPhotos().size(); i++) {
                     Photo photo = result.getPhotos().get(i);

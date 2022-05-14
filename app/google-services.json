@@ -7,7 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:863376647598:android:9a29d2515fd05dd7b9d43f",
+        "mobilesdk_app_id": "1:863376647598:android:bdd74644457e677db9d43f",
         "android_client_info": {
           "package_name": "com.hangyeollee.go4lunch"
         }
@@ -28,7 +28,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA5BiOXJAdFvB6ppwfndOWCwewe4aKyX6k"
+          "current_key": "AIzaSyA2bubfnuuN4dkk55WMVoxXju-bP_7OiaE"
         }
       ],
       "services": {

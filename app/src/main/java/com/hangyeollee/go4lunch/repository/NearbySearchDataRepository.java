@@ -18,11 +18,15 @@ public class NearbySearchDataRepository {
     private GoogleMapsApi mGoogleMapsApi;
     private MutableLiveData<MyNearBySearchData> mNearBySearchMutableLiveData = new MutableLiveData<>();
 
+    private MutableLiveData<Boolean> mIsLoadingMutableLiveData = new MutableLiveData<>();
+
     public NearbySearchDataRepository(GoogleMapsApi googleMapsApi) {
         mGoogleMapsApi = googleMapsApi;
     }
 
     public LiveData<MyNearBySearchData> getNearbySearchLiveData(String location) {
+        mIsLoadingMutableLiveData.setValue(false);
+
         Call<MyNearBySearchData> call = mGoogleMapsApi.getNearbySearchData(location, 1500, "restaurant", BuildConfig.MAPS_API_KEY);
         call.enqueue(new Callback<MyNearBySearchData>() {
             @Override
@@ -30,15 +34,21 @@ public class NearbySearchDataRepository {
                 mNearBySearchMutableLiveData.setValue(response.body());
                 Log.d("Retrofit", response.raw().request().url().toString());
 
+                mIsLoadingMutableLiveData.setValue(true);
             }
             @Override
             public void onFailure(Call<MyNearBySearchData> call, Throwable t) {
                 mNearBySearchMutableLiveData.postValue(null);
+
+                mIsLoadingMutableLiveData.setValue(true);
             }
         });
 
         return mNearBySearchMutableLiveData;
     }
 
+    public LiveData<Boolean> getIsLoadingLiveData() {
+        return mIsLoadingMutableLiveData;
+    }
 
 }

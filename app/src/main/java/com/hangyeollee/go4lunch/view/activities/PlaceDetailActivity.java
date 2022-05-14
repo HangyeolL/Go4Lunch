@@ -12,4 +12,5 @@ public class PlaceDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
     }
+
 }
