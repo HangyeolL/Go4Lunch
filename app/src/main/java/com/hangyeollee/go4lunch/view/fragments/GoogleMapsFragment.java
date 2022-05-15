@@ -78,7 +78,7 @@ public class GoogleMapsFragment extends Fragment {
         });
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Log.d("Permission",  "Is already granted");
+            Log.d("Permission", "Is already granted");
 
             binding.buttonRequestLocation.setOnClickListener(i -> mViewModel.startLocationRequest());
 
@@ -87,6 +87,19 @@ public class GoogleMapsFragment extends Fragment {
                 public void onChanged(Location location) {
                     mLocation = location.getLatitude() + "," + location.getLongitude();
                     Log.i("MyLocation", mLocation);
+
+                    mViewModel.getNearBySearchLiveData(mLocation).observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
+                        @Override
+                        public void onChanged(MyNearBySearchData myNearBySearchData) {
+                            for (Result mResult : myNearBySearchData.getResults()) {
+                                LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
+
+                                BitmapDescriptor markerIcon = setUpMapIcon();
+                                mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
+                                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(restauLatLng, 15));
+                            }
+                        }
+                    });
                 }
             });
 
@@ -103,33 +116,20 @@ public class GoogleMapsFragment extends Fragment {
                 });
             }
 
-            mViewModel.getNearBySearchLiveData(mLocation).observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
-                @Override
-                public void onChanged(MyNearBySearchData myNearBySearchData) {
-                    for (Result mResult : myNearBySearchData.getResults()) {
-                        LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
-
-                        BitmapDescriptor markerIcon = setUpMapIcon();
-                        mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
-                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(restauLatLng, 15));
-                    }
-                }
-            });
-
         } else {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
-        mViewModel.getIsLoadingLiveData().observe(getActivity(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if (aBoolean) {
-                    binding.progressBar.setVisibility(View.VISIBLE);
-                } else {
-                    binding.progressBar.setVisibility(View.GONE);
-                }
-            }
-        });
+//        mViewModel.getIsLoadingLiveData().observe(getActivity(), new Observer<Boolean>() {
+//            @Override
+//            public void onChanged(Boolean aBoolean) {
+//                if (aBoolean) {
+//                    binding.progressBar.setVisibility(View.VISIBLE);
+//                } else {
+//                    binding.progressBar.setVisibility(View.GONE);
+//                }
+//            }
+//        });
 
         return binding.getRoot();
     }

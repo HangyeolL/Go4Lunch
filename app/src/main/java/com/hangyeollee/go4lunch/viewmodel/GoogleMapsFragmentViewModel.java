@@ -35,10 +35,10 @@ public class GoogleMapsFragmentViewModel extends ViewModel {
     }
 
     public LiveData<MyNearBySearchData> getNearBySearchLiveData(String location) {
-        mNearBySearchMutableLiveData.setValue(mNearbySearchDataRepository.getNearbySearchLiveData(location).getValue());
-        mIsLoadingMutableLiveData.postValue(mNearbySearchDataRepository.getIsLoadingLiveData().getValue());
+//        mNearBySearchMutableLiveData.setValue(mNearbySearchDataRepository.getNearbySearchLiveData(location).getValue());
+//        mIsLoadingMutableLiveData.postValue(mNearbySearchDataRepository.getIsLoadingLiveData().getValue());
 
-        return mNearBySearchMutableLiveData;
+        return mNearbySearchDataRepository.getNearbySearchLiveData(location);
     }
 
     public LiveData<Location> getLocationLiveData() {

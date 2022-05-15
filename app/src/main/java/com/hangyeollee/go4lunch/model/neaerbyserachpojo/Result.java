@@ -1,11 +1,15 @@
 package com.hangyeollee.go4lunch.model.neaerbyserachpojo;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class Result {
+public class Result implements Parcelable {
     @SerializedName("business_status")
     @Expose
     private String businessStatus;
@@ -60,6 +64,53 @@ public class Result {
     @SerializedName("permanently_closed")
     @Expose
     private Boolean permanentlyClosed;
+
+    protected Result(Parcel in) {
+        businessStatus = in.readString();
+        icon = in.readString();
+        iconBackgroundColor = in.readString();
+        iconMaskBaseUri = in.readString();
+        name = in.readString();
+
+        //NEW
+        photos = new ArrayList<>();
+        in.readList(photos, Photo.class.getClassLoader());
+
+        placeId = in.readString();
+        if (in.readByte() == 0) {
+            priceLevel = null;
+        } else {
+            priceLevel = in.readInt();
+        }
+        if (in.readByte() == 0) {
+            rating = null;
+        } else {
+            rating = in.readDouble();
+        }
+        reference = in.readString();
+        scope = in.readString();
+        types = in.createStringArrayList();
+        if (in.readByte() == 0) {
+            userRatingsTotal = null;
+        } else {
+            userRatingsTotal = in.readInt();
+        }
+        vicinity = in.readString();
+        byte tmpPermanentlyClosed = in.readByte();
+        permanentlyClosed = tmpPermanentlyClosed == 0 ? null : tmpPermanentlyClosed == 1;
+    }
+
+    public static final Creator<Result> CREATOR = new Creator<Result>() {
+        @Override
+        public Result createFromParcel(Parcel in) {
+            return new Result(in);
+        }
+
+        @Override
+        public Result[] newArray(int size) {
+            return new Result[size];
+        }
+    };
 
     public String getBusinessStatus() {
         return businessStatus;
@@ -205,4 +256,44 @@ public class Result {
         this.permanentlyClosed = permanentlyClosed;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(businessStatus);
+        dest.writeString(icon);
+        dest.writeString(iconBackgroundColor);
+        dest.writeString(iconMaskBaseUri);
+        dest.writeString(name);
+
+        dest.writeList(photos);
+
+        dest.writeString(placeId);
+        if (priceLevel == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(priceLevel);
+        }
+        if (rating == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(rating);
+        }
+        dest.writeString(reference);
+        dest.writeString(scope);
+        dest.writeStringList(types);
+        if (userRatingsTotal == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(userRatingsTotal);
+        }
+        dest.writeString(vicinity);
+        dest.writeByte((byte) (permanentlyClosed == null ? 0 : permanentlyClosed ? 1 : 2));
+    }
 }

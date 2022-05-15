@@ -9,8 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.databinding.ListViewItemBinding;
-import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Photo;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.view.activities.PlaceDetailActivity;
 
@@ -59,22 +59,18 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
             }
 
             if (result.getPhotos() != null) {
-                for (int i = 0; i < result.getPhotos().size(); i++) {
-                    Photo photo = result.getPhotos().get(i);
-                    String imgeUrl = photo.getPhotoReference();
-                    if (imgeUrl.isEmpty()) {
-
-                    } else {
-                        Glide.with(itemView).load(imgeUrl).into(binding.imageViewRestaurant);
-                    }
+                for(int i = 0; i < result.getPhotos().size(); i++) {
+                    Glide.with(itemView).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result.getPhotos().get(i).getPhotoReference() +"&key="+ BuildConfig.MAPS_API_KEY).into(binding.imageViewRestaurant);
                 }
             }
 
-            binding.parentLayout.setOnClickListener(view -> {
-                view.getContext().startActivity(new Intent(view.getContext(), PlaceDetailActivity.class));
+            itemView.setOnClickListener(i -> {
+                Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
+                intent.putExtra("Selected restaurant", result);
+                itemView.getContext().startActivity(intent);
             });
-        }
 
+        }
     }
 
     @NonNull
