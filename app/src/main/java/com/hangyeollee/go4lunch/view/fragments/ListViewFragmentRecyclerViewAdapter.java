@@ -2,6 +2,7 @@ package com.hangyeollee.go4lunch.view.fragments;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,7 +13,6 @@ import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.databinding.ListViewItemBinding;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
-import com.hangyeollee.go4lunch.utility.DistanceCalculator;
 import com.hangyeollee.go4lunch.view.activities.PlaceDetailActivity;
 
 import java.util.List;
@@ -20,13 +20,15 @@ import java.util.List;
 public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<ListViewFragmentRecyclerViewAdapter.ViewHolder> {
 
     private List<Result> mResultList;
+    private Location mLocation;
 
 
-    public ListViewFragmentRecyclerViewAdapter(List<Result> resultList) {
+    public ListViewFragmentRecyclerViewAdapter(List<Result> resultList, Location location) {
         mResultList = resultList;
+        mLocation = location;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         ListViewItemBinding binding;
 
         public ViewHolder(@NonNull ListViewItemBinding mListViewItemBinding) {
@@ -64,15 +66,14 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
                 itemView.getContext().startActivity(intent);
             });
 
-//            binding.textViewDistance.setText(getDistance());
+            Location restauLocation = new Location("restaurant location");
+            restauLocation.setLatitude(result.getGeometry().getLocation().getLat());
+            restauLocation.setLongitude(result.getGeometry().getLocation().getLng());
+            float distance = mLocation.distanceTo(restauLocation);
 
+            binding.textViewDistance.setText(String.format("%.0f", distance) + "m");
         }
 
-        private String getDistance(String currentLocation, double destinationLat, double destinationLng) {
-            DistanceCalculator calculator = new DistanceCalculator();
-            int distance = Math.round(calculator.getDistance(currentLocation, destinationLat, destinationLng));
-            return String.format("%sm", distance);
-        }
     }
 
     @NonNull

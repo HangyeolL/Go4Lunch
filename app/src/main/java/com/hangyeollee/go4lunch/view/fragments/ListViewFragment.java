@@ -15,11 +15,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.hangyeollee.go4lunch.databinding.FragmentListViewBinding;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
-import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.viewmodel.GoogleMapsFragmentViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
-
-import java.util.List;
 
 public class ListViewFragment extends Fragment {
 
@@ -52,7 +49,7 @@ public class ListViewFragment extends Fragment {
                 mViewModel.getNearBySearchLiveData(mLocation).observe(getActivity(), new Observer<MyNearBySearchData>() {
                     @Override
                     public void onChanged(MyNearBySearchData myNearBySearchData) {
-                        updateRecyclerViewList(myNearBySearchData.getResults());
+                        binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(myNearBySearchData.getResults(), location));
                     }
                 });
             }
@@ -79,7 +76,4 @@ public class ListViewFragment extends Fragment {
         binding = null;
     }
 
-    private void updateRecyclerViewList(List<Result> resultList) {
-        binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(resultList));
-    }
 }
