@@ -49,8 +49,6 @@ public class ListViewFragment extends Fragment {
             public void onChanged(Location location) {
                 String mLocation = location.getLatitude() + "," + location.getLongitude();
 
-                mViewModel.getNearBySearchLiveData(mLocation);
-
                 mViewModel.getNearBySearchLiveData(mLocation).observe(getActivity(), new Observer<MyNearBySearchData>() {
                     @Override
                     public void onChanged(MyNearBySearchData myNearBySearchData) {

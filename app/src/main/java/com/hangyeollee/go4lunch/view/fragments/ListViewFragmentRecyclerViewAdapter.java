@@ -1,8 +1,8 @@
 package com.hangyeollee.go4lunch.view.fragments;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.databinding.ListViewItemBinding;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
+import com.hangyeollee.go4lunch.utility.DistanceCalculator;
 import com.hangyeollee.go4lunch.view.activities.PlaceDetailActivity;
 
 import java.util.List;
@@ -40,22 +41,15 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
             if (result.getOpeningHours() != null) {
                 if (result.getOpeningHours().getOpenNow()) {
                     binding.textViewIsOpenNow.setText("OPEN");
+                    binding.textViewIsOpenNow.setTextColor(Color.BLUE);
                 } else {
                     binding.textViewIsOpenNow.setText("CLOSED");
+                    binding.textViewIsOpenNow.setTextColor(Color.RED);
                 }
             }
 
-            if (result.getRating() != null) {
-                if (result.getRating() <= 2.5) {
-                    binding.imageViewStar3.setVisibility(View.VISIBLE);
-                } else if (result.getRating() <= 4 && result.getRating() > 2.5) {
-                    binding.imageViewStar3.setVisibility(View.VISIBLE);
-                    binding.imageViewStar2.setVisibility(View.VISIBLE);
-                } else if (result.getRating() > 4) {
-                    binding.imageViewStar3.setVisibility(View.VISIBLE);
-                    binding.imageViewStar2.setVisibility(View.VISIBLE);
-                    binding.imageViewStar1.setVisibility(View.VISIBLE);
-                }
+            if(result.getRating() != null) {
+                binding.ratingBar.setRating(result.getRating().floatValue());
             }
 
             if (result.getPhotos() != null) {
@@ -70,6 +64,14 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
                 itemView.getContext().startActivity(intent);
             });
 
+//            binding.textViewDistance.setText(getDistance());
+
+        }
+
+        private String getDistance(String currentLocation, double destinationLat, double destinationLng) {
+            DistanceCalculator calculator = new DistanceCalculator();
+            int distance = Math.round(calculator.getDistance(currentLocation, destinationLat, destinationLng));
+            return String.format("%sm", distance);
         }
     }
 
