@@ -7,7 +7,9 @@ import android.view.MenuItem;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -20,7 +22,7 @@ import com.hangyeollee.go4lunch.view.fragments.GoogleMapsFragment;
 import com.hangyeollee.go4lunch.view.fragments.ListViewFragment;
 import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
 
-public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
 
     private ActivityMainBinding binding;
 
@@ -38,30 +40,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-//
-//        mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        // Handles the user's response to the system permissions dialog.
-//        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-//            if (isGranted) {
-//                // Permission is granted now
-//                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-//            } else {
-//                // Explain to the user that the feature is unavailable because the
-//                // features requires a permission that the user has denied. At the
-//                // same time, respect the user's decision. Don't link to system
-//                // settings in an effort to convince the user to change their
-//                // decision.
-//                //Todo : Alert Dialog builder
-//            }
-//        });
-//
-//        // Launch requestPermissionLauncher if mLocation permission is not already granted
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-//        } else {
-//            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-//        }
+        setSupportActionBar(binding.toolBar);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        binding.drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
 
         mFragmentStateAdapter = new ViewPagerAdapter(this);
         binding.viewPager.setAdapter(mFragmentStateAdapter);
@@ -88,12 +71,13 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
 
     @Override
     public void onBackPressed() {
-        if (binding.viewPager.getCurrentItem() == 0) {
-            // If the user is currently looking at the first step, allow the system to handle the
-            // Back button. This calls finish() on this activity and pops the back stack.
+        if (binding.viewPager.getCurrentItem() == 0 && !binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             super.onBackPressed();
-        } else {
-            // Otherwise, select the previous step.
+
+        } else if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+
+        } else if (!binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.viewPager.setCurrentItem(binding.viewPager.getCurrentItem() - 1);
         }
     }

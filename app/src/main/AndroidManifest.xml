@@ -25,7 +25,8 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
-        <meta-data android:name="com.google.android.gms.version"
+        <meta-data
+            android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <meta-data
@@ -57,10 +58,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.activities.PlaceDetailActivity"
-            android:parentActivityName=".view.activities.MainActivity"
-            android:theme="@style/Theme.Go4Lunch.NoActionBar" />
-        <activity
             android:name=".view.activities.LogInActivity"
             android:exported="true">
             <intent-filter>
@@ -72,7 +69,10 @@
             android:name=".view.activities.MainActivity"
             android:exported="true"
             android:parentActivityName=".view.activities.LogInActivity"
-            android:theme="@style/Theme.Go4Lunch.NoActionBar" />
+            android:theme="@style/Theme.Go4Lunch.MainActivityTheme"/>
+        <activity
+            android:name=".view.activities.PlaceDetailActivity"
+            android:parentActivityName=".view.activities.MainActivity" />
     </application>
 
 </manifest>

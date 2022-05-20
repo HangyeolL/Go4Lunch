@@ -4,10 +4,14 @@
     <string name="error_authentication_canceled">Log in failed</string>
     <string name="error_no_internet">No internet conncection</string>
     <string name="error_unknown_error">Unknown error occured</string>
+    <string name="app_description">Find a nice restaurants and invite your co-workers for lunch !</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+
+
+
 
     <string name="fb_login_protocol_scheme">fb3320128438266102</string>
-
     <string name="firebase_web_client_id">863376647598-4ermgeses0stnoccfgch1bs0v4d8sagf.apps.googleusercontent.com</string>
-    <string name="app_description">Find a nice restaurants and invite your co-workers for lunch !</string>
-
 </resources>
