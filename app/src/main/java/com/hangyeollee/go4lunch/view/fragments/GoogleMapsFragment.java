@@ -32,24 +32,21 @@ import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.FragmentGoogleMapsBinding;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
-import com.hangyeollee.go4lunch.viewmodel.GoogleMapsFragmentViewModel;
+import com.hangyeollee.go4lunch.viewmodel.MapsAndListSharedViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
 public class GoogleMapsFragment extends Fragment {
 
-    private String mLocation;
+    private String mUserLocation;
+    private double mUserLat, mUserLng;
+
+    private MapsAndListSharedViewModel mViewModel;
 
     private GoogleMap mGoogleMap;
-    private GoogleMapsFragmentViewModel mViewModel;
-
     private FragmentGoogleMapsBinding binding;
 
     private ActivityResultLauncher<String> requestPermissionLauncher;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @SuppressLint("MissingPermission")
     @Nullable
@@ -58,7 +55,7 @@ public class GoogleMapsFragment extends Fragment {
         binding = FragmentGoogleMapsBinding.inflate(inflater, container, false);
         Log.i("GoogleMapsFragment", "onCreateView launched");
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getActivity())).get(GoogleMapsFragmentViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getActivity())).get(MapsAndListSharedViewModel.class);
 
         // Register the permissions callback, which handles the user's response to the
         // system permissions dialog. Save the return value, an instance of
@@ -67,7 +64,8 @@ public class GoogleMapsFragment extends Fragment {
             if (isGranted) {
                 // Permission is granted. Continue the action or workflow in your
                 // app.
-                binding.buttonRequestLocation.setOnClickListener(i -> mViewModel.startLocationRequest());
+                mViewModel.startLocationRequest();
+                setUpView();
             } else {
                 // Explain to the user that the feature is unavailable because the
                 // features requires a permission that the user has denied. At the
@@ -79,57 +77,12 @@ public class GoogleMapsFragment extends Fragment {
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d("Permission", "Is already granted");
-
-            binding.buttonRequestLocation.setOnClickListener(i -> mViewModel.startLocationRequest());
-
-            mViewModel.getLocationLiveData().observe(getActivity(), new Observer<Location>() {
-                @Override
-                public void onChanged(Location location) {
-                    mLocation = location.getLatitude() + "," + location.getLongitude();
-                    Log.i("MyLocation", mLocation);
-
-                    mViewModel.getNearBySearchLiveData(mLocation).observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
-                        @Override
-                        public void onChanged(MyNearBySearchData myNearBySearchData) {
-                            for (Result mResult : myNearBySearchData.getResults()) {
-                                LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
-
-                                BitmapDescriptor markerIcon = setUpMapIcon();
-                                mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
-                                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(restauLatLng, 15));
-                            }
-                        }
-                    });
-                }
-            });
-
-            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-            if (mapFragment != null) {
-                mapFragment.getMapAsync(new OnMapReadyCallback() {
-                    @Override
-                    public void onMapReady(@NonNull GoogleMap googleMap) {
-                        mGoogleMap = googleMap;
-                        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-                        mGoogleMap.clear();
-                        mGoogleMap.setMyLocationEnabled(true);
-                    }
-                });
-            }
-
+            mViewModel.startLocationRequest();
+            setUpView();
         } else {
+            Log.d("Permission", "is not granted launch permission dialog");
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
-
-//        mViewModel.getIsLoadingLiveData().observe(getActivity(), new Observer<Boolean>() {
-//            @Override
-//            public void onChanged(Boolean aBoolean) {
-//                if (aBoolean) {
-//                    binding.progressBar.setVisibility(View.VISIBLE);
-//                } else {
-//                    binding.progressBar.setVisibility(View.GONE);
-//                }
-//            }
-//        });
 
         return binding.getRoot();
     }
@@ -139,6 +92,57 @@ public class GoogleMapsFragment extends Fragment {
         super.onDestroyView();
         mViewModel.stopLocationRequest();
         binding = null;
+    }
+
+    private void setUpView() {
+        mViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), new Observer<Location>() {
+            @Override
+            public void onChanged(Location location) {
+                mUserLocation = location.getLatitude() + "," + location.getLongitude();
+                mUserLat = location.getLatitude();
+                mUserLng = location.getLongitude();
+
+                mViewModel.fetchNearBySearchData(mUserLocation);
+            }
+        });
+
+        mViewModel.getNearBySearchLiveData().observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
+            @Override
+            public void onChanged(MyNearBySearchData myNearBySearchData) {
+                BitmapDescriptor markerIcon = setUpMapIcon();
+
+                for (Result mResult : myNearBySearchData.getResults()) {
+                    LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
+                    mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
+                }
+
+                LatLng userLatLng = new LatLng(mUserLat, mUserLng);
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
+            }
+        });
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(new OnMapReadyCallback() {
+                @SuppressLint("MissingPermission")
+                @Override
+                public void onMapReady(@NonNull GoogleMap googleMap) {
+                    mGoogleMap = googleMap;
+                    mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                    mGoogleMap.clear();
+                    mGoogleMap.setMyLocationEnabled(true);
+                }
+            });
+        }
+
+        //                    mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+        //                        @Override
+        //                        public void onInfoWindowClick(@NonNull Marker marker) {
+        //                            Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
+        //                            intent.putExtra("Selected restaurant", mResult);
+        //                            startActivity(intent);
+        //                        }
+        //                    });
     }
 
     private BitmapDescriptor setUpMapIcon() {

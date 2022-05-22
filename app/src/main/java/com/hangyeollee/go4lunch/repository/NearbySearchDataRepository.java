@@ -10,7 +10,6 @@ import com.hangyeollee.go4lunch.api.GoogleMapsApi;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -21,22 +20,20 @@ public class NearbySearchDataRepository {
 
     private GoogleMapsApi mGoogleMapsApi;
 
-    private LocationRepository mLocationRepository;
-    private String mLocation;
-
     private MutableLiveData<MyNearBySearchData> mNearBySearchMutableLiveData = new MutableLiveData<>();
 
-    private MutableLiveData<Boolean> mIsLoadingMutableLiveData = new MutableLiveData<>();
-
-    private List<Result> mResultList = new ArrayList<>();
+    private List<Result> mResultList;
 
     public NearbySearchDataRepository(GoogleMapsApi googleMapsApi) {
         mGoogleMapsApi = googleMapsApi;
     }
 
-    public LiveData<MyNearBySearchData> getNearbySearchLiveData(String location) {
+    public LiveData<MyNearBySearchData> getNearbySearchLiveData() {
+        return mNearBySearchMutableLiveData;
+    }
 
-        Call<MyNearBySearchData> call = mGoogleMapsApi.getNearbySearchData(location, 1500, "restaurant", BuildConfig.MAPS_API_KEY);
+    public void fetchData(String location) {
+        Call<MyNearBySearchData> call = mGoogleMapsApi.getNearbySearchData(location, 1000, "restaurant", BuildConfig.MAPS_API_KEY);
         call.enqueue(new Callback<MyNearBySearchData>() {
             @Override
             public void onResponse(Call<MyNearBySearchData> call, Response<MyNearBySearchData> response) {
@@ -50,8 +47,6 @@ public class NearbySearchDataRepository {
                 mNearBySearchMutableLiveData.postValue(null);
             }
         });
-
-        return mNearBySearchMutableLiveData;
     }
 
     public List<Result> getResultList() {

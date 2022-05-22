@@ -13,32 +13,35 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
+import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
 
-public class GoogleMapsFragmentViewModel extends ViewModel {
+import java.util.List;
+
+public class MapsAndListSharedViewModel extends ViewModel {
 
     private NearbySearchDataRepository mNearbySearchDataRepository;
     private LocationRepository mLocationRepository;
 
-    public MutableLiveData<Boolean> mIsLoadingMutableLiveData = new MutableLiveData<>();
     public MutableLiveData<MyNearBySearchData> mNearBySearchMutableLiveData = new MutableLiveData<>();
 
 
-    public GoogleMapsFragmentViewModel(NearbySearchDataRepository nearbySearchDataRepository, LocationRepository locationRepository) {
+    public MapsAndListSharedViewModel(NearbySearchDataRepository nearbySearchDataRepository, LocationRepository locationRepository) {
         mNearbySearchDataRepository = nearbySearchDataRepository;
         mLocationRepository = locationRepository;
     }
 
-    public LiveData<Boolean> getIsLoadingLiveData() {
-        return mIsLoadingMutableLiveData;
+    public void fetchNearBySearchData(String location) {
+        mNearbySearchDataRepository.fetchData(location);
     }
 
-    public LiveData<MyNearBySearchData> getNearBySearchLiveData(String location) {
-//        mNearBySearchMutableLiveData.setValue(mNearbySearchDataRepository.getNearbySearchLiveData(location).getValue());
-//        mIsLoadingMutableLiveData.postValue(mNearbySearchDataRepository.getIsLoadingLiveData().getValue());
+    public LiveData<MyNearBySearchData> getNearBySearchLiveData() {
+        return mNearbySearchDataRepository.getNearbySearchLiveData();
+    }
 
-        return mNearbySearchDataRepository.getNearbySearchLiveData(location);
+    public List<Result> getNearbySearchResultList() {
+        return mNearbySearchDataRepository.getResultList();
     }
 
     public LiveData<Location> getLocationLiveData() {

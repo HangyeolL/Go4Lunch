@@ -40,8 +40,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
 
-        if (modelClass.isAssignableFrom(GoogleMapsFragmentViewModel.class)) {
-            return (T) new GoogleMapsFragmentViewModel(mNearbySearchDataRepository, mLocationRepository);
+        if (modelClass.isAssignableFrom(MapsAndListSharedViewModel.class)) {
+            return (T) new MapsAndListSharedViewModel(mNearbySearchDataRepository, mLocationRepository);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
