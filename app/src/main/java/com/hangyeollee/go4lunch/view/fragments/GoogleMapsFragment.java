@@ -2,6 +2,7 @@ package com.hangyeollee.go4lunch.view.fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -27,11 +28,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.FragmentGoogleMapsBinding;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
+import com.hangyeollee.go4lunch.view.activities.PlaceDetailActivity;
 import com.hangyeollee.go4lunch.viewmodel.MapsAndListSharedViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
@@ -109,6 +112,9 @@ public class GoogleMapsFragment extends Fragment {
         mViewModel.getNearBySearchLiveData().observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
             @Override
             public void onChanged(MyNearBySearchData myNearBySearchData) {
+                LatLng userLatLng = new LatLng(mUserLat, mUserLng);
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
+
                 BitmapDescriptor markerIcon = setUpMapIcon();
 
                 for (Result mResult : myNearBySearchData.getResults()) {
@@ -116,8 +122,16 @@ public class GoogleMapsFragment extends Fragment {
                     mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
                 }
 
-                LatLng userLatLng = new LatLng(mUserLat, mUserLng);
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
+                mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(@NonNull Marker marker) {
+                        Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
+                        for (Result result: myNearBySearchData.getResults()){
+                            intent.putExtra("place id", result.getPlaceId());
+                        }
+                        startActivity(intent);
+                    }
+                });
             }
         });
 
@@ -135,14 +149,6 @@ public class GoogleMapsFragment extends Fragment {
             });
         }
 
-        //                    mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-        //                        @Override
-        //                        public void onInfoWindowClick(@NonNull Marker marker) {
-        //                            Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
-        //                            intent.putExtra("Selected restaurant", mResult);
-        //                            startActivity(intent);
-        //                        }
-        //                    });
     }
 
     private BitmapDescriptor setUpMapIcon() {

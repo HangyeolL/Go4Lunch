@@ -9,11 +9,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.gms.location.LocationServices;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
+import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
 import com.hangyeollee.go4lunch.utility.MyRetrofitBuilder;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private NearbySearchDataRepository mNearbySearchDataRepository;
+    private PlaceDetailDataRepository mPlaceDetailDataRepository;
     private LocationRepository mLocationRepository;
 
     private static ViewModelFactory mViewModelFactory;
@@ -33,6 +35,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private ViewModelFactory(Context context) {
         mNearbySearchDataRepository = new NearbySearchDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
+        mPlaceDetailDataRepository = new PlaceDetailDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
         mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(context.getApplicationContext()));
     }
 
@@ -43,6 +46,10 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(MapsAndListSharedViewModel.class)) {
             return (T) new MapsAndListSharedViewModel(mNearbySearchDataRepository, mLocationRepository);
         }
+        if (modelClass.isAssignableFrom(PlaceDetailActivityViewModel.class)) {
+            return (T) new PlaceDetailActivityViewModel(mPlaceDetailDataRepository);
+        }
+
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
 

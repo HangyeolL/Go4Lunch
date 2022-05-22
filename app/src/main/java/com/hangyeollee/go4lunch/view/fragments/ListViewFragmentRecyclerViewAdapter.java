@@ -62,7 +62,7 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
 
             itemView.setOnClickListener(i -> {
                 Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
-                intent.putExtra("Selected restaurant", result);
+                intent.putExtra("place id", result.getPlaceId());
                 itemView.getContext().startActivity(intent);
             });
 

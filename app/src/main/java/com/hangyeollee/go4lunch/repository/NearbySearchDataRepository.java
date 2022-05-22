@@ -38,7 +38,7 @@ public class NearbySearchDataRepository {
             @Override
             public void onResponse(Call<MyNearBySearchData> call, Response<MyNearBySearchData> response) {
                 mNearBySearchMutableLiveData.setValue(response.body());
-                Log.d("Retrofit", response.raw().request().url().toString());
+                Log.d("NearbySearchURL", response.raw().request().url().toString());
 
                 mResultList = response.body().getResults();
             }

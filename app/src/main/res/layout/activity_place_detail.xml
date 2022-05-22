@@ -102,6 +102,7 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/button_call"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -112,6 +113,7 @@
                     android:textColor="@color/orange" />
 
                 <Button
+                    android:id="@+id/button_like"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -122,6 +124,7 @@
                     android:textColor="@color/orange" />
 
                 <Button
+                    android:id="@+id/button_website"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
