@@ -30,50 +30,53 @@ public class PlaceDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         binding = ActivityPlaceDetailBinding.inflate(getLayoutInflater());
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(PlaceDetailActivityViewModel.class);
         setContentView(binding.getRoot());
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(PlaceDetailActivityViewModel.class);
-        setUpViews();
+        fetchPlaceDetailData();
 
-    }
-
-
-
-    private void setUpViews() {
-        Intent intent = getIntent();
-        String placeId = intent.getStringExtra("place id");
-        Log.i("Place id" , intent.getStringExtra("place id"));
-
-        mViewModel.fetchPlaceDetailData(placeId);
         mViewModel.getPlaceDetailLiveData().observe(this, new Observer<MyPlaceDetailData>() {
             @Override
             public void onChanged(MyPlaceDetailData myPlaceDetailData) {
-                Result mResult = myPlaceDetailData.getResult();
-
-                if (mResult.getPhotos() != null) {
-                    for (int i = 0; i < mResult.getPhotos().size(); i++) {
-                        Glide.with(PlaceDetailActivity.this).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + mResult.getPhotos().get(i).getPhotoReference() + "&key=" + BuildConfig.MAPS_API_KEY).into(binding.imageViewRestaurant);
-                    }
-                }
-
-                binding.textViewName.setText(mResult.getName());
-                binding.textViewAddress.setText(mResult.getVicinity());
-
-                if (mResult.getRating() != null) {
-                    binding.ratingBar.setRating(mResult.getRating().floatValue());
-                }
-
-                if (mResult.getInternationalPhoneNumber() != null) {
-                    binding.buttonCall.setOnClickListener(i -> {
-                        Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                        callIntent.setData(Uri.parse(mResult.getInternationalPhoneNumber()));
-                        startActivity(callIntent);
-                    });
-                } else {
-                    Toast.makeText(PlaceDetailActivity.this, "Couldn't find restaurant phone number", Toast.LENGTH_SHORT).show();
-                }
+            Log.d("Selected place", myPlaceDetailData.getResult().getName());
             }
         });
+
+
     }
 
+    private void fetchPlaceDetailData() {
+        Intent intent = getIntent();
+        String placeId = intent.getStringExtra("place id");
+
+        Log.i("Place id", intent.getStringExtra("place id"));
+
+        mViewModel.fetchPlaceDetailData(placeId);
+    }
+
+
+    private void setUpViews(Result result) {
+        if (result.getPhotos() != null) {
+            for (int i = 0; i < result.getPhotos().size(); i++) {
+                Glide.with(PlaceDetailActivity.this).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result.getPhotos().get(i).getPhotoReference() + "&key=" + BuildConfig.MAPS_API_KEY).into(binding.imageViewRestaurant);
+            }
+        }
+
+        binding.textViewName.setText(result.getName());
+        binding.textViewAddress.setText(result.getVicinity());
+
+        if (result.getRating() != null) {
+            binding.ratingBar.setRating(result.getRating().floatValue());
+        }
+
+        if (result.getInternationalPhoneNumber() != null) {
+            binding.buttonCall.setOnClickListener(i -> {
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.setData(Uri.parse(result.getInternationalPhoneNumber()));
+                startActivity(callIntent);
+            });
+        } else {
+            Toast.makeText(PlaceDetailActivity.this, "Couldn't find restaurant phone number", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

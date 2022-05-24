@@ -1,20 +1,30 @@
 package com.hangyeollee.go4lunch.model.placedetailpojo;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Viewport{
-
+public class Viewport {
+    @SerializedName("northeast")
+    @Expose
+    private Northeast northeast;
     @SerializedName("southwest")
+    @Expose
     private Southwest southwest;
 
-    @SerializedName("northeast")
-    private Northeast northeast;
+    public Northeast getNortheast() {
+        return northeast;
+    }
 
-    public Southwest getSouthwest(){
+    public void setNortheast(Northeast northeast) {
+        this.northeast = northeast;
+    }
+
+    public Southwest getSouthwest() {
         return southwest;
     }
 
-    public Northeast getNortheast(){
-        return northeast;
+    public void setSouthwest(Southwest southwest) {
+        this.southwest = southwest;
     }
 }
+

@@ -23,17 +23,11 @@ import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
 public class ListViewFragment extends Fragment {
 
-    private String mUserLocationInString;
     private Location mUserLocation;
 
     private MapsAndListSharedViewModel mViewModel;
 
     private FragmentListViewBinding binding;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @SuppressLint("MissingPermission")
     @Nullable
@@ -53,7 +47,6 @@ public class ListViewFragment extends Fragment {
             @Override
             public void onChanged(Location location) {
                 mUserLocation = location;
-                mUserLocationInString = location.getLatitude() + "," + location.getLongitude();
             }
         });
 

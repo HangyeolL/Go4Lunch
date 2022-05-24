@@ -16,13 +16,15 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.navigation.NavigationView;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainBinding;
 import com.hangyeollee.go4lunch.view.fragments.GoogleMapsFragment;
 import com.hangyeollee.go4lunch.view.fragments.ListViewFragment;
+import com.hangyeollee.go4lunch.view.fragments.SettingsFragment;
 import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
 
-public class MainActivity extends AppCompatActivity implements NavigationBarView.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
@@ -41,11 +43,14 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        setSupportActionBar(binding.toolBar);
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        binding.drawerLayout.addDrawerListener(actionBarDrawerToggle);
-        actionBarDrawerToggle.syncState();
+        viewPagerSetup();
+        navigationViewSetup();
+        linkDrawerLayoutWithToolbar();
+        bottomNavigationBarSetup();
 
+    }
+
+    private void viewPagerSetup() {
         mFragmentStateAdapter = new ViewPagerAdapter(this);
         binding.viewPager.setAdapter(mFragmentStateAdapter);
 
@@ -62,11 +67,58 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                     case 2:
                         binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationView_menu_workMates).setChecked(true);
                         break;
+                    case 4:
+                        binding.NavigationView.getMenu().findItem(R.id.navigationView_settings).setChecked(true);
                 }
             }
         });
+    }
 
-        binding.bottomNavigationView.setOnItemSelectedListener(this);
+    private void navigationViewSetup() {
+        binding.NavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.navigationView_yourLunch:
+
+                        break;
+                    case R.id.navigationView_settings:
+                        binding.viewPager.setCurrentItem(4);
+                        break;
+                    case R.id.navigationView_logout:
+                        break;
+                }
+                binding.drawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
+    }
+
+    private void linkDrawerLayoutWithToolbar() {
+        setSupportActionBar(binding.toolBar);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        binding.drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+    }
+
+    private void bottomNavigationBarSetup() {
+        binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.bottomNavigationView_menu_mapView:
+                        binding.viewPager.setCurrentItem(0);
+                        break;
+                    case R.id.bottomNavigationView_menu_listView:
+                        binding.viewPager.setCurrentItem(1);
+                        break;
+                    case R.id.bottomNavigationView_menu_workMates:
+                        binding.viewPager.setCurrentItem(2);
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     @Override
@@ -80,25 +132,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         } else if (!binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.viewPager.setCurrentItem(binding.viewPager.getCurrentItem() - 1);
         }
-    }
-
-    /**
-     * On Item Selected Listener
-     */
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.bottomNavigationView_menu_mapView:
-                binding.viewPager.setCurrentItem(0);
-                break;
-            case R.id.bottomNavigationView_menu_listView:
-                binding.viewPager.setCurrentItem(1);
-                break;
-            case R.id.bottomNavigationView_menu_workMates:
-                binding.viewPager.setCurrentItem(2);
-                break;
-        }
-        return true;
     }
 
     /**
@@ -118,6 +151,10 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
                     return new ListViewFragment();
                 case 2:
                     return new WorkMatesFragment();
+                case 3:
+                    break;
+                case 4:
+                    return new SettingsFragment();
             }
             return null;
         }

@@ -126,7 +126,7 @@ public class GoogleMapsFragment extends Fragment {
                     @Override
                     public void onInfoWindowClick(@NonNull Marker marker) {
                         Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
-                        for (Result result: myNearBySearchData.getResults()){
+                        for (Result result : myNearBySearchData.getResults()) {
                             intent.putExtra("place id", result.getPlaceId());
                         }
                         startActivity(intent);

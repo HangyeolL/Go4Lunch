@@ -15,8 +15,7 @@ public class MyRetrofitBuilder {
 
     public static Retrofit getRetrofit() {
         //to see the HTTP request in the logcat
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build();
 
         if(mRetrofit == null) {
             mRetrofit = new Retrofit.Builder()

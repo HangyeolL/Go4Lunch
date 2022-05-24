@@ -7,7 +7,6 @@ import android.location.Location;
 
 import androidx.annotation.RequiresPermission;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -23,8 +22,6 @@ public class MapsAndListSharedViewModel extends ViewModel {
 
     private NearbySearchDataRepository mNearbySearchDataRepository;
     private LocationRepository mLocationRepository;
-
-    public MutableLiveData<MyNearBySearchData> mNearBySearchMutableLiveData = new MutableLiveData<>();
 
 
     public MapsAndListSharedViewModel(NearbySearchDataRepository nearbySearchDataRepository, LocationRepository locationRepository) {

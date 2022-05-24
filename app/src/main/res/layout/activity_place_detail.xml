@@ -62,7 +62,6 @@
                     android:layout_marginTop="16dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@color/white"
-                    android:textStyle="normal"
                     app:layout_constraintEnd_toStartOf="@+id/ratingBar"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
