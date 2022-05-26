@@ -1,7 +1,5 @@
 package com.hangyeollee.go4lunch.repository;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -40,11 +38,7 @@ public class PlaceDetailDataRepository {
         call.enqueue(new Callback<MyPlaceDetailData>() {
             @Override
             public void onResponse(Call<MyPlaceDetailData> call, Response<MyPlaceDetailData> response) {
-                Log.wtf("PlaceDetailURL", response.raw().request().url().toString());
-
-                if(response.body() != null) {
-                    mPlaceDetailMutableLiveData.setValue(response.body());
-                }
+                mPlaceDetailMutableLiveData.setValue(response.body());
             }
 
             @Override

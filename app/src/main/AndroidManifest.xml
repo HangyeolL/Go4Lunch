@@ -69,10 +69,12 @@
             android:name=".view.activities.MainActivity"
             android:exported="true"
             android:parentActivityName=".view.activities.LogInActivity"
-            android:theme="@style/Theme.Go4Lunch.MainActivityTheme"/>
+            android:theme="@style/Theme.Go4Lunch.MainActivityTheme" />
         <activity
             android:name=".view.activities.PlaceDetailActivity"
             android:parentActivityName=".view.activities.MainActivity" />
-    </application>
+        <activity android:name=".view.activities.SettingsActivity"
+            android:parentActivityName=".view.activities.MainActivity"/>
 
+    </application>
 </manifest>

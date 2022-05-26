@@ -17,6 +17,12 @@
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="?attr/actionBarSize"/>
+
             <ImageView
                 android:id="@+id/imageView_restaurant"
                 android:layout_width="match_parent"

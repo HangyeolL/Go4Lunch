@@ -1,6 +1,6 @@
 package com.hangyeollee.go4lunch.view.activities;
 
-import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -12,30 +12,34 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainBinding;
+import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBinding;
 import com.hangyeollee.go4lunch.view.fragments.GoogleMapsFragment;
 import com.hangyeollee.go4lunch.view.fragments.ListViewFragment;
-import com.hangyeollee.go4lunch.view.fragments.SettingsFragment;
 import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
+import com.hangyeollee.go4lunch.viewmodel.MainActivityViewModel;
+import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
-    private ActivityResultLauncher<String> requestPermissionLauncher;
+    private MainActivityViewModel mViewModel;
 
+    private ActivityResultLauncher<String> requestPermissionLauncher;
     private LocationManager mLocationManager;
 
     private static final int NUM_PAGES = 3;
     private FragmentStateAdapter mFragmentStateAdapter;
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +47,11 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
+
         viewPagerSetup();
-        navigationViewSetup();
+        navigationViewUserProfileSetup();
+        navigationViewItemSelectedListener();
         linkDrawerLayoutWithToolbar();
         bottomNavigationBarSetup();
 
@@ -67,25 +74,34 @@ public class MainActivity extends AppCompatActivity {
                     case 2:
                         binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationView_menu_workMates).setChecked(true);
                         break;
-                    case 4:
-                        binding.NavigationView.getMenu().findItem(R.id.navigationView_settings).setChecked(true);
                 }
             }
         });
     }
 
-    private void navigationViewSetup() {
+    private void navigationViewUserProfileSetup() {
+        MainActivityHeaderNavigationViewBinding navigationViewHeaderBinding = MainActivityHeaderNavigationViewBinding.bind(binding.NavigationView.getHeaderView(0));
+
+        navigationViewHeaderBinding.textViewUserName.setText(mViewModel.getCurrentUser().getDisplayName());
+        navigationViewHeaderBinding.textViewUserEmail.setText(mViewModel.getCurrentUser().getEmail());
+        Glide.with(this).load(mViewModel.getCurrentUser().getPhotoUrl().toString()).into(navigationViewHeaderBinding.imageViewUserPhoto);
+    }
+
+
+    private void navigationViewItemSelectedListener() {
         binding.NavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigationView_yourLunch:
-
                         break;
                     case R.id.navigationView_settings:
-                        binding.viewPager.setCurrentItem(4);
+                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                         break;
                     case R.id.navigationView_logout:
+                        mViewModel.signOut();
+                        startActivity(new Intent(MainActivity.this, LogInActivity.class));
+                        finish();
                         break;
                 }
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
@@ -134,34 +150,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * ViewPagerAdapter for MainActivity
-     */
-    private class ViewPagerAdapter extends FragmentStateAdapter {
-        public ViewPagerAdapter(FragmentActivity fa) {
-            super(fa);
-        }
-
-        @Override
-        public Fragment createFragment(int position) {
-            switch (position) {
-                case 0:
-                    return new GoogleMapsFragment();
-                case 1:
-                    return new ListViewFragment();
-                case 2:
-                    return new WorkMatesFragment();
-                case 3:
-                    break;
-                case 4:
-                    return new SettingsFragment();
-            }
-            return null;
-        }
-
-        @Override
-        public int getItemCount() {
-            return NUM_PAGES;
-        }
+/**
+ * ViewPagerAdapter for MainActivity
+ */
+private class ViewPagerAdapter extends FragmentStateAdapter {
+    public ViewPagerAdapter(FragmentActivity fa) {
+        super(fa);
     }
+
+    @Override
+    public Fragment createFragment(int position) {
+        switch (position) {
+            case 0:
+                return new GoogleMapsFragment();
+            case 1:
+                return new ListViewFragment();
+            case 2:
+                return new WorkMatesFragment();
+        }
+        return null;
+    }
+
+    @Override
+    public int getItemCount() {
+        return NUM_PAGES;
+    }
+}
 }

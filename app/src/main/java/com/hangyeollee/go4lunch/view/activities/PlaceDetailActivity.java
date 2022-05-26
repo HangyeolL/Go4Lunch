@@ -30,32 +30,39 @@ public class PlaceDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         binding = ActivityPlaceDetailBinding.inflate(getLayoutInflater());
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(PlaceDetailActivityViewModel.class);
         setContentView(binding.getRoot());
+
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(PlaceDetailActivityViewModel.class);
+
+        toolBarSetup();
 
         fetchPlaceDetailData();
 
         mViewModel.getPlaceDetailLiveData().observe(this, new Observer<MyPlaceDetailData>() {
             @Override
             public void onChanged(MyPlaceDetailData myPlaceDetailData) {
-            Log.d("Selected place", myPlaceDetailData.getResult().getName());
+//                setUpViews(myPlaceDetailData.getResult());
             }
         });
 
+    }
 
+    private void toolBarSetup() {
+        setSupportActionBar(binding.toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     private void fetchPlaceDetailData() {
         Intent intent = getIntent();
         String placeId = intent.getStringExtra("place id");
 
-        Log.i("Place id", intent.getStringExtra("place id"));
+        Log.e("receivingPlaceId", placeId);
 
         mViewModel.fetchPlaceDetailData(placeId);
     }
 
-
-    private void setUpViews(Result result) {
+    private void setUpViews(@Nullable Result result) {
         if (result.getPhotos() != null) {
             for (int i = 0; i < result.getPhotos().size(); i++) {
                 Glide.with(PlaceDetailActivity.this).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result.getPhotos().get(i).getPhotoReference() + "&key=" + BuildConfig.MAPS_API_KEY).into(binding.imageViewRestaurant);

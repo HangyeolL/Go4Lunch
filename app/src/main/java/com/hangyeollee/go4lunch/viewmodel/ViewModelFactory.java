@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.LocationServices;
+import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
@@ -17,6 +18,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private NearbySearchDataRepository mNearbySearchDataRepository;
     private PlaceDetailDataRepository mPlaceDetailDataRepository;
     private LocationRepository mLocationRepository;
+    private FirebaseRepository mFirebaseRepository;
 
     private static ViewModelFactory mViewModelFactory;
 
@@ -37,6 +39,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         mNearbySearchDataRepository = new NearbySearchDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
         mPlaceDetailDataRepository = new PlaceDetailDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
         mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(context.getApplicationContext()));
+        mFirebaseRepository = new FirebaseRepository();
     }
 
     @NonNull
@@ -45,9 +48,10 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
         if (modelClass.isAssignableFrom(MapsAndListSharedViewModel.class)) {
             return (T) new MapsAndListSharedViewModel(mNearbySearchDataRepository, mLocationRepository);
-        }
-        if (modelClass.isAssignableFrom(PlaceDetailActivityViewModel.class)) {
+        } else if (modelClass.isAssignableFrom(PlaceDetailActivityViewModel.class)) {
             return (T) new PlaceDetailActivityViewModel(mPlaceDetailDataRepository);
+        } else if (modelClass.isAssignableFrom(MainActivityViewModel.class)) {
+            return (T) new MainActivityViewModel(mFirebaseRepository);
         }
 
         throw new IllegalArgumentException("Unknown ViewModel class");

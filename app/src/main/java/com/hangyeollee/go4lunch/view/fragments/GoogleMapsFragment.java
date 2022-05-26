@@ -38,10 +38,13 @@ import com.hangyeollee.go4lunch.view.activities.PlaceDetailActivity;
 import com.hangyeollee.go4lunch.viewmodel.MapsAndListSharedViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
+import java.util.List;
+
 public class GoogleMapsFragment extends Fragment {
 
     private String mUserLocation;
     private double mUserLat, mUserLng;
+    private List<Result> nearBySearchResultList;
 
     private MapsAndListSharedViewModel mViewModel;
 
@@ -68,7 +71,7 @@ public class GoogleMapsFragment extends Fragment {
                 // Permission is granted. Continue the action or workflow in your
                 // app.
                 mViewModel.startLocationRequest();
-                setUpView();
+                onMapReady();
             } else {
                 // Explain to the user that the feature is unavailable because the
                 // features requires a permission that the user has denied. At the
@@ -81,7 +84,7 @@ public class GoogleMapsFragment extends Fragment {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d("Permission", "Is already granted");
             mViewModel.startLocationRequest();
-            setUpView();
+            onMapReady();
         } else {
             Log.d("Permission", "is not granted launch permission dialog");
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -97,44 +100,7 @@ public class GoogleMapsFragment extends Fragment {
         binding = null;
     }
 
-    private void setUpView() {
-        mViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), new Observer<Location>() {
-            @Override
-            public void onChanged(Location location) {
-                mUserLocation = location.getLatitude() + "," + location.getLongitude();
-                mUserLat = location.getLatitude();
-                mUserLng = location.getLongitude();
-
-                mViewModel.fetchNearBySearchData(mUserLocation);
-            }
-        });
-
-        mViewModel.getNearBySearchLiveData().observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
-            @Override
-            public void onChanged(MyNearBySearchData myNearBySearchData) {
-                LatLng userLatLng = new LatLng(mUserLat, mUserLng);
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
-
-                BitmapDescriptor markerIcon = setUpMapIcon();
-
-                for (Result mResult : myNearBySearchData.getResults()) {
-                    LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
-                    mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
-                }
-
-                mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                    @Override
-                    public void onInfoWindowClick(@NonNull Marker marker) {
-                        Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
-                        for (Result result : myNearBySearchData.getResults()) {
-                            intent.putExtra("place id", result.getPlaceId());
-                        }
-                        startActivity(intent);
-                    }
-                });
-            }
-        });
-
+    private void onMapReady() {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -145,10 +111,26 @@ public class GoogleMapsFragment extends Fragment {
                     mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
                     mGoogleMap.clear();
                     mGoogleMap.setMyLocationEnabled(true);
+
+                    getLiveLocationAndFetchData();
+                    putMarkersOnMap();
+                    setListenerOnMarker();
                 }
             });
         }
+    }
 
+    private void getLiveLocationAndFetchData() {
+        mViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), new Observer<Location>() {
+            @Override
+            public void onChanged(Location location) {
+                mUserLocation = location.getLatitude() + "," + location.getLongitude();
+                mViewModel.fetchNearBySearchData(mUserLocation);
+
+                LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
+            }
+        });
     }
 
     private BitmapDescriptor setUpMapIcon() {
@@ -158,6 +140,43 @@ public class GoogleMapsFragment extends Fragment {
         BitmapDescriptor markerIcon = mViewModel.makeDrawableIntoBitmap(wrappedDrawable);
         return markerIcon;
     }
+
+    private void putMarkersOnMap() {
+
+        mViewModel.getNearBySearchLiveData().observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
+            @Override
+            public void onChanged(MyNearBySearchData myNearBySearchData) {
+                nearBySearchResultList = myNearBySearchData.getResults();
+
+                BitmapDescriptor markerIcon = setUpMapIcon();
+                for (Result mResult : nearBySearchResultList) {
+                    LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
+                    mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
+                }
+            }
+        });
+    }
+
+    private void setListenerOnMarker() {
+        mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(@NonNull Marker marker) {
+                Log.e("markerName", marker.getTitle());
+
+                for(Result result : nearBySearchResultList) {
+                    if(marker.getTitle().equalsIgnoreCase(result.getName())) {
+                        Log.e("sendingPlaceId", result.getPlaceId());
+                        Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
+                        intent.putExtra("place id", result.getPlaceId());
+                        startActivity(intent);
+                    }
+                }
+            }
+        });
+    }
+
+
+
 
 
 }
