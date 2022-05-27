@@ -9,22 +9,22 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MyRetrofitBuilder {
 
-    public static final String GOOGLE_NEARBY_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/";
+    private static final String GOOGLE_NEARBY_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/";
 
-    public static Retrofit mRetrofit = null;
+    private static Retrofit INSTANCE = null;
 
-    public static Retrofit getRetrofit() {
+    private static Retrofit getRetrofit() {
         //to see the HTTP request in the logcat
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build();
 
-        if(mRetrofit == null) {
-            mRetrofit = new Retrofit.Builder()
+        if(INSTANCE == null) {
+            INSTANCE = new Retrofit.Builder()
                     .baseUrl(GOOGLE_NEARBY_SEARCH_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(client)
                     .build();
         }
-        return mRetrofit;
+        return INSTANCE;
     }
 
     public static GoogleMapsApi getGoogleMapsApi() {

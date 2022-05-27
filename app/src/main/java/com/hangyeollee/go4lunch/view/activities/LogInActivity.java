@@ -1,12 +1,11 @@
 package com.hangyeollee.go4lunch.view.activities;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -16,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -29,16 +29,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityLogInBinding;
+import com.hangyeollee.go4lunch.viewmodel.LogInAndMainActivitySharedViewModel;
+import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
 import java.util.Collections;
 
@@ -47,7 +50,8 @@ public class LogInActivity extends AppCompatActivity {
     // Todo : When pressing back button from the phone either the one from the activity, it should go back to previous activity
     private ActivityLogInBinding binding;
 
-    private FirebaseAuth mFirebaseAuth;
+    private LogInAndMainActivitySharedViewModel mViewModel;
+
     private CallbackManager mCallbackManager;
 
     private ActivityResultLauncher<Intent> mActivityResultLauncher;
@@ -60,7 +64,8 @@ public class LogInActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        mFirebaseAuth = FirebaseAuth.getInstance();
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(LogInAndMainActivitySharedViewModel.class);
+
         mCallbackManager = CallbackManager.Factory.create();
 
         buttonLogInLogoSetup();
@@ -87,6 +92,7 @@ public class LogInActivity extends AppCompatActivity {
 
     /**
      * Show snack bar at the bottom of logInActivity to inform users
+     *
      * @param message
      */
     private void showSnackBarInLogInActivity(String message) {
@@ -126,6 +132,7 @@ public class LogInActivity extends AppCompatActivity {
 
     /**
      * Retrieve the result of google log in activity
+     *
      * @param result
      */
     private void onGoogleLogInResult(ActivityResult result) {
@@ -139,11 +146,10 @@ public class LogInActivity extends AppCompatActivity {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 // Link with firebase
                 firebaseAuthWithGoogle(account);
-                startMainActivity();
             }
             // Log in fails
             catch (ApiException e) {
-                Log.w(TAG, "Google log in failed", e);
+                Log.e("Google log in failed", "e.getMessage()");
                 showSnackBarInLogInActivity("Google log in failed");
             }
         }
@@ -154,11 +160,24 @@ public class LogInActivity extends AppCompatActivity {
 
     /**
      * Link firebase and google log in
+     *
      * @param account
      */
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-        mFirebaseAuth.signInWithCredential(credential).addOnSuccessListener(this, authResult -> Log.d(TAG, "firebaseAuthWithGoogle:success")).addOnFailureListener(this, listener -> Log.d(TAG, "firebaseAuthWithGoogle:failure"));
+        mViewModel.getFirebaseInstance().signInWithCredential(credential).addOnSuccessListener(this, new OnSuccessListener<AuthResult>() {
+            @Override
+            public void onSuccess(AuthResult authResult) {
+                Log.d("firebaseAuthWithGoogle", ":success");
+                startMainActivity();
+            }
+        }).addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("firebaseAuthWithGoogle", ":failure");
+                Toast.makeText(LogInActivity.this, "firebaseAuthWithGoogle:failure", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -180,7 +199,7 @@ public class LogInActivity extends AppCompatActivity {
 
             @Override
             public void onError(@NonNull FacebookException exception) {
-                Log.w(TAG, "Facebook log in failed", exception);
+                Log.e("FacebookLogIn", "failed", exception);
                 showSnackBarInLogInActivity("Error occurred : " + exception.getMessage());
             }
         });
@@ -188,19 +207,20 @@ public class LogInActivity extends AppCompatActivity {
 
     /**
      * Link firebase and facebook log in
+     *
      * @param accessToken
      */
     private void firebaseAuthWithFacebook(AccessToken accessToken) {
         AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
-        mFirebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        mViewModel.getFirebaseInstance().signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     // Firebase linking success
-                    Log.d(TAG, "firebaseAuthWithFacebook:success");
+                    Log.e("firebaseAuthWithFb", ":success");
                 } else {
                     // Firebase linking fails
-                    Log.w(TAG, "firebaseAuthWithFacebook:failure", task.getException());
+                    Log.e("firebaseAuthWithFb", ":failure", task.getException());
                 }
             }
         });

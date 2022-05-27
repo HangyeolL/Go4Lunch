@@ -17,6 +17,9 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.hangyeollee.go4lunch.R;
@@ -25,15 +28,16 @@ import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBind
 import com.hangyeollee.go4lunch.view.fragments.GoogleMapsFragment;
 import com.hangyeollee.go4lunch.view.fragments.ListViewFragment;
 import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
-import com.hangyeollee.go4lunch.viewmodel.MainActivityViewModel;
+import com.hangyeollee.go4lunch.viewmodel.LogInAndMainActivitySharedViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
-    private MainActivityViewModel mViewModel;
+    private LogInAndMainActivitySharedViewModel mViewModel;
 
+    private GoogleSignInClient mSignInClient;
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private LocationManager mLocationManager;
 
@@ -47,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(LogInAndMainActivitySharedViewModel.class);
 
         viewPagerSetup();
         navigationViewUserProfileSetup();
@@ -82,11 +86,22 @@ public class MainActivity extends AppCompatActivity {
     private void navigationViewUserProfileSetup() {
         MainActivityHeaderNavigationViewBinding navigationViewHeaderBinding = MainActivityHeaderNavigationViewBinding.bind(binding.NavigationView.getHeaderView(0));
 
-        navigationViewHeaderBinding.textViewUserName.setText(mViewModel.getCurrentUser().getDisplayName());
-        navigationViewHeaderBinding.textViewUserEmail.setText(mViewModel.getCurrentUser().getEmail());
-        Glide.with(this).load(mViewModel.getCurrentUser().getPhotoUrl().toString()).into(navigationViewHeaderBinding.imageViewUserPhoto);
+        if (mViewModel.getCurrentUser() != null) {
+            navigationViewHeaderBinding.textViewUserName.setText(mViewModel.getCurrentUser().getDisplayName());
+            navigationViewHeaderBinding.textViewUserEmail.setText(mViewModel.getCurrentUser().getEmail());
+            if (mViewModel.getCurrentUser().getPhotoUrl() != null) {
+                Glide.with(this).load(mViewModel.getCurrentUser().getPhotoUrl().toString()).into(navigationViewHeaderBinding.imageViewUserPhoto);
+            } else {
+                navigationViewHeaderBinding.imageViewUserPhoto.setImageResource(R.drawable.ic_baseline_person_outline_24);
+            }
+        }
     }
 
+    private void SignOutGoogleAccount() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
+        mSignInClient = GoogleSignIn.getClient(this, gso);
+        mSignInClient.signOut();
+    }
 
     private void navigationViewItemSelectedListener() {
         binding.NavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -100,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.navigationView_logout:
                         mViewModel.signOut();
+                        SignOutGoogleAccount();
                         startActivity(new Intent(MainActivity.this, LogInActivity.class));
                         finish();
                         break;
@@ -150,30 +166,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-/**
- * ViewPagerAdapter for MainActivity
- */
-private class ViewPagerAdapter extends FragmentStateAdapter {
-    public ViewPagerAdapter(FragmentActivity fa) {
-        super(fa);
-    }
-
-    @Override
-    public Fragment createFragment(int position) {
-        switch (position) {
-            case 0:
-                return new GoogleMapsFragment();
-            case 1:
-                return new ListViewFragment();
-            case 2:
-                return new WorkMatesFragment();
+    /**
+     * ViewPagerAdapter for MainActivity
+     */
+    private class ViewPagerAdapter extends FragmentStateAdapter {
+        public ViewPagerAdapter(FragmentActivity fa) {
+            super(fa);
         }
-        return null;
-    }
 
-    @Override
-    public int getItemCount() {
-        return NUM_PAGES;
+        @Override
+        public Fragment createFragment(int position) {
+            switch (position) {
+                case 0:
+                    return new GoogleMapsFragment();
+                case 1:
+                    return new ListViewFragment();
+                case 2:
+                    return new WorkMatesFragment();
+            }
+            return null;
+        }
+
+        @Override
+        public int getItemCount() {
+            return NUM_PAGES;
+        }
     }
-}
 }

@@ -53,30 +53,48 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/switch_notification" />
 
-    <TextView
-        android:id="@+id/textView_userName"
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout_userName"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="32dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_marginBottom="64dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView_userPhoto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView_userPhoto"
-        app:layout_constraintTop_toTopOf="@+id/imageView_userPhoto"
-        tools:text="Jhon doe" />
+        app:layout_constraintTop_toTopOf="@+id/imageView_userPhoto">
 
-    <TextView
-        android:id="@+id/textView_userEmail"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textInputEditText_userName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            tools:text="Jack Sparrow" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout_userEmail"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintEnd_toEndOf="@+id/textView_userName"
-        app:layout_constraintStart_toStartOf="@+id/textView_userName"
-        app:layout_constraintTop_toBottomOf="@+id/textView_userName"
-        tools:text="JhoneDoe@gmail.com" />
+        app:layout_constraintEnd_toEndOf="@+id/textInputLayout_userName"
+        app:layout_constraintStart_toStartOf="@+id/textInputLayout_userName"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_userName">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textInputEditText_userEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="email"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            tools:text="JhoneDoe@gmail.com" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/button_save"
