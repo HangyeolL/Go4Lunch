@@ -1,11 +1,9 @@
 package com.hangyeollee.go4lunch.view.activities;
 
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +15,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -38,8 +37,6 @@ public class MainActivity extends AppCompatActivity {
     private LogInAndMainActivitySharedViewModel mViewModel;
 
     private GoogleSignInClient mSignInClient;
-    private ActivityResultLauncher<String> requestPermissionLauncher;
-    private LocationManager mLocationManager;
 
     private static final int NUM_PAGES = 3;
     private FragmentStateAdapter mFragmentStateAdapter;
@@ -53,12 +50,19 @@ public class MainActivity extends AppCompatActivity {
 
         mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(LogInAndMainActivitySharedViewModel.class);
 
+        createLoggedInUserInFirestore();
         viewPagerSetup();
         navigationViewUserProfileSetup();
         navigationViewItemSelectedListener();
         linkDrawerLayoutWithToolbar();
         bottomNavigationBarSetup();
 
+    }
+
+    private void createLoggedInUserInFirestore() {
+        if( mViewModel.getCurrentUser() != null) {
+//            mViewModel.createUser();
+        }
     }
 
     private void viewPagerSetup() {
@@ -97,10 +101,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void SignOutGoogleAccount() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
-        mSignInClient = GoogleSignIn.getClient(this, gso);
-        mSignInClient.signOut();
+    private void signOutAccordingToProviders() {
+        switch (mViewModel.getCurrentUser().getProviderId()) {
+            case "google.com" :
+                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
+                mSignInClient = GoogleSignIn.getClient(this, gso);
+                mSignInClient.signOut();
+                break;
+            case "facebook.com" :
+                LoginManager.getInstance().logOut();
+                break;
+        }
     }
 
     private void navigationViewItemSelectedListener() {
@@ -114,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                         break;
                     case R.id.navigationView_logout:
-                        mViewModel.signOut();
-                        SignOutGoogleAccount();
+                        signOutAccordingToProviders();
+                        mViewModel.signOutFromFirebaseAuth();
                         startActivity(new Intent(MainActivity.this, LogInActivity.class));
                         finish();
                         break;

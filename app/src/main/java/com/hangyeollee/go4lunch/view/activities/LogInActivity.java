@@ -125,7 +125,7 @@ public class LogInActivity extends AppCompatActivity {
      * Launch google log in activity for result via ActivityResultLauncher
      */
     private void googleLogIn() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.firebase_web_client_id)).requestEmail().build();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
         GoogleSignInClient gsc = GoogleSignIn.getClient(this, gso);
         mActivityResultLauncher.launch(gsc.getSignInIntent());
     }
@@ -149,7 +149,7 @@ public class LogInActivity extends AppCompatActivity {
             }
             // Log in fails
             catch (ApiException e) {
-                Log.e("Google log in failed", "e.getMessage()");
+                Log.e("Google log in failed", e.getMessage());
                 showSnackBarInLogInActivity("Google log in failed");
             }
         }
@@ -174,7 +174,7 @@ public class LogInActivity extends AppCompatActivity {
         }).addOnFailureListener(this, new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.d("firebaseAuthWithGoogle", ":failure");
+                Log.d("firebaseAuthWithGoogle", ":failure/" + e.getMessage());
                 Toast.makeText(LogInActivity.this, "firebaseAuthWithGoogle:failure", Toast.LENGTH_SHORT).show();
             }
         });
@@ -189,7 +189,6 @@ public class LogInActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 firebaseAuthWithFacebook(loginResult.getAccessToken());
-                startMainActivity();
             }
 
             @Override
@@ -218,6 +217,7 @@ public class LogInActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     // Firebase linking success
                     Log.e("firebaseAuthWithFb", ":success");
+                    startMainActivity();
                 } else {
                     // Firebase linking fails
                     Log.e("firebaseAuthWithFb", ":failure", task.getException());

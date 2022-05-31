@@ -7,10 +7,11 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.LocationServices;
-import com.hangyeollee.go4lunch.repository.FirebaseAuthRepository;
+import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
+import com.hangyeollee.go4lunch.utility.MyFirestoreUtil;
 import com.hangyeollee.go4lunch.utility.MyRetrofitBuilder;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
@@ -18,7 +19,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private NearbySearchDataRepository mNearbySearchDataRepository;
     private PlaceDetailDataRepository mPlaceDetailDataRepository;
     private LocationRepository mLocationRepository;
-    private FirebaseAuthRepository mFirebaseAuthRepository;
+    private FirebaseRepository mFirebaseRepository;
 
     private static ViewModelFactory mViewModelFactory;
 
@@ -39,7 +40,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         mNearbySearchDataRepository = new NearbySearchDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
         mPlaceDetailDataRepository = new PlaceDetailDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
         mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(context.getApplicationContext()));
-        mFirebaseAuthRepository = new FirebaseAuthRepository();
+        mFirebaseRepository = new FirebaseRepository(MyFirestoreUtil.getFirestoreInstance());
     }
 
     @NonNull
@@ -51,7 +52,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         } else if (modelClass.isAssignableFrom(PlaceDetailActivityViewModel.class)) {
             return (T) new PlaceDetailActivityViewModel(mPlaceDetailDataRepository);
         } else if (modelClass.isAssignableFrom(LogInAndMainActivitySharedViewModel.class)) {
-            return (T) new LogInAndMainActivitySharedViewModel(mFirebaseAuthRepository);
+            return (T) new LogInAndMainActivitySharedViewModel(mFirebaseRepository);
         }
 
         throw new IllegalArgumentException("Unknown ViewModel class");

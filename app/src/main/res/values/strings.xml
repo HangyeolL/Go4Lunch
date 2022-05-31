@@ -8,9 +8,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-
     <string name="fb_login_protocol_scheme">fb3320128438266102</string>
-    <string name="firebase_web_client_id">863376647598-4ermgeses0stnoccfgch1bs0v4d8sagf.apps.googleusercontent.com</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="firebase_web_client_id">863376647598-1fs4tds46kqk8521gai41dtbekrd0glm.apps.googleusercontent.com</string>
+
 </resources>

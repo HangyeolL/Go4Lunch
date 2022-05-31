@@ -1,43 +1,42 @@
 package com.hangyeollee.go4lunch.model;
 
 public class User {
+    private String uId;
     private String name;
-    private String photoUrl;
     private String email;
-    private String selectedRestaurantName;
+    private String photoUrl;
+
+    private String chosenRestaurantName;
+    private String restaurantId;
+    private String date;
 
     public User() {
+        // Empty constructor needed for Firestore
+    }
+
+    public User(String uId, String name, String email, String photoUrl, String chosenRestaurantName, String restaurantId, String date) {
+        this.uId = uId;
+        this.name = name;
+        this.email = email;
+        this.photoUrl = photoUrl;
+        this.chosenRestaurantName = chosenRestaurantName;
+        this.restaurantId = restaurantId;
+        this.date = date;
+    }
+
+    public String getUid() {
+        return uId;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
-
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSelectedRestaurantName() {
-        return selectedRestaurantName;
-    }
-
-    public void setSelectedRestaurantName(String selectedRestaurantName) {
-        this.selectedRestaurantName = selectedRestaurantName;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 }
