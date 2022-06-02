@@ -28,6 +28,23 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
         mLocation = location;
     }
 
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ListViewItemBinding mListViewItemBinding = ListViewItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(mListViewItemBinding);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.bindViews(mResultList.get(position));
+    }
+
+    @Override
+    public int getItemCount() {
+        return mResultList.size();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         ListViewItemBinding binding;
 
@@ -74,22 +91,5 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
             binding.textViewDistance.setText(String.format("%.0f", distance) + "m");
         }
 
-    }
-
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ListViewItemBinding mListViewItemBinding = ListViewItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new ViewHolder(mListViewItemBinding);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bindViews(mResultList.get(position));
-    }
-
-    @Override
-    public int getItemCount() {
-        return mResultList.size();
     }
 }

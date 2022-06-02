@@ -1,12 +1,14 @@
 package com.hangyeollee.go4lunch.viewmodel;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
+
+import java.util.List;
 
 public class LogInAndMainActivitySharedViewModel extends ViewModel {
 
@@ -40,12 +42,12 @@ public class LogInAndMainActivitySharedViewModel extends ViewModel {
      * Firestore
      */
 
-    public Task<DocumentSnapshot> getCurrentUserData(){
-        return mFirebaseRepository.getCurrentUserData();
+    public void saveUserInFirestore() {
+        mFirebaseRepository.saveUserInFirestore();
     }
 
-    public void createUser() {
-        mFirebaseRepository.createUser();
+    public LiveData<List<User>> getAllUsers() {
+        return mFirebaseRepository.getAllUsers();
     }
 
 

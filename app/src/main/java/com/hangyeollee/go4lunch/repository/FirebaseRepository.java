@@ -1,21 +1,34 @@
 package com.hangyeollee.go4lunch.repository;
 
 import android.net.Uri;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.utility.MyFirestoreUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FirebaseRepository {
 
     private static FirebaseAuth FIREBASEAUTH;
     private FirebaseFirestore mFirestore;
+
+    private MutableLiveData<List<User>> mUserListMutableLiveData;
+    private List<User> mUserList;
 
     // Dependency Injection for unit test purpose
     public FirebaseRepository(FirebaseFirestore firestore) {
@@ -63,59 +76,43 @@ public class FirebaseRepository {
         return getFirestoreInstance().collection("users");
     }
 
-    // Get CurrentUser Data from Firestore
-    public Task<DocumentSnapshot> getCurrentUserData(){
-        String uid = getCurrentUser().getUid();
-        if(uid != null){
-            return this.getUsersCollection().document(uid).get();
-        }else{
-            return null;
-        }
+    public void saveUserInFirestore() {
+        String photoUrl = getCurrentUser().getPhotoUrl().toString();
+        String username = getCurrentUser().getDisplayName();
+
+        User userToCreate = new User(username, photoUrl);
+
+        getUsersCollection().document(getCurrentUser().getUid()).set(userToCreate).addOnSuccessListener(v -> {
+            Log.e("Firestore", "user successfully stored !");
+        }).addOnFailureListener(v -> {
+            Log.e("Firestore", "Nope, didnt work man");
+        });
     }
 
-    public void createUser() {
-        FirebaseUser userToCreate = getCurrentUser();
-        if (userToCreate != null) {
-            String urlPicture = (userToCreate.getPhotoUrl() != null) ? userToCreate.getPhotoUrl().toString() : null;
-            String username = userToCreate.getDisplayName();
-            String uid = userToCreate.getUid();
-
-            Task<DocumentSnapshot> userData = getCurrentUserData();
-            userData.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    getUsersCollection().document(uid).set(userToCreate);
+    public LiveData<List<User>> getAllUsers() {
+        getUsersCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                mUserList = new ArrayList<>();
+                for(QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    User user = documentSnapshot.toObject(User.class);
+                    mUserList.add(user);
                 }
-            });
-        }
+                mUserListMutableLiveData.setValue(mUserList);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("getAllUsersFail", e.getMessage());
+                mUserListMutableLiveData.postValue(null);
+            }
+        });
+        return  mUserListMutableLiveData;
     }
 
-    // Update User Username
-    public Task<Void> updateCurrentUsername(String username) {
-        String uid = getCurrentUser().getUid();
-        if(uid != null){
-            return this.getUsersCollection().document(uid).update("name", username);
-        }else{
-            return null;
-        }
-    }
+
 
     public void setLikeRestaurant() {
 
     }
-
-    //    public void addFirebaseAuthUserInFirestore(FirebaseUser firebaseUser) {
-    //        userData.put(FIELD_NAME, firebaseUser.getDisplayName());
-    //        userData.put(FIELD_PHOTO_URL, firebaseUser.getPhotoUrl());
-    //        getFirestoreInstance().collection(COLLECTION_USERS).document(DOCUMENT_INFO).set(userData);
-    //    }
-    //
-    //    public void setChosenRestaurantOfUserInFirestore(User user) {
-    //        userData.put(FIELD_NAME, user.getChosenRestaurantName());
-    //        userData.put(FIELD_ID, user.getRestaurantId());
-    //        userData.put(FIELD_DATE, user.getDate());
-    //        getFirestoreInstance().collection(COLLECTION_USERS).document(DOCUMENT_CHOSEN_RESTAURANT).set(userData);
-    //    }
-
-
 }

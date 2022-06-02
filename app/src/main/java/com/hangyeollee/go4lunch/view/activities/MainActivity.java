@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void createLoggedInUserInFirestore() {
         if( mViewModel.getCurrentUser() != null) {
-//            mViewModel.createUser();
+            mViewModel.saveUserInFirestore();
         }
     }
 
