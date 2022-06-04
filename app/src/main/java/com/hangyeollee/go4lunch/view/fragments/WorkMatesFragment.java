@@ -31,12 +31,13 @@ public class WorkMatesFragment extends Fragment {
 
         mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getActivity())).get(LogInAndMainActivitySharedViewModel.class);
 
-        mViewModel.getAllUsers().observe(getViewLifecycleOwner(), new Observer<List<User>>() {
+        mViewModel.getAllUsers().observe(getActivity(), new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
                 binding.recyclerViewWorkmates.setAdapter(new WorkmatesFragmentRecyclerViewAdapter(users));
             }
         });
+
 
         return binding.getRoot();
     }

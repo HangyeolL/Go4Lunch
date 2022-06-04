@@ -50,7 +50,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(MapsAndListSharedViewModel.class)) {
             return (T) new MapsAndListSharedViewModel(mNearbySearchDataRepository, mLocationRepository);
         } else if (modelClass.isAssignableFrom(PlaceDetailActivityViewModel.class)) {
-            return (T) new PlaceDetailActivityViewModel(mPlaceDetailDataRepository);
+            return (T) new PlaceDetailActivityViewModel(mPlaceDetailDataRepository, mFirebaseRepository);
         } else if (modelClass.isAssignableFrom(LogInAndMainActivitySharedViewModel.class)) {
             return (T) new LogInAndMainActivitySharedViewModel(mFirebaseRepository);
         }

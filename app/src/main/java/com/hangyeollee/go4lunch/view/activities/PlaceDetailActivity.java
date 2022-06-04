@@ -14,16 +14,23 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.databinding.ActivityPlaceDetailBinding;
+import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
 import com.hangyeollee.go4lunch.model.placedetailpojo.Result;
 import com.hangyeollee.go4lunch.viewmodel.PlaceDetailActivityViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class PlaceDetailActivity extends AppCompatActivity {
 
     private ActivityPlaceDetailBinding binding;
 
     private PlaceDetailActivityViewModel mViewModel;
+
+    private String placeId;
+    private LunchRestaurant mLunchRestaurant;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,7 +48,9 @@ public class PlaceDetailActivity extends AppCompatActivity {
         mViewModel.getPlaceDetailLiveData().observe(this, new Observer<MyPlaceDetailData>() {
             @Override
             public void onChanged(MyPlaceDetailData myPlaceDetailData) {
-//                setUpViews(myPlaceDetailData.getResult());
+                if (myPlaceDetailData != null) {
+                    setUpViews(myPlaceDetailData.getResult());
+                }
             }
         });
 
@@ -55,7 +64,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     private void fetchPlaceDetailData() {
         Intent intent = getIntent();
-        String placeId = intent.getStringExtra("place id");
+        placeId = intent.getStringExtra("place id");
 
         Log.e("receivingPlaceId", placeId);
 
@@ -64,9 +73,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     private void setUpViews(@Nullable Result result) {
         if (result.getPhotos() != null) {
-            for (int i = 0; i < result.getPhotos().size(); i++) {
-                Glide.with(PlaceDetailActivity.this).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result.getPhotos().get(i).getPhotoReference() + "&key=" + BuildConfig.MAPS_API_KEY).into(binding.imageViewRestaurant);
-            }
+            Glide.with(PlaceDetailActivity.this).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.MAPS_API_KEY).into(binding.imageViewRestaurant);
+
         }
 
         binding.textViewName.setText(result.getName());
@@ -79,11 +87,21 @@ public class PlaceDetailActivity extends AppCompatActivity {
         if (result.getInternationalPhoneNumber() != null) {
             binding.buttonCall.setOnClickListener(i -> {
                 Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                callIntent.setData(Uri.parse(result.getInternationalPhoneNumber()));
+                callIntent.setData(Uri.parse("tel:" + result.getInternationalPhoneNumber()));
                 startActivity(callIntent);
             });
         } else {
             Toast.makeText(PlaceDetailActivity.this, "Couldn't find restaurant phone number", Toast.LENGTH_SHORT).show();
         }
+
+        binding.floatingActionBtn.setOnClickListener(listener -> {
+            String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(Calendar.getInstance().getTime().getDate());
+            mLunchRestaurant = new LunchRestaurant(placeId, result.getName(), currentDate);
+            mViewModel.setLunchRestaurant(mLunchRestaurant);
+        });
+
+        binding.buttonLike.setOnClickListener(listener -> {
+
+        });
     }
 }

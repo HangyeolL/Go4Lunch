@@ -7,8 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -16,6 +16,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.hangyeollee.go4lunch.model.LikedRestaurant;
+import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.utility.MyFirestoreUtil;
 
@@ -27,7 +30,7 @@ public class FirebaseRepository {
     private static FirebaseAuth FIREBASEAUTH;
     private FirebaseFirestore mFirestore;
 
-    private MutableLiveData<List<User>> mUserListMutableLiveData;
+    private MutableLiveData<List<User>> mUserListMutableLiveData = new MutableLiveData<>();
     private List<User> mUserList;
 
     // Dependency Injection for unit test purpose
@@ -76,43 +79,58 @@ public class FirebaseRepository {
         return getFirestoreInstance().collection("users");
     }
 
+    public CollectionReference getLunchRestaurantCollection() {
+        return getUsersCollection().document(getCurrentUser().getUid()).collection("lunchRestaurant");
+    }
+
+    public CollectionReference getLikedRestaurantCollection() {
+        return getUsersCollection().document(getCurrentUser().getUid()).collection("likedRestaurant");
+    }
+
     public void saveUserInFirestore() {
         String photoUrl = getCurrentUser().getPhotoUrl().toString();
         String username = getCurrentUser().getDisplayName();
 
         User userToCreate = new User(username, photoUrl);
 
-        getUsersCollection().document(getCurrentUser().getUid()).set(userToCreate).addOnSuccessListener(v -> {
+        getUsersCollection().document(getCurrentUser().getUid()).set(userToCreate, SetOptions.merge()).addOnSuccessListener(v -> {
             Log.e("Firestore", "user successfully stored !");
         }).addOnFailureListener(v -> {
-            Log.e("Firestore", "Nope, didnt work man");
+            Log.e("Firestore", "user saving failed");
         });
     }
 
     public LiveData<List<User>> getAllUsers() {
-        getUsersCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                mUserList = new ArrayList<>();
-                for(QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                    User user = documentSnapshot.toObject(User.class);
-                    mUserList.add(user);
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    mUserList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        User user = document.toObject(User.class);
+                        mUserList.add(user);
+                    }
+                    mUserListMutableLiveData.setValue(mUserList);
+                    Log.e("Firestore", "Success getting all of user documents");
+                } else {
+                    Log.d("Firestore", "Error getting all of users documents: ", task.getException());
+                    mUserListMutableLiveData.postValue(null);
                 }
-                mUserListMutableLiveData.setValue(mUserList);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("getAllUsersFail", e.getMessage());
-                mUserListMutableLiveData.postValue(null);
             }
         });
-        return  mUserListMutableLiveData;
+        return mUserListMutableLiveData;
     }
 
+    public void setLunchRestaurant(LunchRestaurant lunchRestaurant) {
+        getLunchRestaurantCollection().document(lunchRestaurant.getId()).set(lunchRestaurant, SetOptions.merge()).addOnSuccessListener(success -> {
+            Log.e("LunchRestau", "Successfully stored");
+        }).addOnFailureListener(failure -> {
+            Log.e("LunchRestau", "Failed storing");
+        });
+    }
 
-
-    public void setLikeRestaurant() {
+    public void setLikedRestaurant(LikedRestaurant likedRestaurant) {
 
     }
+
 }

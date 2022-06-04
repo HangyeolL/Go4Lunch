@@ -1,13 +1,11 @@
 package com.hangyeollee.go4lunch.model.placedetailpojo;
 
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
 public class Photo {
-
     @SerializedName("height")
     @Expose
     private Integer height;

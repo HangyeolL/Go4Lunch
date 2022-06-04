@@ -10,5 +10,6 @@
 
     <string name="fb_login_protocol_scheme">fb3320128438266102</string>
     <string name="firebase_web_client_id">863376647598-1fs4tds46kqk8521gai41dtbekrd0glm.apps.googleusercontent.com</string>
+    <string name="is_eating_at">is eating at</string>
 
 </resources>

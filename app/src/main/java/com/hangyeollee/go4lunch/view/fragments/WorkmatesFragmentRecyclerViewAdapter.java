@@ -52,6 +52,11 @@ public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<W
             binding.textViewUserName.setText(user.getName());
 //            binding.textViewRestaruantName.setText();
 
+//            itemView.setOnClickListener(listener -> {
+//                Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
+//                intent.putExtra("place id", result.getPlaceId());
+//                itemView.getContext().startActivity(intent);
+//            });
         }
     }
 }

@@ -47,6 +47,7 @@ public class ListViewFragment extends Fragment {
             @Override
             public void onChanged(Location location) {
                 mUserLocation = location;
+                mViewModel.fetchNearBySearchData(location.toString());
             }
         });
 
