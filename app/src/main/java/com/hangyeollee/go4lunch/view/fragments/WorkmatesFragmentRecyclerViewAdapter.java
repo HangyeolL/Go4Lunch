@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.databinding.WorkmatesListItemBinding;
+import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
 
 import java.util.List;
@@ -15,9 +16,11 @@ import java.util.List;
 public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<WorkmatesFragmentRecyclerViewAdapter.ViewHolder> {
 
     private List<User> mUserList;
+    private LunchRestaurant mLunchRestaurant;
 
-    public WorkmatesFragmentRecyclerViewAdapter(List<User> userList) {
+    public WorkmatesFragmentRecyclerViewAdapter(List<User> userList, LunchRestaurant lunchRestaurant) {
         mUserList = userList;
+        mLunchRestaurant = lunchRestaurant;
     }
 
     @NonNull
@@ -46,17 +49,26 @@ public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<W
         }
 
         public void bindViews(User user) {
-            if(user.getPhotoUrl() != null) {
+            if (user.getPhotoUrl() != null) {
                 Glide.with(itemView).load(user.getPhotoUrl()).into(binding.viewUserPhoto);
             }
-            binding.textViewUserName.setText(user.getName());
-//            binding.textViewRestaruantName.setText();
 
-//            itemView.setOnClickListener(listener -> {
-//                Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
-//                intent.putExtra("place id", result.getPlaceId());
-//                itemView.getContext().startActivity(intent);
-//            });
+            binding.textViewUserName.setText(user.getName());
+
+            if(mLunchRestaurant != null) {
+                if(mLunchRestaurant.getName() != null) {
+                    binding.textViewRestaruantName.setText(mLunchRestaurant.getName());
+                } else {
+                    binding.textViewRestaruantName.setText("not decided yet");
+
+                }
+            }
+
+            //            itemView.setOnClickListener(listener -> {
+            //                Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
+            //                intent.putExtra("place id", result.getPlaceId());
+            //                itemView.getContext().startActivity(intent);
+            //            });
         }
     }
 }

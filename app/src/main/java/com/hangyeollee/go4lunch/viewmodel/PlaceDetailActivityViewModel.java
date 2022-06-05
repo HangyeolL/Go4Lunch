@@ -3,7 +3,6 @@ package com.hangyeollee.go4lunch.viewmodel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
@@ -28,11 +27,19 @@ public class PlaceDetailActivityViewModel extends ViewModel {
     }
 
     public void setLunchRestaurant(LunchRestaurant lunchRestaurant) {
-        mFirebaseRepository.setLunchRestaurant(lunchRestaurant);
+        mFirebaseRepository.saveLunchRestaurant(lunchRestaurant);
     }
 
-    public void setLikedRestaurant(LikedRestaurant likedRestaurant) {
-        mFirebaseRepository.setLikedRestaurant(likedRestaurant);
+    public void getLunchRestaurant() {
+        mFirebaseRepository.getLunchRestaurant();
     }
+
+//    public void deleteLunchRestaurant(LunchRestaurant lunchRestaurant) {
+//        mFirebaseRepository.deleteLunchRestaurant(lunchRestaurant);
+//    }
+//
+//    public void setLikedRestaurant(LikedRestaurant likedRestaurant) {
+//        mFirebaseRepository.setLikedRestaurant(likedRestaurant);
+//    }
 
 }

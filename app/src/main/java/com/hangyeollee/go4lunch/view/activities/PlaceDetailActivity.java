@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.databinding.ActivityPlaceDetailBinding;
+import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
 import com.hangyeollee.go4lunch.model.placedetailpojo.Result;
@@ -21,7 +22,7 @@ import com.hangyeollee.go4lunch.viewmodel.PlaceDetailActivityViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Date;
 
 public class PlaceDetailActivity extends AppCompatActivity {
 
@@ -29,8 +30,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     private PlaceDetailActivityViewModel mViewModel;
 
+    private Result mResult;
     private String placeId;
     private LunchRestaurant mLunchRestaurant;
+    private LikedRestaurant mLikedRestaurant;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,9 +51,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
         mViewModel.getPlaceDetailLiveData().observe(this, new Observer<MyPlaceDetailData>() {
             @Override
             public void onChanged(MyPlaceDetailData myPlaceDetailData) {
-                if (myPlaceDetailData != null) {
-                    setUpViews(myPlaceDetailData.getResult());
-                }
+                mResult = myPlaceDetailData.getResult();
+
+                photoRatingTextsSetup(mResult);
+                ButtonListenerSetup(mResult);
+                floatingActionButtonSetup(mResult);
             }
         });
 
@@ -71,10 +76,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
         mViewModel.fetchPlaceDetailData(placeId);
     }
 
-    private void setUpViews(@Nullable Result result) {
+    private void photoRatingTextsSetup(@Nullable Result result) {
+
         if (result.getPhotos() != null) {
             Glide.with(PlaceDetailActivity.this).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.MAPS_API_KEY).into(binding.imageViewRestaurant);
-
         }
 
         binding.textViewName.setText(result.getName());
@@ -83,6 +88,9 @@ public class PlaceDetailActivity extends AppCompatActivity {
         if (result.getRating() != null) {
             binding.ratingBar.setRating(result.getRating().floatValue());
         }
+    }
+
+    private void ButtonListenerSetup(Result result) {
 
         if (result.getInternationalPhoneNumber() != null) {
             binding.buttonCall.setOnClickListener(i -> {
@@ -94,14 +102,20 @@ public class PlaceDetailActivity extends AppCompatActivity {
             Toast.makeText(PlaceDetailActivity.this, "Couldn't find restaurant phone number", Toast.LENGTH_SHORT).show();
         }
 
-        binding.floatingActionBtn.setOnClickListener(listener -> {
-            String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(Calendar.getInstance().getTime().getDate());
-            mLunchRestaurant = new LunchRestaurant(placeId, result.getName(), currentDate);
-            mViewModel.setLunchRestaurant(mLunchRestaurant);
-        });
-
         binding.buttonLike.setOnClickListener(listener -> {
+            mLikedRestaurant = new LikedRestaurant(placeId, result.getName());
+//            mViewModel.setLikedRestaurant(mLikedRestaurant);
+            Toast.makeText(this, result.getName() + " has added to liked restaurant list", Toast.LENGTH_SHORT).show();
+        });
+    }
 
+    private void floatingActionButtonSetup(Result result) {
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        mLunchRestaurant = new LunchRestaurant(placeId, result.getName(), currentDate);
+
+        binding.floatingActionBtn.setOnClickListener(listener -> {
+            mViewModel.setLunchRestaurant(mLunchRestaurant);
+            Toast.makeText(this, "you decided to go " + result.getName() + " for lunch", Toast.LENGTH_SHORT).show();
         });
     }
 }

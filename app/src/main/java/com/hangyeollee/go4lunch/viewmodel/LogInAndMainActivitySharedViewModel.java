@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 
@@ -46,8 +47,12 @@ public class LogInAndMainActivitySharedViewModel extends ViewModel {
         mFirebaseRepository.saveUserInFirestore();
     }
 
-    public LiveData<List<User>> getAllUsers() {
-        return mFirebaseRepository.getAllUsers();
+    public LiveData<List<User>> subscribeToUsersCollectionSnapshotListener() {
+        return mFirebaseRepository.subscribeToUsersCollectionSnapshotListener();
+    }
+
+    public LunchRestaurant getLunchRestaurant() {
+        return mFirebaseRepository.getLunchRestaurant();
     }
 
 

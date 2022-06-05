@@ -5,6 +5,7 @@ public class User {
     private String name;
     private String photoUrl;
 
+
     public User() {
         // Empty constructor needed for Firestore
     }
@@ -21,4 +22,5 @@ public class User {
     public String getPhotoUrl() {
         return photoUrl;
     }
+
 }

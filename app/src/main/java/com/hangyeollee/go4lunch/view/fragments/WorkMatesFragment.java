@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hangyeollee.go4lunch.databinding.FragmentWorkmatesBinding;
+import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.viewmodel.LogInAndMainActivitySharedViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
@@ -31,10 +32,12 @@ public class WorkMatesFragment extends Fragment {
 
         mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getActivity())).get(LogInAndMainActivitySharedViewModel.class);
 
-        mViewModel.getAllUsers().observe(getActivity(), new Observer<List<User>>() {
+        mViewModel.subscribeToUsersCollectionSnapshotListener().observe(getViewLifecycleOwner(), new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
-                binding.recyclerViewWorkmates.setAdapter(new WorkmatesFragmentRecyclerViewAdapter(users));
+                LunchRestaurant lunchRestaurant = mViewModel.getLunchRestaurant();
+
+                binding.recyclerViewWorkmates.setAdapter(new WorkmatesFragmentRecyclerViewAdapter(users, lunchRestaurant));
             }
         });
 

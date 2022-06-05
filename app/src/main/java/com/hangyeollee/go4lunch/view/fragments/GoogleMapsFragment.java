@@ -163,20 +163,17 @@ public class GoogleMapsFragment extends Fragment {
             public void onInfoWindowClick(@NonNull Marker marker) {
                 Log.e("markerName", marker.getTitle());
 
-                for(Result result : nearBySearchResultList) {
-                    if(marker.getTitle().equalsIgnoreCase(result.getName())) {
+                Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
+                for (Result result : nearBySearchResultList) {
+                    if (marker.getTitle().equalsIgnoreCase(result.getName())) {
                         Log.e("sendingPlaceId", result.getPlaceId());
-                        Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
                         intent.putExtra("place id", result.getPlaceId());
-                        startActivity(intent);
                     }
                 }
+                startActivity(intent);
             }
         });
     }
-
-
-
 
 
 }

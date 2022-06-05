@@ -67,14 +67,12 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
                 }
             }
 
-            if(result.getRating() != null) {
+            if (result.getRating() != null) {
                 binding.ratingBar.setRating(result.getRating().floatValue());
             }
 
             if (result.getPhotos() != null) {
-                for(int i = 0; i < result.getPhotos().size(); i++) {
-                    Glide.with(itemView).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result.getPhotos().get(i).getPhotoReference() +"&key="+ BuildConfig.MAPS_API_KEY).into(binding.imageViewRestaurant);
-                }
+                Glide.with(itemView).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.MAPS_API_KEY).into(binding.imageViewRestaurant);
             }
 
             itemView.setOnClickListener(i -> {
