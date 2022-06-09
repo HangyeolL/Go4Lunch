@@ -40,7 +40,7 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityLogInBinding;
-import com.hangyeollee.go4lunch.viewmodel.LogInAndMainActivitySharedViewModel;
+import com.hangyeollee.go4lunch.viewmodel.FirebaseViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
 import java.util.Collections;
@@ -50,7 +50,7 @@ public class LogInActivity extends AppCompatActivity {
     // Todo : When pressing back button from the phone either the one from the activity, it should go back to previous activity
     private ActivityLogInBinding binding;
 
-    private LogInAndMainActivitySharedViewModel mViewModel;
+    private FirebaseViewModel mViewModel;
 
     private CallbackManager mCallbackManager;
 
@@ -64,7 +64,7 @@ public class LogInActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(LogInAndMainActivitySharedViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(FirebaseViewModel.class);
 
         mCallbackManager = CallbackManager.Factory.create();
 

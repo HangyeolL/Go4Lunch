@@ -54,8 +54,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 mResult = myPlaceDetailData.getResult();
 
                 photoRatingTextsSetup(mResult);
-                ButtonListenerSetup(mResult);
-                floatingActionButtonSetup(mResult);
+                listenerSetup(mResult);
             }
         });
 
@@ -90,7 +89,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void ButtonListenerSetup(Result result) {
+    private void listenerSetup(Result result) {
+        String userId = mViewModel.getCurrentUser().getUid();
 
         if (result.getInternationalPhoneNumber() != null) {
             binding.buttonCall.setOnClickListener(i -> {
@@ -107,11 +107,9 @@ public class PlaceDetailActivity extends AppCompatActivity {
 //            mViewModel.setLikedRestaurant(mLikedRestaurant);
             Toast.makeText(this, result.getName() + " has added to liked restaurant list", Toast.LENGTH_SHORT).show();
         });
-    }
 
-    private void floatingActionButtonSetup(Result result) {
         String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-        mLunchRestaurant = new LunchRestaurant(placeId, result.getName(), currentDate);
+        mLunchRestaurant = new LunchRestaurant(placeId, userId, result.getName(), currentDate);
 
         binding.floatingActionBtn.setOnClickListener(listener -> {
             mViewModel.setLunchRestaurant(mLunchRestaurant);

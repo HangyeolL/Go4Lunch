@@ -3,6 +3,7 @@ package com.hangyeollee.go4lunch.viewmodel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
@@ -30,8 +31,8 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         mFirebaseRepository.saveLunchRestaurant(lunchRestaurant);
     }
 
-    public void getLunchRestaurant() {
-        mFirebaseRepository.getLunchRestaurant();
+    public FirebaseUser getCurrentUser() {
+        return mFirebaseRepository.getCurrentUser();
     }
 
 //    public void deleteLunchRestaurant(LunchRestaurant lunchRestaurant) {

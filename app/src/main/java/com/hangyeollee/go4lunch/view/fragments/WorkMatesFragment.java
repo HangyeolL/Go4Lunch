@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.hangyeollee.go4lunch.databinding.FragmentWorkmatesBinding;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
-import com.hangyeollee.go4lunch.viewmodel.LogInAndMainActivitySharedViewModel;
+import com.hangyeollee.go4lunch.viewmodel.FirebaseViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
 import java.util.List;
@@ -23,25 +23,40 @@ public class WorkMatesFragment extends Fragment {
 
     private FragmentWorkmatesBinding binding;
 
-    private LogInAndMainActivitySharedViewModel mViewModel;
+    private FirebaseViewModel mViewModel;
+
+    private WorkmatesFragmentRecyclerViewAdapter mAdapter;
+    private List<User> mUserList;
+    private List<LunchRestaurant> mLunchRestaurantList;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentWorkmatesBinding.inflate(inflater, container, false);
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getActivity())).get(LogInAndMainActivitySharedViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getActivity())).get(FirebaseViewModel.class);
+
+        mAdapter = new WorkmatesFragmentRecyclerViewAdapter();
 
         mViewModel.subscribeToUsersCollectionSnapshotListener().observe(getViewLifecycleOwner(), new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
-                LunchRestaurant lunchRestaurant = mViewModel.getLunchRestaurant();
+                mAdapter.updateUserLists(users);
+            }
+        });
 
-                binding.recyclerViewWorkmates.setAdapter(new WorkmatesFragmentRecyclerViewAdapter(users, lunchRestaurant));
+        mViewModel.subscribeToLunchRestaurantCollectionSnapshotListener().observe(getViewLifecycleOwner(), new Observer<List<LunchRestaurant>>() {
+            @Override
+            public void onChanged(List<LunchRestaurant> lunchRestaurantList) {
+                mAdapter.updateRestaurantList(lunchRestaurantList);
+                binding.recyclerViewWorkmates.setAdapter(mAdapter);
             }
         });
 
 
         return binding.getRoot();
+    }
+
+    private void configureRecyclerView() {
     }
 }

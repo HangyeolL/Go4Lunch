@@ -27,14 +27,14 @@ import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBind
 import com.hangyeollee.go4lunch.view.fragments.GoogleMapsFragment;
 import com.hangyeollee.go4lunch.view.fragments.ListViewFragment;
 import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
-import com.hangyeollee.go4lunch.viewmodel.LogInAndMainActivitySharedViewModel;
+import com.hangyeollee.go4lunch.viewmodel.FirebaseViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
-    private LogInAndMainActivitySharedViewModel mViewModel;
+    private FirebaseViewModel mViewModel;
 
     private GoogleSignInClient mSignInClient;
 
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(LogInAndMainActivitySharedViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(FirebaseViewModel.class);
 
         createLoggedInUserInFirestore();
         viewPagerSetup();

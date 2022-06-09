@@ -7,12 +7,10 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -32,8 +30,7 @@ public class FirebaseRepository {
     private FirebaseFirestore mFirestore;
 
     private MutableLiveData<List<User>> mUserListMutableLiveData = new MutableLiveData<>();
-
-    private LunchRestaurant mLunchRestaurant;
+    private MutableLiveData<List<LunchRestaurant>> mLunchRestaurantMutableLiveData = new MutableLiveData<>();
 
     // Dependency Injection for unit test purpose
     public FirebaseRepository(FirebaseFirestore firestore) {
@@ -90,10 +87,11 @@ public class FirebaseRepository {
     }
 
     public void saveUserInFirestore() {
+        String id = getCurrentUser().getUid();
         String photoUrl = getCurrentUser().getPhotoUrl().toString();
         String username = getCurrentUser().getDisplayName();
 
-        User userToCreate = new User(username, photoUrl);
+        User userToCreate = new User(id, username, photoUrl);
 
         getUsersCollection().document(getCurrentUser().getUid()).set(userToCreate, SetOptions.merge()).addOnSuccessListener(v -> {
             Log.e("Firestore", "user successfully stored !");
@@ -126,28 +124,25 @@ public class FirebaseRepository {
         getLunchRestaurantCollection().document(getCurrentUser().getUid()).set(lunchRestaurant, SetOptions.merge());
     }
 
-//    public LiveData<> subscribeToLunchRestaurantDocumentSnapshotListener() {
-//        getLunchRestaurantCollection().document(getCurrentUser().getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
-//                if(error != null) {
-//                    Log.e("lunchCollect", "listen failed", error);
-//                }
-//            }
-//        });
-//    }
-
-    public LunchRestaurant getLunchRestaurant() {
-        getLunchRestaurantCollection().document(getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+    public MutableLiveData<List<LunchRestaurant>> subscribeToLunchRestaurantCollectionSnapshotListener() {
+        getLunchRestaurantCollection().addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    mLunchRestaurant = documentSnapshot.toObject(LunchRestaurant.class);
+            public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.w("lunchRestauCollection", "Listen failed.", error);
+                    mLunchRestaurantMutableLiveData.postValue(null);
+                    return;
                 }
+                List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
+                for (QueryDocumentSnapshot document : querySnapshot) {
+                    LunchRestaurant lunchRestaurant = document.toObject(LunchRestaurant.class);
+                    lunchRestaurantList.add(lunchRestaurant);
+                }
+                mLunchRestaurantMutableLiveData.setValue(lunchRestaurantList);
             }
         });
-
-        return mLunchRestaurant;
+        return mLunchRestaurantMutableLiveData;
     }
+
 
 }

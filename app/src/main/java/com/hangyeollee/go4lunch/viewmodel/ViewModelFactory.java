@@ -51,8 +51,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new MapsAndListSharedViewModel(mNearbySearchDataRepository, mLocationRepository);
         } else if (modelClass.isAssignableFrom(PlaceDetailActivityViewModel.class)) {
             return (T) new PlaceDetailActivityViewModel(mPlaceDetailDataRepository, mFirebaseRepository);
-        } else if (modelClass.isAssignableFrom(LogInAndMainActivitySharedViewModel.class)) {
-            return (T) new LogInAndMainActivitySharedViewModel(mFirebaseRepository);
+        } else if (modelClass.isAssignableFrom(FirebaseViewModel.class)) {
+            return (T) new FirebaseViewModel(mFirebaseRepository);
         }
 
         throw new IllegalArgumentException("Unknown ViewModel class");

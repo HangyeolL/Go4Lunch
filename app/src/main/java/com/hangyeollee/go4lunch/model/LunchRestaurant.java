@@ -1,20 +1,26 @@
 package com.hangyeollee.go4lunch.model;
 
 public class LunchRestaurant {
-    private String id;
+    private String restaurantId;
+    private String userId;
     private String name;
     private String date;
 
     public LunchRestaurant() { }
 
-    public LunchRestaurant(String id, String name, String date) {
-        this.id = id;
+    public LunchRestaurant(String restaurantId, String userId, String name, String date) {
+        this.restaurantId = restaurantId;
+        this.userId = userId;
         this.name = name;
         this.date = date;
     }
 
-    public String getId() {
-        return id;
+    public String getRestaurantId() {
+        return restaurantId;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     public String getName() {

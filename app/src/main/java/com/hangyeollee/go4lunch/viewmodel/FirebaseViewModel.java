@@ -11,11 +11,11 @@ import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 
 import java.util.List;
 
-public class LogInAndMainActivitySharedViewModel extends ViewModel {
+public class FirebaseViewModel extends ViewModel {
 
     private FirebaseRepository mFirebaseRepository;
 
-    public LogInAndMainActivitySharedViewModel(FirebaseRepository firebaseRepository) {
+    public FirebaseViewModel(FirebaseRepository firebaseRepository) {
         mFirebaseRepository = firebaseRepository;
     }
 
@@ -27,7 +27,7 @@ public class LogInAndMainActivitySharedViewModel extends ViewModel {
         return mFirebaseRepository.getCurrentUser();
     }
 
-    public void updateUserProfile(String newName,String photoUri ) {
+    public void updateUserProfile(String newName, String photoUri) {
         mFirebaseRepository.updateUserProfile(newName, photoUri);
     }
 
@@ -51,10 +51,8 @@ public class LogInAndMainActivitySharedViewModel extends ViewModel {
         return mFirebaseRepository.subscribeToUsersCollectionSnapshotListener();
     }
 
-    public LunchRestaurant getLunchRestaurant() {
-        return mFirebaseRepository.getLunchRestaurant();
+    public LiveData<List<LunchRestaurant>> subscribeToLunchRestaurantCollectionSnapshotListener() {
+        return mFirebaseRepository.subscribeToLunchRestaurantCollectionSnapshotListener();
     }
-
-
 }
 

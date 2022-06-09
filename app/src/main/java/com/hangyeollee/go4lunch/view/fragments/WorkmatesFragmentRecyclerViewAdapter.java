@@ -11,16 +11,25 @@ import com.hangyeollee.go4lunch.databinding.WorkmatesListItemBinding;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<WorkmatesFragmentRecyclerViewAdapter.ViewHolder> {
 
-    private List<User> mUserList;
-    private LunchRestaurant mLunchRestaurant;
+    private List<User> mUserList = new ArrayList<>();
+    private List<LunchRestaurant> mLunchRestaurantList = new ArrayList<>();
 
-    public WorkmatesFragmentRecyclerViewAdapter(List<User> userList, LunchRestaurant lunchRestaurant) {
+    public WorkmatesFragmentRecyclerViewAdapter() {
+    }
+
+    public void updateUserLists(List<User> userList) {
         mUserList = userList;
-        mLunchRestaurant = lunchRestaurant;
+        notifyDataSetChanged();
+    }
+
+    public void updateRestaurantList(List<LunchRestaurant> lunchRestaurantList) {
+        mLunchRestaurantList = lunchRestaurantList;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -32,7 +41,7 @@ public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<W
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bindViews(mUserList.get(position));
+        holder.bindViews(mUserList.get(position), mLunchRestaurantList);
     }
 
     @Override
@@ -48,27 +57,33 @@ public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<W
             binding = workmatesListItemBinding;
         }
 
-        public void bindViews(User user) {
+        public void bindViews(User user, List<LunchRestaurant> lunchRestaurantList) {
             if (user.getPhotoUrl() != null) {
                 Glide.with(itemView).load(user.getPhotoUrl()).into(binding.viewUserPhoto);
             }
 
             binding.textViewUserName.setText(user.getName());
 
-            if(mLunchRestaurant != null) {
-                if(mLunchRestaurant.getName() != null) {
-                    binding.textViewRestaruantName.setText(mLunchRestaurant.getName());
-                } else {
-                    binding.textViewRestaruantName.setText("not decided yet");
-
-                }
+            if(lunchRestaurantList.isEmpty()) {
+                binding.textViewRestaruantName.setText("not decided yet");
             }
 
-            //            itemView.setOnClickListener(listener -> {
-            //                Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
-            //                intent.putExtra("place id", result.getPlaceId());
-            //                itemView.getContext().startActivity(intent);
-            //            });
+            for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                if (lunchRestaurant.getUserId().equals(user.getId())) {
+                    binding.textViewRestaruantName.setText(lunchRestaurant.getName());
+                } else {
+                    binding.textViewRestaruantName.setText("not decided yet");
+                }
+                break;
+            }
         }
     }
 }
+//            itemView.setOnClickListener(listener -> {
+//                Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
+//                intent.putExtra("place id", result.getPlaceId());
+//                itemView.getContext().startActivity(intent);
+//            });
+
+
+
