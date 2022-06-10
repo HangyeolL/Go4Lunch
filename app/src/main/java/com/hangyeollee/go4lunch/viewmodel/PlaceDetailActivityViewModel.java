@@ -4,10 +4,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
+
+import java.util.List;
 
 public class PlaceDetailActivityViewModel extends ViewModel {
 
@@ -39,8 +42,12 @@ public class PlaceDetailActivityViewModel extends ViewModel {
 //        mFirebaseRepository.deleteLunchRestaurant(lunchRestaurant);
 //    }
 //
-//    public void setLikedRestaurant(LikedRestaurant likedRestaurant) {
-//        mFirebaseRepository.setLikedRestaurant(likedRestaurant);
-//    }
+    public void setLikedRestaurant(LikedRestaurant likedRestaurant) {
+        mFirebaseRepository.setLikeRestaurant(likedRestaurant);
+    }
+
+    public LiveData<List<LikedRestaurant>> subscribeToLikedRestaurantList() {
+        return mFirebaseRepository.subscribeToLikedRestaurantArrayListener();
+    }
 
 }

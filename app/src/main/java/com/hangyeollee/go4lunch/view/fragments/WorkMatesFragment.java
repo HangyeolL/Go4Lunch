@@ -49,10 +49,10 @@ public class WorkMatesFragment extends Fragment {
             @Override
             public void onChanged(List<LunchRestaurant> lunchRestaurantList) {
                 mAdapter.updateRestaurantList(lunchRestaurantList);
-                binding.recyclerViewWorkmates.setAdapter(mAdapter);
             }
         });
 
+        binding.recyclerViewWorkmates.setAdapter(mAdapter);
 
         return binding.getRoot();
     }

@@ -7,4 +7,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.fragments.WorkMatesFragment"
-    tools:listitem="@layout/workmates_list_item" />
+    tools:listitem="@layout/workmates_fragment_list_item" />

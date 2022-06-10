@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.BuildConfig;
-import com.hangyeollee.go4lunch.databinding.ListViewItemBinding;
+import com.hangyeollee.go4lunch.databinding.ListViewFragmentListItemBinding;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.view.activities.PlaceDetailActivity;
 
@@ -31,7 +31,7 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ListViewItemBinding mListViewItemBinding = ListViewItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        ListViewFragmentListItemBinding mListViewItemBinding = ListViewFragmentListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new ViewHolder(mListViewItemBinding);
     }
 
@@ -46,9 +46,9 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ListViewItemBinding binding;
+        ListViewFragmentListItemBinding binding;
 
-        public ViewHolder(@NonNull ListViewItemBinding mListViewItemBinding) {
+        public ViewHolder(@NonNull ListViewFragmentListItemBinding mListViewItemBinding) {
             super(mListViewItemBinding.getRoot());
             binding = mListViewItemBinding;
         }

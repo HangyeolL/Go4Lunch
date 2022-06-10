@@ -11,12 +11,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.utility.MyFirestoreUtil;
@@ -31,6 +34,7 @@ public class FirebaseRepository {
 
     private MutableLiveData<List<User>> mUserListMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<List<LunchRestaurant>> mLunchRestaurantMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<LikedRestaurant>> mLikedRestaurantMutableLiveData = new MutableLiveData<>();
 
     // Dependency Injection for unit test purpose
     public FirebaseRepository(FirebaseFirestore firestore) {
@@ -93,7 +97,7 @@ public class FirebaseRepository {
 
         User userToCreate = new User(id, username, photoUrl);
 
-        getUsersCollection().document(getCurrentUser().getUid()).set(userToCreate, SetOptions.merge()).addOnSuccessListener(v -> {
+        getUsersCollection().document(getCurrentUser().getUid()).set(userToCreate, SetOptions.mergeFields("id", "name", "photoUrl")).addOnSuccessListener(v -> {
             Log.e("Firestore", "user successfully stored !");
         }).addOnFailureListener(v -> {
             Log.e("Firestore", "user saving failed");
@@ -144,5 +148,27 @@ public class FirebaseRepository {
         return mLunchRestaurantMutableLiveData;
     }
 
+    public void setLikeRestaurant(LikedRestaurant likedRestaurant) {
+        getUsersCollection().document(getCurrentUser().getUid()).update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
+    }
+
+    public MutableLiveData<List<LikedRestaurant>> subscribeToLikedRestaurantArrayListener() {
+        getUsersCollection().document(getCurrentUser().getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.w("likedRestauCollection", "Listen failed.", error);
+                    mLikedRestaurantMutableLiveData.postValue(null);
+                    return;
+                }
+                assert documentSnapshot != null;
+
+                User user = documentSnapshot.toObject(User.class);
+                List<LikedRestaurant> likedRestaurantList = user.getLikedRestaurantList();
+                mLikedRestaurantMutableLiveData.setValue(likedRestaurantList);
+            }
+        });
+        return mLikedRestaurantMutableLiveData;
+    }
 
 }

@@ -23,6 +23,7 @@ import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class PlaceDetailActivity extends AppCompatActivity {
 
@@ -58,6 +59,13 @@ public class PlaceDetailActivity extends AppCompatActivity {
             }
         });
 
+        mViewModel.subscribeToLikedRestaurantList().observe(this, new Observer<List<LikedRestaurant>>() {
+            @Override
+            public void onChanged(List<LikedRestaurant> likedRestaurants) {
+
+            }
+        });
+
     }
 
     private void toolBarSetup() {
@@ -90,8 +98,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
     }
 
     private void listenerSetup(Result result) {
-        String userId = mViewModel.getCurrentUser().getUid();
-
         if (result.getInternationalPhoneNumber() != null) {
             binding.buttonCall.setOnClickListener(i -> {
                 Intent callIntent = new Intent(Intent.ACTION_DIAL);
@@ -104,10 +110,13 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         binding.buttonLike.setOnClickListener(listener -> {
             mLikedRestaurant = new LikedRestaurant(placeId, result.getName());
-//            mViewModel.setLikedRestaurant(mLikedRestaurant);
+
+            mViewModel.setLikedRestaurant(mLikedRestaurant);
+
             Toast.makeText(this, result.getName() + " has added to liked restaurant list", Toast.LENGTH_SHORT).show();
         });
 
+        String userId = mViewModel.getCurrentUser().getUid();
         String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
         mLunchRestaurant = new LunchRestaurant(placeId, userId, result.getName(), currentDate);
 
