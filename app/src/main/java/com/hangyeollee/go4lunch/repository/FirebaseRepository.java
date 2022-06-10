@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +32,7 @@ public class FirebaseRepository {
     private FirebaseFirestore mFirestore;
 
     private MutableLiveData<List<User>> mUserListMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<User>> mUserListWithLunchMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<List<LunchRestaurant>> mLunchRestaurantMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<List<LikedRestaurant>> mLikedRestaurantMutableLiveData = new MutableLiveData<>();
 
@@ -41,9 +41,7 @@ public class FirebaseRepository {
         mFirestore = firestore;
     }
 
-    /**
-     * -----------FirebaseAuth-----------
-     */
+    // -----------FirebaseAuth method starts----------- //
 
     public FirebaseAuth getFirebaseAuthInstance() {
         if (FIREBASEAUTH != null) {
@@ -70,9 +68,7 @@ public class FirebaseRepository {
         getFirebaseAuthInstance().signOut();
     }
 
-    /**
-     * -----------Firestore-----------
-     */
+    // -----------Firestore method starts----------- //
 
     public FirebaseFirestore getFirestoreInstance() {
         return MyFirestoreUtil.getFirestoreInstance();
@@ -104,7 +100,7 @@ public class FirebaseRepository {
         });
     }
 
-    public LiveData<List<User>> subscribeToUsersCollectionSnapshotListener() {
+    public MutableLiveData<List<User>> getUsersList() {
         getUsersCollection().addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException error) {
@@ -124,11 +120,31 @@ public class FirebaseRepository {
         return mUserListMutableLiveData;
     }
 
+    public MutableLiveData<List<User>> getUsersListWithLunch(String placeId) {
+        getLunchRestaurantCollection().whereEqualTo("restaurantId", placeId).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.w("UsersListWithLunch", "Listen failed.", error);
+                    mUserListWithLunchMutableLiveData.postValue(null);
+                    return;
+                }
+                List<User> userList = new ArrayList<>();
+                for (QueryDocumentSnapshot document : querySnapshot) {
+                    User user = document.toObject(User.class);
+                    userList.add(user);
+                }
+                mUserListWithLunchMutableLiveData.setValue(userList);
+            }
+        });
+        return mUserListWithLunchMutableLiveData;
+    }
+
     public void saveLunchRestaurant(LunchRestaurant lunchRestaurant) {
         getLunchRestaurantCollection().document(getCurrentUser().getUid()).set(lunchRestaurant, SetOptions.merge());
     }
 
-    public MutableLiveData<List<LunchRestaurant>> subscribeToLunchRestaurantCollectionSnapshotListener() {
+    public MutableLiveData<List<LunchRestaurant>> getLunchRestaurantList() {
         getLunchRestaurantCollection().addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException error) {
@@ -152,7 +168,7 @@ public class FirebaseRepository {
         getUsersCollection().document(getCurrentUser().getUid()).update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
     }
 
-    public MutableLiveData<List<LikedRestaurant>> subscribeToLikedRestaurantArrayListener() {
+    public MutableLiveData<List<LikedRestaurant>> getLikedRestaurantList() {
         getUsersCollection().document(getCurrentUser().getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {

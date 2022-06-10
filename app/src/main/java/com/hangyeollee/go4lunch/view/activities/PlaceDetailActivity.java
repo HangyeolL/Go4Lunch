@@ -16,6 +16,7 @@ import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.databinding.ActivityPlaceDetailBinding;
 import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
+import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
 import com.hangyeollee.go4lunch.model.placedetailpojo.Result;
 import com.hangyeollee.go4lunch.viewmodel.PlaceDetailActivityViewModel;
@@ -59,10 +60,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
             }
         });
 
-        mViewModel.subscribeToLikedRestaurantList().observe(this, new Observer<List<LikedRestaurant>>() {
+        mViewModel.getUsersListWithLunch(placeId).observe(this, new Observer<List<User>>() {
             @Override
-            public void onChanged(List<LikedRestaurant> likedRestaurants) {
-
+            public void onChanged(List<User> userList) {
+                binding.recyclerViewWorkmates.setAdapter(new PlaceDetailActivityWorkmatesRecyclerViewAdapter(userList));
             }
         });
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 import com.google.firebase.auth.FirebaseUser;
 import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
+import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
@@ -30,14 +31,15 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         return mPlaceDetailDataRepository.getPlaceDetailLiveData();
     }
 
-    public void setLunchRestaurant(LunchRestaurant lunchRestaurant) {
-        mFirebaseRepository.saveLunchRestaurant(lunchRestaurant);
-    }
+    // -----------Firebase method starts----------- //
 
     public FirebaseUser getCurrentUser() {
         return mFirebaseRepository.getCurrentUser();
     }
 
+    public void setLunchRestaurant(LunchRestaurant lunchRestaurant) {
+        mFirebaseRepository.saveLunchRestaurant(lunchRestaurant);
+    }
 //    public void deleteLunchRestaurant(LunchRestaurant lunchRestaurant) {
 //        mFirebaseRepository.deleteLunchRestaurant(lunchRestaurant);
 //    }
@@ -46,8 +48,12 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         mFirebaseRepository.setLikeRestaurant(likedRestaurant);
     }
 
-    public LiveData<List<LikedRestaurant>> subscribeToLikedRestaurantList() {
-        return mFirebaseRepository.subscribeToLikedRestaurantArrayListener();
+    public LiveData<List<LikedRestaurant>> getLikedRestaurantList() {
+        return mFirebaseRepository.getLikedRestaurantList();
+    }
+
+    public LiveData<List<User>> getUsersListWithLunch(String placeId) {
+        return mFirebaseRepository.getUsersListWithLunch(placeId);
     }
 
 }

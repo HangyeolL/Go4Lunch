@@ -6,17 +6,18 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.databinding.PlaceDetailActivityWorkmatesJoiningListItemBinding;
-import com.hangyeollee.go4lunch.model.LikedRestaurant;
+import com.hangyeollee.go4lunch.model.User;
 
 import java.util.List;
 
 public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<PlaceDetailActivityWorkmatesRecyclerViewAdapter.ViewHolder> {
 
-    private List<LikedRestaurant> mLikedRestaurantList;
+    private List<User> mUserList;
 
-    public PlaceDetailActivityWorkmatesRecyclerViewAdapter(List<LikedRestaurant> likedRestaurantList) {
-        mLikedRestaurantList = likedRestaurantList;
+    public PlaceDetailActivityWorkmatesRecyclerViewAdapter(List<User> userList) {
+        mUserList = userList;
     }
 
     @NonNull
@@ -28,12 +29,12 @@ public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerVie
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bindViews(mLikedRestaurantList.get(position));
+        holder.bindViews(mUserList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mLikedRestaurantList.size();
+        return mUserList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -44,8 +45,12 @@ public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerVie
             binding = placeDetailActivityWorkmatesJoiningListItemBinding;
         }
 
-        public void bindViews(LikedRestaurant likedRestaurant) {
+        public void bindViews(User user) {
+            binding.textViewUserName.setText(user.getName());
 
+            if (user.getPhotoUrl() != null) {
+                Glide.with(itemView).load(user.getPhotoUrl()).into(binding.viewUserPhoto);
+            }
         }
     }
 }

@@ -47,12 +47,12 @@ public class FirebaseViewModel extends ViewModel {
         mFirebaseRepository.saveUserInFirestore();
     }
 
-    public LiveData<List<User>> subscribeToUsersCollectionSnapshotListener() {
-        return mFirebaseRepository.subscribeToUsersCollectionSnapshotListener();
+    public LiveData<List<User>> getUsersList() {
+        return mFirebaseRepository.getUsersList();
     }
 
-    public LiveData<List<LunchRestaurant>> subscribeToLunchRestaurantCollectionSnapshotListener() {
-        return mFirebaseRepository.subscribeToLunchRestaurantCollectionSnapshotListener();
+    public LiveData<List<LunchRestaurant>> getLunchRestaurantList() {
+        return mFirebaseRepository.getLunchRestaurantList();
     }
 }
 

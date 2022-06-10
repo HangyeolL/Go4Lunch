@@ -26,8 +26,6 @@ public class WorkMatesFragment extends Fragment {
     private FirebaseViewModel mViewModel;
 
     private WorkmatesFragmentRecyclerViewAdapter mAdapter;
-    private List<User> mUserList;
-    private List<LunchRestaurant> mLunchRestaurantList;
 
     @Nullable
     @Override
@@ -38,14 +36,14 @@ public class WorkMatesFragment extends Fragment {
 
         mAdapter = new WorkmatesFragmentRecyclerViewAdapter();
 
-        mViewModel.subscribeToUsersCollectionSnapshotListener().observe(getViewLifecycleOwner(), new Observer<List<User>>() {
+        mViewModel.getUsersList().observe(getViewLifecycleOwner(), new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {
                 mAdapter.updateUserLists(users);
             }
         });
 
-        mViewModel.subscribeToLunchRestaurantCollectionSnapshotListener().observe(getViewLifecycleOwner(), new Observer<List<LunchRestaurant>>() {
+        mViewModel.getLunchRestaurantList().observe(getViewLifecycleOwner(), new Observer<List<LunchRestaurant>>() {
             @Override
             public void onChanged(List<LunchRestaurant> lunchRestaurantList) {
                 mAdapter.updateRestaurantList(lunchRestaurantList);
@@ -57,6 +55,4 @@ public class WorkMatesFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private void configureRecyclerView() {
-    }
 }
