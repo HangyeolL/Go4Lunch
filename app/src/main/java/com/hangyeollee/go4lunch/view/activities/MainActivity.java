@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createLoggedInUserInFirestore() {
-        if( mViewModel.getCurrentUser() != null) {
+        if (mViewModel.getCurrentUser() != null) {
             mViewModel.saveUserInFirestore();
         }
     }
@@ -74,12 +74,15 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 switch (position) {
                     case 0:
+                        binding.toolBar.setTitle("I am Hungry!");
                         binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationView_menu_mapView).setChecked(true);
                         break;
                     case 1:
+                        binding.toolBar.setTitle("I am Hungry!");
                         binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationView_menu_listView).setChecked(true);
                         break;
                     case 2:
+                        binding.toolBar.setTitle("Available Workmates");
                         binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationView_menu_workMates).setChecked(true);
                         break;
                 }
@@ -103,12 +106,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void signOutAccordingToProviders() {
         switch (mViewModel.getCurrentUser().getProviderId()) {
-            case "google.com" :
+            case "google.com":
                 GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
                 mSignInClient = GoogleSignIn.getClient(this, gso);
                 mSignInClient.signOut();
                 break;
-            case "facebook.com" :
+            case "facebook.com":
                 LoginManager.getInstance().logOut();
                 break;
         }
@@ -139,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void linkDrawerLayoutWithToolbar() {
         setSupportActionBar(binding.toolBar);
+
         ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         binding.drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
@@ -189,10 +193,13 @@ public class MainActivity extends AppCompatActivity {
         public Fragment createFragment(int position) {
             switch (position) {
                 case 0:
+                    getSupportActionBar().setTitle("I am Hungry!");
                     return new GoogleMapsFragment();
                 case 1:
+                    getSupportActionBar().setTitle("I am Hungry!");
                     return new ListViewFragment();
                 case 2:
+                    getSupportActionBar().setTitle("Available Workmates");
                     return new WorkMatesFragment();
             }
             return null;

@@ -2,6 +2,7 @@ package com.hangyeollee.go4lunch.view.fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -40,7 +41,8 @@ public class ListViewFragment extends Fragment {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mViewModel.startLocationRequest();
         } else {
-
+            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
+            alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings").create().show();
         }
 
         mViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), new Observer<Location>() {
@@ -60,6 +62,7 @@ public class ListViewFragment extends Fragment {
 
         return binding.getRoot();
     }
+
 
     @Override
     public void onDestroyView() {

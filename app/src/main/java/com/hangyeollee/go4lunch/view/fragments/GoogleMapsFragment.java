@@ -92,6 +92,7 @@ public class GoogleMapsFragment extends Fragment {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
+
         return binding.getRoot();
     }
 

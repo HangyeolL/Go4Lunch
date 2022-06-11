@@ -40,20 +40,13 @@ public class PlaceDetailActivityViewModel extends ViewModel {
     public void setLunchRestaurant(LunchRestaurant lunchRestaurant) {
         mFirebaseRepository.saveLunchRestaurant(lunchRestaurant);
     }
-//    public void deleteLunchRestaurant(LunchRestaurant lunchRestaurant) {
-//        mFirebaseRepository.deleteLunchRestaurant(lunchRestaurant);
-//    }
-//
+
     public void setLikedRestaurant(LikedRestaurant likedRestaurant) {
         mFirebaseRepository.setLikeRestaurant(likedRestaurant);
     }
 
-    public LiveData<List<LikedRestaurant>> getLikedRestaurantList() {
-        return mFirebaseRepository.getLikedRestaurantList();
-    }
-
-    public LiveData<List<User>> getUsersListWithLunch(String placeId) {
-        return mFirebaseRepository.getUsersListWithLunch(placeId);
+    public LiveData<List<User>> getUserListWithLunch(String placeId) {
+        return mFirebaseRepository.getUserListWithLunch(placeId);
     }
 
 }

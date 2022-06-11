@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -32,9 +33,11 @@ public class FirebaseRepository {
     private FirebaseFirestore mFirestore;
 
     private MutableLiveData<List<User>> mUserListMutableLiveData = new MutableLiveData<>();
-    private MutableLiveData<List<User>> mUserListWithLunchMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<List<LunchRestaurant>> mLunchRestaurantMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<List<LikedRestaurant>> mLikedRestaurantMutableLiveData = new MutableLiveData<>();
+
+    private List<LunchRestaurant> mLunchRestaurantListOfSpecificPlace = new ArrayList<>();
+    private MutableLiveData<List<User>> mUserListWithLunch = new MutableLiveData<>();
 
     // Dependency Injection for unit test purpose
     public FirebaseRepository(FirebaseFirestore firestore) {
@@ -120,31 +123,11 @@ public class FirebaseRepository {
         return mUserListMutableLiveData;
     }
 
-    public MutableLiveData<List<User>> getUsersListWithLunch(String placeId) {
-        getLunchRestaurantCollection().whereEqualTo("restaurantId", placeId).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException error) {
-                if (error != null) {
-                    Log.w("UsersListWithLunch", "Listen failed.", error);
-                    mUserListWithLunchMutableLiveData.postValue(null);
-                    return;
-                }
-                List<User> userList = new ArrayList<>();
-                for (QueryDocumentSnapshot document : querySnapshot) {
-                    User user = document.toObject(User.class);
-                    userList.add(user);
-                }
-                mUserListWithLunchMutableLiveData.setValue(userList);
-            }
-        });
-        return mUserListWithLunchMutableLiveData;
-    }
-
     public void saveLunchRestaurant(LunchRestaurant lunchRestaurant) {
         getLunchRestaurantCollection().document(getCurrentUser().getUid()).set(lunchRestaurant, SetOptions.merge());
     }
 
-    public MutableLiveData<List<LunchRestaurant>> getLunchRestaurantList() {
+    public MutableLiveData<List<LunchRestaurant>> getLunchRestaurantListOfAllUsers() {
         getLunchRestaurantCollection().addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException error) {
@@ -162,6 +145,56 @@ public class FirebaseRepository {
             }
         });
         return mLunchRestaurantMutableLiveData;
+    }
+
+    public List<LunchRestaurant> getLunchRestaurantListOfSpecificPlace(String placeId) {
+//        getLunchRestaurantCollection().whereEqualTo("restaurantId", placeId).addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException error) {
+//                if (error != null) {
+//                    Log.w("UsersListWithLunch", "Listen failed.", error);
+//                    return;
+//                }
+//                for (QueryDocumentSnapshot document : querySnapshot) {
+//                    LunchRestaurant lunchRestaurant = document.toObject(LunchRestaurant.class);
+//                    mLunchRestaurantListOfSpecificPlace.add(lunchRestaurant);
+//                }
+//            }
+//        });
+
+        getLunchRestaurantCollection().whereEqualTo("restaurantId", placeId).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot querySnapshot) {
+                for (QueryDocumentSnapshot document : querySnapshot) {
+                    LunchRestaurant lunchRestaurant = document.toObject(LunchRestaurant.class);
+                    mLunchRestaurantListOfSpecificPlace.add(lunchRestaurant);
+                }
+            }
+        });
+        return mLunchRestaurantListOfSpecificPlace;
+    }
+
+    public MutableLiveData<List<User>> getUserListWithLunch(String placeId) {
+        List<LunchRestaurant> lunchRestaurantList = getLunchRestaurantListOfSpecificPlace(placeId);
+
+        for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+            getUsersCollection().whereEqualTo("id", lunchRestaurant.getUserId()).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot querySnapshot, @Nullable FirebaseFirestoreException error) {
+                    if (error != null) {
+                        Log.w("userListWithLunch", "Listen failed.", error);
+                        mUserListWithLunch.postValue(null);
+                        return;
+                    }
+                    List<User> userList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : querySnapshot) {
+                        User user = document.toObject(User.class);
+                        userList.add(user);
+                    }
+                    mUserListWithLunch.setValue(userList);
+                }
+            });
+        } return mUserListWithLunch;
     }
 
     public void setLikeRestaurant(LikedRestaurant likedRestaurant) {

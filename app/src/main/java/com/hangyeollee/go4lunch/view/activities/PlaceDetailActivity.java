@@ -60,7 +60,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
             }
         });
 
-        mViewModel.getUsersListWithLunch(placeId).observe(this, new Observer<List<User>>() {
+        mViewModel.getUserListWithLunch(placeId).observe(this, new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> userList) {
                 binding.recyclerViewWorkmates.setAdapter(new PlaceDetailActivityWorkmatesRecyclerViewAdapter(userList));

@@ -43,7 +43,7 @@ public class WorkMatesFragment extends Fragment {
             }
         });
 
-        mViewModel.getLunchRestaurantList().observe(getViewLifecycleOwner(), new Observer<List<LunchRestaurant>>() {
+        mViewModel.getLunchRestaurantListOfAllUsers().observe(getViewLifecycleOwner(), new Observer<List<LunchRestaurant>>() {
             @Override
             public void onChanged(List<LunchRestaurant> lunchRestaurantList) {
                 mAdapter.updateRestaurantList(lunchRestaurantList);
@@ -54,5 +54,6 @@ public class WorkMatesFragment extends Fragment {
 
         return binding.getRoot();
     }
+
 
 }

@@ -51,8 +51,8 @@ public class FirebaseViewModel extends ViewModel {
         return mFirebaseRepository.getUsersList();
     }
 
-    public LiveData<List<LunchRestaurant>> getLunchRestaurantList() {
-        return mFirebaseRepository.getLunchRestaurantList();
+    public LiveData<List<LunchRestaurant>> getLunchRestaurantListOfAllUsers() {
+        return mFirebaseRepository.getLunchRestaurantListOfAllUsers();
     }
 }
 
