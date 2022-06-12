@@ -8,16 +8,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.databinding.PlaceDetailActivityWorkmatesJoiningListItemBinding;
+import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
 
 import java.util.List;
 
 public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<PlaceDetailActivityWorkmatesRecyclerViewAdapter.ViewHolder> {
 
-    private List<User> mUserList;
+    private List<User> sortedUserList;
 
-    public PlaceDetailActivityWorkmatesRecyclerViewAdapter(List<User> userList) {
+    private List<User> mUserList;
+    private List<LunchRestaurant> mLunchRestaurantList;
+
+    public void setUserList(List<User> userList) {
         mUserList = userList;
+    }
+
+    public void setLunchRestaurantList(List<LunchRestaurant> lunchRestaurantList) {
+        mLunchRestaurantList = lunchRestaurantList;
     }
 
     @NonNull
@@ -47,10 +55,13 @@ public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerVie
 
         public void bindViews(User user) {
             binding.textViewUserName.setText(user.getName());
-
             if (user.getPhotoUrl() != null) {
                 Glide.with(itemView).load(user.getPhotoUrl()).into(binding.viewUserPhoto);
             }
+
         }
     }
+
 }
+
+

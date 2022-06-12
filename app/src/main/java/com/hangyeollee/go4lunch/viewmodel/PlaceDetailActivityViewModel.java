@@ -1,6 +1,7 @@
 package com.hangyeollee.go4lunch.viewmodel;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -11,12 +12,15 @@ import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlaceDetailActivityViewModel extends ViewModel {
 
     private PlaceDetailDataRepository mPlaceDetailDataRepository;
     private FirebaseRepository mFirebaseRepository;
+
+    private MutableLiveData<List<User>> mSortedUserListLiveData = new MutableLiveData<>();
 
     public PlaceDetailActivityViewModel(PlaceDetailDataRepository placeDetailDataRepository, FirebaseRepository firebaseRepository) {
         mPlaceDetailDataRepository = placeDetailDataRepository;
@@ -45,8 +49,25 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         mFirebaseRepository.setLikeRestaurant(likedRestaurant);
     }
 
-    public LiveData<List<User>> getUserListWithLunch(String placeId) {
-        return mFirebaseRepository.getUserListWithLunch(placeId);
+    public LiveData<List<User>> getUsersList() {
+        return mFirebaseRepository.getUsersList();
     }
 
+    public LiveData<List<LunchRestaurant>> getLunchRestaurantListOfAllUsers() {
+        return mFirebaseRepository.getLunchRestaurantListOfAllUsers();
+    }
+
+    public LiveData<List<User>> getSortedUserList(List<User> userList, List<LunchRestaurant> lunchRestaurantList) {
+        List<User> sortedUserList = new ArrayList<>();
+        for (User user : userList) {
+            for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                if (user.getId().equals(lunchRestaurant.getUserId())) {
+                    sortedUserList.add(user);
+                    mSortedUserListLiveData.setValue(sortedUserList);
+                    break;
+                }
+            }
+        }
+        return mSortedUserListLiveData;
+    }
 }

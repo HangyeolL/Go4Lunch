@@ -1,6 +1,7 @@
 package com.hangyeollee.go4lunch.view.fragments;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -86,6 +87,7 @@ public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<W
                 });
             } else {
                 binding.textViewRestaruantName.setText("not decided yet");
+                binding.textViewUserName.setTextColor(Color.GRAY);
             }
         }
     }

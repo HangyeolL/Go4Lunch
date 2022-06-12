@@ -19,11 +19,10 @@ import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
 import com.hangyeollee.go4lunch.model.placedetailpojo.Result;
+import com.hangyeollee.go4lunch.utility.MyCalendar;
 import com.hangyeollee.go4lunch.viewmodel.PlaceDetailActivityViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class PlaceDetailActivity extends AppCompatActivity {
@@ -32,10 +31,15 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     private PlaceDetailActivityViewModel mViewModel;
 
+    private PlaceDetailActivityWorkmatesRecyclerViewAdapter mAdapter;
+
     private Result mResult;
     private String placeId;
     private LunchRestaurant mLunchRestaurant;
+    private LunchRestaurant usersLunch;
     private LikedRestaurant mLikedRestaurant;
+    private List<LunchRestaurant> mLunchRestaurantList;
+    private List<User> mUserList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +50,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(PlaceDetailActivityViewModel.class);
 
+        mAdapter = new PlaceDetailActivityWorkmatesRecyclerViewAdapter();
+
         toolBarSetup();
 
         fetchPlaceDetailData();
@@ -54,18 +60,12 @@ public class PlaceDetailActivity extends AppCompatActivity {
             @Override
             public void onChanged(MyPlaceDetailData myPlaceDetailData) {
                 mResult = myPlaceDetailData.getResult();
-
                 photoRatingTextsSetup(mResult);
                 listenerSetup(mResult);
             }
         });
 
-        mViewModel.getUserListWithLunch(placeId).observe(this, new Observer<List<User>>() {
-            @Override
-            public void onChanged(List<User> userList) {
-                binding.recyclerViewWorkmates.setAdapter(new PlaceDetailActivityWorkmatesRecyclerViewAdapter(userList));
-            }
-        });
+        recyclerViewSetup();
 
     }
 
@@ -118,12 +118,23 @@ public class PlaceDetailActivity extends AppCompatActivity {
         });
 
         String userId = mViewModel.getCurrentUser().getUid();
-        String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-        mLunchRestaurant = new LunchRestaurant(placeId, userId, result.getName(), currentDate);
+
+        mLunchRestaurant = new LunchRestaurant(placeId, userId, result.getName(), MyCalendar.getCurrentDate());
 
         binding.floatingActionBtn.setOnClickListener(listener -> {
             mViewModel.setLunchRestaurant(mLunchRestaurant);
             Toast.makeText(this, "you decided to go " + result.getName() + " for lunch", Toast.LENGTH_SHORT).show();
         });
+    }
+
+    private void recyclerViewSetup() {
+        mViewModel.getSortedUserList(mViewModel.getUsersList().getValue(), mViewModel.getLunchRestaurantListOfAllUsers().getValue()).observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> userList) {
+                mAdapter.setUserList(userList);
+            }
+        });
+
+        binding.recyclerViewWorkmates.setAdapter(mAdapter);
     }
 }
