@@ -12,11 +12,8 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
-import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
-
-import java.util.List;
 
 public class MapsAndListSharedViewModel extends ViewModel {
 
@@ -35,10 +32,6 @@ public class MapsAndListSharedViewModel extends ViewModel {
 
     public LiveData<MyNearBySearchData> getNearBySearchLiveData() {
         return mNearbySearchDataRepository.getNearbySearchLiveData();
-    }
-
-    public List<Result> getNearbySearchResultList() {
-        return mNearbySearchDataRepository.getResultList();
     }
 
     public LiveData<Location> getLocationLiveData() {

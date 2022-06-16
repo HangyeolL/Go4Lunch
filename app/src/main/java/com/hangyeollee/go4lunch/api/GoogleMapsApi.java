@@ -1,5 +1,6 @@
 package com.hangyeollee.go4lunch.api;
 
+import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
 
@@ -17,4 +18,7 @@ public interface GoogleMapsApi {
             @Query("place_id") String placeId,
             @Query("key") String key
     );
+
+    @GET("autocomplete/json?")
+    Call<MyAutoCompleteData> getAutoCompleteData(@Query("input") String input ,@Query("location") String location, @Query("radius") int radius, @Query("type") String type ,@Query("key") String key);
 }

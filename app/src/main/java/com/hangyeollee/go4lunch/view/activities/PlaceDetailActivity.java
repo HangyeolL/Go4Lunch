@@ -33,13 +33,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     private PlaceDetailActivityWorkmatesRecyclerViewAdapter mAdapter;
 
+    private List<User> mUserList;
+    private List<LunchRestaurant> mLunchRestaurantList;
     private Result mResult;
     private String placeId;
-    private LunchRestaurant mLunchRestaurant;
-    private LunchRestaurant usersLunch;
-    private LikedRestaurant mLikedRestaurant;
-    private List<LunchRestaurant> mLunchRestaurantList;
-    private List<User> mUserList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,7 +62,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
             }
         });
 
-        recyclerViewSetup();
+//        recyclerViewSetup();
 
     }
 
@@ -110,7 +107,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
         }
 
         binding.buttonLike.setOnClickListener(listener -> {
-            mLikedRestaurant = new LikedRestaurant(placeId, result.getName());
+            LikedRestaurant mLikedRestaurant = new LikedRestaurant(placeId, result.getName());
 
             mViewModel.setLikedRestaurant(mLikedRestaurant);
 
@@ -119,7 +116,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         String userId = mViewModel.getCurrentUser().getUid();
 
-        mLunchRestaurant = new LunchRestaurant(placeId, userId, result.getName(), MyCalendar.getCurrentDate());
+        LunchRestaurant mLunchRestaurant = new LunchRestaurant(placeId, userId, result.getName(), MyCalendar.getCurrentDate());
 
         binding.floatingActionBtn.setOnClickListener(listener -> {
             mViewModel.setLunchRestaurant(mLunchRestaurant);
@@ -128,10 +125,19 @@ public class PlaceDetailActivity extends AppCompatActivity {
     }
 
     private void recyclerViewSetup() {
-        mViewModel.getSortedUserList(mViewModel.getUsersList().getValue(), mViewModel.getLunchRestaurantListOfAllUsers().getValue()).observe(this, new Observer<List<User>>() {
+        mViewModel.getUsersList().observe(this, observer -> {
+            mUserList = observer;
+        });
+        mViewModel.getLunchRestaurantListOfAllUsers().observe(this, observer->{
+            mLunchRestaurantList = observer;
+        });
+
+        mViewModel.getSortedUserList(mUserList, mLunchRestaurantList).observe(this, new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> userList) {
-                mAdapter.setUserList(userList);
+                if( userList != null) {
+                    mAdapter.setUserList(userList);
+                }
             }
         });
 

@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -27,14 +28,14 @@ import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBind
 import com.hangyeollee.go4lunch.view.fragments.GoogleMapsFragment;
 import com.hangyeollee.go4lunch.view.fragments.ListViewFragment;
 import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
-import com.hangyeollee.go4lunch.viewmodel.FirebaseViewModel;
+import com.hangyeollee.go4lunch.viewmodel.MainActivityViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
-    private FirebaseViewModel mViewModel;
+    private MainActivityViewModel mViewModel;
 
     private GoogleSignInClient mSignInClient;
 
@@ -48,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(FirebaseViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
+
 
         createLoggedInUserInFirestore();
         viewPagerSetup();
@@ -168,6 +170,25 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void searchViewSetup() {
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(newText.length() > 1 ) {
+                    mViewModel.fetchAutoCompleteData(newText,);
+                }
+                return false;
+            }
+        });
+    }
+
+
+
     @Override
     public void onBackPressed() {
         if (binding.viewPager.getCurrentItem() == 0 && !binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -180,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
             binding.viewPager.setCurrentItem(binding.viewPager.getCurrentItem() - 1);
         }
     }
+
 
     /**
      * ViewPagerAdapter for MainActivity

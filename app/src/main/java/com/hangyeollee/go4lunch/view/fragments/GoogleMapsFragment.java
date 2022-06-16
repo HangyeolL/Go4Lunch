@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
@@ -40,13 +41,14 @@ import com.hangyeollee.go4lunch.view.activities.PlaceDetailActivity;
 import com.hangyeollee.go4lunch.viewmodel.MapsAndListSharedViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GoogleMapsFragment extends Fragment {
 
     private String mUserLocation;
-    private double mUserLat, mUserLng;
     private List<Result> nearBySearchResultList;
+    private List<String> restaurantNameList = new ArrayList<>();
 
     private MapsAndListSharedViewModel mViewModel;
 
@@ -147,13 +149,17 @@ public class GoogleMapsFragment extends Fragment {
     }
 
     private void putMarkersOnMap() {
+        BitmapDescriptor markerIcon = setUpMapIcon();
 
         mViewModel.getNearBySearchLiveData().observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
             @Override
             public void onChanged(MyNearBySearchData myNearBySearchData) {
                 nearBySearchResultList = myNearBySearchData.getResults();
 
-                BitmapDescriptor markerIcon = setUpMapIcon();
+                for(Result result : nearBySearchResultList) {
+                    restaurantNameList.add(result.getName());
+                }
+
                 for (Result mResult : nearBySearchResultList) {
                     LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
                     mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
@@ -176,6 +182,35 @@ public class GoogleMapsFragment extends Fragment {
                     }
                 }
                 startActivity(intent);
+            }
+        });
+    }
+
+    private void searchView() {
+        BitmapDescriptor markerIcon = setUpMapIcon();
+
+        SearchView searchView = getActivity().findViewById(R.id.searchView);
+//        ArrayAdapter<String> stringArrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, restaurantNameList);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+//                for (int i = 0; i < nearBySearchResultList.size(); i++) {
+//                    if (nearBySearchResultList.get(i).getName().equals(query)) {
+//                        LatLng restauLatLng = new LatLng(nearBySearchResultList.get(i).getGeometry().getLocation().getLat(), nearBySearchResultList.get(i).getGeometry().getLocation().getLng());
+//                        mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(nearBySearchResultList.get(i).getName()));
+//                        break;
+//                    }
+//                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(newText.length() > 1) {
+
+                }
+                return false;
             }
         });
     }

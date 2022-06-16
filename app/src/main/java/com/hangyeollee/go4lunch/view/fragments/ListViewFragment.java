@@ -60,6 +60,7 @@ public class ListViewFragment extends Fragment {
             }
         });
 
+
         return binding.getRoot();
     }
 
