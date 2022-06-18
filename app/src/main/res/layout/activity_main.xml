@@ -29,7 +29,8 @@
                 android:id="@+id/searchView"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="right" />
+                android:layout_gravity="right"
+                app:queryHint="Search restaurants here" />
 
         </androidx.appcompat.widget.Toolbar>
 
