@@ -11,23 +11,27 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
-import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
+import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
-
-import java.util.List;
 
 public class MapsAndListSharedViewModel extends ViewModel {
 
     private NearbySearchDataRepository mNearbySearchDataRepository;
     private LocationRepository mLocationRepository;
 
+    private AutoCompleteDataRepository mAutoCompleteDataRepository;
 
-    public MapsAndListSharedViewModel(NearbySearchDataRepository nearbySearchDataRepository, LocationRepository locationRepository) {
+    public MapsAndListSharedViewModel(NearbySearchDataRepository nearbySearchDataRepository, LocationRepository locationRepository, AutoCompleteDataRepository autoCompleteDataRepository) {
         mNearbySearchDataRepository = nearbySearchDataRepository;
         mLocationRepository = locationRepository;
+        mAutoCompleteDataRepository = autoCompleteDataRepository;
     }
+
+    // NearbySearch Repo //
+
 
     public void fetchNearBySearchData(String location) {
         mNearbySearchDataRepository.fetchData(location);
@@ -37,9 +41,7 @@ public class MapsAndListSharedViewModel extends ViewModel {
         return mNearbySearchDataRepository.getNearbySearchLiveData();
     }
 
-    public List<Result> getNearbySearchResultList() {
-        return mNearbySearchDataRepository.getResultList();
-    }
+    // Location Repo //
 
     public LiveData<Location> getLocationLiveData() {
         return mLocationRepository.getLocationLiveData();
@@ -53,6 +55,23 @@ public class MapsAndListSharedViewModel extends ViewModel {
     public void stopLocationRequest() {
         mLocationRepository.stopLocationRequest();
     }
+
+    // AutoComplete Repo //
+
+    public LiveData<MyAutoCompleteData> getAutoCompleteLiveData() {
+        return mAutoCompleteDataRepository.getAutoCompleteLiveData();
+    }
+
+    public void setAutoCompleteDataLiveDataAsNull() {
+        mAutoCompleteDataRepository.setAutoCompleteDataLiveDataAsNull();
+    }
+
+    public void fetchAutoCompleteData(String input, String location) {
+        mAutoCompleteDataRepository.fetchData(input, location);
+    }
+
+
+    // Etc.... //
 
     public BitmapDescriptor makeDrawableIntoBitmap(Drawable drawable) {
         Canvas canvas = new Canvas();

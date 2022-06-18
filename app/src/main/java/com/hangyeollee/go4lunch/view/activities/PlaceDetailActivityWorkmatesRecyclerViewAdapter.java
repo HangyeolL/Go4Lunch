@@ -11,13 +11,14 @@ import com.hangyeollee.go4lunch.databinding.PlaceDetailActivityWorkmatesJoiningL
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<PlaceDetailActivityWorkmatesRecyclerViewAdapter.ViewHolder> {
 
     private List<User> sortedUserList;
 
-    private List<User> mUserList;
+    private List<User> mUserList = new ArrayList<>();
     private List<LunchRestaurant> mLunchRestaurantList;
 
     public void setUserList(List<User> userList) {

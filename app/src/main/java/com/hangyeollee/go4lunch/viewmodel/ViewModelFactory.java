@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.LocationServices;
+import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
@@ -18,6 +19,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private NearbySearchDataRepository mNearbySearchDataRepository;
     private PlaceDetailDataRepository mPlaceDetailDataRepository;
+    private AutoCompleteDataRepository mAutoCompleteDataRepository;
+
     private LocationRepository mLocationRepository;
     private FirebaseRepository mFirebaseRepository;
 
@@ -39,6 +42,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private ViewModelFactory(Context context) {
         mNearbySearchDataRepository = new NearbySearchDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
         mPlaceDetailDataRepository = new PlaceDetailDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
+        mAutoCompleteDataRepository = new AutoCompleteDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
+
         mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(context.getApplicationContext()));
         mFirebaseRepository = new FirebaseRepository(MyFirestoreUtil.getFirestoreInstance());
     }
@@ -48,7 +53,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
 
         if (modelClass.isAssignableFrom(MapsAndListSharedViewModel.class)) {
-            return (T) new MapsAndListSharedViewModel(mNearbySearchDataRepository, mLocationRepository);
+            return (T) new MapsAndListSharedViewModel(mNearbySearchDataRepository, mLocationRepository, mAutoCompleteDataRepository);
         } else if (modelClass.isAssignableFrom(PlaceDetailActivityViewModel.class)) {
             return (T) new PlaceDetailActivityViewModel(mPlaceDetailDataRepository, mFirebaseRepository);
         } else if (modelClass.isAssignableFrom(FirebaseViewModel.class)) {

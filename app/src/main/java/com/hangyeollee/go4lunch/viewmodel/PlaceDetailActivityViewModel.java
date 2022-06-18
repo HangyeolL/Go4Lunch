@@ -70,4 +70,21 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         }
         return mSortedUserListLiveData;
     }
+
+    public LiveData<List<User>> getSortedUserList2() {
+        List<User> sortedUserList = new ArrayList<>();
+        List<User> userList = mFirebaseRepository.getUsersList2();
+        List<LunchRestaurant> lunchRestaurantList = mFirebaseRepository.getLunchRestaurantListOfAllUsers2();
+
+        for (User user : userList) {
+            for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                if (user.getId().equals(lunchRestaurant.getUserId())) {
+                    sortedUserList.add(user);
+                    mSortedUserListLiveData.setValue(sortedUserList);
+                    break;
+                }
+            }
+        }
+        return mSortedUserListLiveData;
+    }
 }

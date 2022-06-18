@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
@@ -34,6 +35,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.FragmentGoogleMapsBinding;
+import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
+import com.hangyeollee.go4lunch.model.autocompletepojo.Prediction;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.view.activities.PlaceDetailActivity;
@@ -45,8 +48,8 @@ import java.util.List;
 public class GoogleMapsFragment extends Fragment {
 
     private String mUserLocation;
-    private double mUserLat, mUserLng;
     private List<Result> nearBySearchResultList;
+    private List<Prediction> mPredictionList;
 
     private MapsAndListSharedViewModel mViewModel;
 
@@ -114,52 +117,16 @@ public class GoogleMapsFragment extends Fragment {
                     mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
                     mGoogleMap.clear();
                     mGoogleMap.setMyLocationEnabled(true);
-
-                    getLiveLocationAndFetchData();
-                    putMarkersOnMap();
                     setListenerOnMarker();
+
+                    getLiveLocationAndFetchNearbySearchData();
+                    nearbySearchMarkersOnMap();
+
+                    fetchAutoCompleteData();
+
                 }
             });
         }
-    }
-
-    private void getLiveLocationAndFetchData() {
-        binding.progressBar.setVisibility(View.INVISIBLE);
-
-        mViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), new Observer<Location>() {
-            @Override
-            public void onChanged(Location location) {
-                mUserLocation = location.getLatitude() + "," + location.getLongitude();
-                mViewModel.fetchNearBySearchData(mUserLocation);
-
-                LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
-            }
-        });
-    }
-
-    private BitmapDescriptor setUpMapIcon() {
-        Drawable markerIconDrawable = getResources().getDrawable(R.drawable.ic_baseline_local_dining_24);
-        Drawable wrappedDrawable = DrawableCompat.wrap(markerIconDrawable);
-        DrawableCompat.setTint(wrappedDrawable, getResources().getColor(R.color.orange));
-        BitmapDescriptor markerIcon = mViewModel.makeDrawableIntoBitmap(wrappedDrawable);
-        return markerIcon;
-    }
-
-    private void putMarkersOnMap() {
-
-        mViewModel.getNearBySearchLiveData().observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
-            @Override
-            public void onChanged(MyNearBySearchData myNearBySearchData) {
-                nearBySearchResultList = myNearBySearchData.getResults();
-
-                BitmapDescriptor markerIcon = setUpMapIcon();
-                for (Result mResult : nearBySearchResultList) {
-                    LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
-                    mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
-                }
-            }
-        });
     }
 
     private void setListenerOnMarker() {
@@ -180,5 +147,89 @@ public class GoogleMapsFragment extends Fragment {
         });
     }
 
+    private void getLiveLocationAndFetchNearbySearchData() {
+        binding.progressBar.setVisibility(View.INVISIBLE);
+
+        mViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), new Observer<Location>() {
+            @Override
+            public void onChanged(Location location) {
+                mUserLocation = location.getLatitude() + "," + location.getLongitude();
+                mViewModel.fetchNearBySearchData(mUserLocation);
+
+                LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
+            }
+        });
+    }
+
+    private void nearbySearchMarkersOnMap() {
+        mViewModel.getNearBySearchLiveData().observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
+            @Override
+            public void onChanged(MyNearBySearchData myNearBySearchData) {
+                nearBySearchResultList = myNearBySearchData.getResults();
+
+                BitmapDescriptor markerIcon = setUpMapIcon();
+                for (Result mResult : nearBySearchResultList) {
+                    LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
+                    mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
+                }
+            }
+        });
+    }
+
+    private void fetchAutoCompleteData() {
+        SearchView searchView = getActivity().findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.length() > 2) {
+                    mViewModel.fetchAutoCompleteData(newText, mUserLocation);
+                    autoCompleteMarkersOnMap();
+                } else {
+                    mViewModel.setAutoCompleteDataLiveDataAsNull();
+                    nearbySearchMarkersOnMap();
+                }
+                return false;
+            }
+        });
+    }
+
+    private void autoCompleteMarkersOnMap() {
+        mGoogleMap.clear();
+
+        mViewModel.getAutoCompleteLiveData().observe(getViewLifecycleOwner(), new Observer<MyAutoCompleteData>() {
+            @Override
+            public void onChanged(MyAutoCompleteData myAutoCompleteData) {
+                if(myAutoCompleteData != null) {
+                    mPredictionList = myAutoCompleteData.getPredictions();
+
+                    BitmapDescriptor markerIcon = setUpMapIcon();
+
+                    for (Result result : nearBySearchResultList) {
+                        for (Prediction prediction : mPredictionList) {
+                            if (prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
+                                LatLng restauLatLng = new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng());
+                                mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(result.getName()));
+                            }
+                        }
+                    }
+                }
+
+            }
+        });
+    }
+
+    private BitmapDescriptor setUpMapIcon() {
+        Drawable markerIconDrawable = getResources().getDrawable(R.drawable.ic_baseline_local_dining_24);
+        Drawable wrappedDrawable = DrawableCompat.wrap(markerIconDrawable);
+        DrawableCompat.setTint(wrappedDrawable, getResources().getColor(R.color.orange));
+        BitmapDescriptor markerIcon = mViewModel.makeDrawableIntoBitmap(wrappedDrawable);
+        return markerIcon;
+    }
 
 }

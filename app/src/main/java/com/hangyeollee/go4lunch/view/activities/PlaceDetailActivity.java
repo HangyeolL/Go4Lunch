@@ -65,7 +65,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
             }
         });
 
-        recyclerViewSetup();
+//        recyclerViewSetup();
 
     }
 
@@ -127,14 +127,14 @@ public class PlaceDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void recyclerViewSetup() {
-        mViewModel.getSortedUserList(mViewModel.getUsersList().getValue(), mViewModel.getLunchRestaurantListOfAllUsers().getValue()).observe(this, new Observer<List<User>>() {
-            @Override
-            public void onChanged(List<User> userList) {
-                mAdapter.setUserList(userList);
-            }
-        });
-
-        binding.recyclerViewWorkmates.setAdapter(mAdapter);
-    }
+//    private void recyclerViewSetup() {
+//        mViewModel.getSortedUserList2().observe(this, new Observer<List<User>>() {
+//            @Override
+//            public void onChanged(List<User> userList) {
+//                mAdapter.setUserList(userList);
+//            }
+//        });
+//
+//        binding.recyclerViewWorkmates.setAdapter(mAdapter);
+//    }
 }
