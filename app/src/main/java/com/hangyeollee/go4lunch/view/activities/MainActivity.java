@@ -193,13 +193,10 @@ public class MainActivity extends AppCompatActivity {
         public Fragment createFragment(int position) {
             switch (position) {
                 case 0:
-                    getSupportActionBar().setTitle("I am Hungry!");
                     return new GoogleMapsFragment();
                 case 1:
-                    getSupportActionBar().setTitle("I am Hungry!");
                     return new ListViewFragment();
                 case 2:
-                    getSupportActionBar().setTitle("Available Workmates");
                     return new WorkMatesFragment();
             }
             return null;
