@@ -27,10 +27,6 @@ public class FirebaseViewModel extends ViewModel {
         return mFirebaseRepository.getCurrentUser();
     }
 
-    public void updateUserProfile(String newName, String photoUri) {
-        mFirebaseRepository.updateUserProfile(newName, photoUri);
-    }
-
     public void deleteUserFromFirebaseAuth() {
         mFirebaseRepository.deleteUserFromFirebaseAuth();
     }

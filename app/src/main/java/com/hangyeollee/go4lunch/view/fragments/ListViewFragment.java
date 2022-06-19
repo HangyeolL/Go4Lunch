@@ -34,6 +34,7 @@ public class ListViewFragment extends Fragment {
 
     private Location mUserLocation;
 
+    private String mUserLocationToString;
     private List<Result> mNearbySearchResultList;
 
     private MapsAndListSharedViewModel mViewModel;
@@ -59,7 +60,7 @@ public class ListViewFragment extends Fragment {
         //            @Override
         //            public void onChanged(Location location) {
         //                mUserLocation = location;
-        //                mViewModel.fetchNearBySearchData(location.toString());
+        //                        mViewModel.fetchNearBySearchData(location.toString());
         //            }
         //        });
 
@@ -67,6 +68,8 @@ public class ListViewFragment extends Fragment {
             @Override
             public void onChanged(Location location) {
                 mUserLocation = location;
+                mUserLocationToString = location.getLatitude() + "," + location.getLongitude();
+                //                mViewModel.fetchNearBySearchData(location.toString());
             }
         });
 
@@ -104,7 +107,7 @@ public class ListViewFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText.length() > 2) {
-//                    mViewModel.fetchAutoCompleteData(newText, mUserLocation.toString());
+                    mViewModel.fetchAutoCompleteData(newText, mUserLocationToString);
                     autoCompleteRecyclerViewSetup();
                 } else {
                     mViewModel.setAutoCompleteDataLiveDataAsNull();
@@ -119,21 +122,22 @@ public class ListViewFragment extends Fragment {
         mViewModel.getAutoCompleteLiveData().observe(getViewLifecycleOwner(), new Observer<MyAutoCompleteData>() {
             @Override
             public void onChanged(MyAutoCompleteData myAutoCompleteData) {
-                List<Prediction> mPredictionList = myAutoCompleteData.getPredictions();
+                if (myAutoCompleteData != null) {
+                    List<Prediction> mPredictionList = myAutoCompleteData.getPredictions();
 
-                List<Result> sortedResultList = new ArrayList<>();
-                for (Result result : mNearbySearchResultList) {
-                    for (Prediction prediction : mPredictionList) {
-                        if (prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
-                            sortedResultList.add(result);
+                    List<Result> sortedResultList = new ArrayList<>();
+                    for (Result result : mNearbySearchResultList) {
+                        for (Prediction prediction : mPredictionList) {
+                            if (prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
+                                sortedResultList.add(result);
+                            }
                         }
                     }
+                    binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(sortedResultList, mUserLocation));
                 }
-                binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(sortedResultList, mUserLocation));
+
             }
         });
-
-
     }
 
 }

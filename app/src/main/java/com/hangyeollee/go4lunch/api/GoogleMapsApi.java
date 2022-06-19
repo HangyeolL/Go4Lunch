@@ -16,5 +16,5 @@ public interface GoogleMapsApi {
     Call<MyPlaceDetailData> getPlaceDetails(@Query("fields") String fields, @Query("place_id") String placeId, @Query("key") String key);
 
     @GET("autocomplete/json?")
-    Call<MyAutoCompleteData> getAutoCompleteData(@Query("input") String input, @Query("location") String location, @Query("radius") int radius, @Query("type") String type, @Query("key") String key);
+    Call<MyAutoCompleteData> getAutoCompleteData(@Query("input") String input, @Query("location") String location, @Query("radius") int radius, @Query("type") String type, @Query("language") String language, @Query("strictbounds") boolean strictbounds, @Query("key") String key);
 }

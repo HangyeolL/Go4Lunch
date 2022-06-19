@@ -60,6 +60,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new FirebaseViewModel(mFirebaseRepository);
         } else if (modelClass.isAssignableFrom(MainActivityViewModel.class)) {
             return (T) new MainActivityViewModel(mFirebaseRepository, mAutoCompleteDataRepository, mLocationRepository);
+        } else if (modelClass.isAssignableFrom(SettingsActivityViewModel.class)) {
+            return (T) new SettingsActivityViewModel(mFirebaseRepository);
         }
 
         throw new IllegalArgumentException("Unknown ViewModel class");

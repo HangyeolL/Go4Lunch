@@ -1,13 +1,13 @@
 package com.hangyeollee.go4lunch.view.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -22,6 +22,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainBinding;
 import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBinding;
@@ -95,11 +97,25 @@ public class MainActivity extends AppCompatActivity {
     private void navigationViewUserProfileSetup() {
         MainActivityHeaderNavigationViewBinding navigationViewHeaderBinding = MainActivityHeaderNavigationViewBinding.bind(binding.NavigationView.getHeaderView(0));
 
+        FirebaseUser user = mViewModel.getCurrentUser();
         if (mViewModel.getCurrentUser() != null) {
+            for (UserInfo profile : user.getProviderData()) {
+                // Id of the provider (ex: google.com)
+                String providerId = profile.getProviderId();
+
+                // UID specific to the provider
+                String uid = profile.getUid();
+
+                // Name, email address, and profile photo Url
+                String name = profile.getDisplayName();
+                String email = profile.getEmail();
+                Uri photoUrl = profile.getPhotoUrl();
+            }
+
             navigationViewHeaderBinding.textViewUserName.setText(mViewModel.getCurrentUser().getDisplayName());
             navigationViewHeaderBinding.textViewUserEmail.setText(mViewModel.getCurrentUser().getEmail());
             if (mViewModel.getCurrentUser().getPhotoUrl() != null) {
-                Glide.with(this).load(mViewModel.getCurrentUser().getPhotoUrl().toString()).into(navigationViewHeaderBinding.imageViewUserPhoto);
+                Glide.with(this).load(mViewModel.getCurrentUser().getPhotoUrl()).into(navigationViewHeaderBinding.imageViewUserPhoto);
             } else {
                 navigationViewHeaderBinding.imageViewUserPhoto.setImageResource(R.drawable.ic_baseline_person_outline_24);
             }
@@ -169,25 +185,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    private void searchViewSetup() {
-        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if(newText.length() > 1 ) {
-                    mViewModel.fetchAutoCompleteData(newText,);
-                }
-                return false;
-            }
-        });
-    }
-
-
 
     @Override
     public void onBackPressed() {

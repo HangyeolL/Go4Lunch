@@ -84,7 +84,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="@+id/textInputLayout_userName"
         app:layout_constraintStart_toStartOf="@+id/textInputLayout_userName"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_userName">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_userName"
+        >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/textInputEditText_userEmail"
@@ -92,7 +93,9 @@
             android:layout_height="wrap_content"
             android:hint="email"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            tools:text="JhoneDoe@gmail.com" />
+            tools:text="JhoneDoe@gmail.com"
+            android:focusable="false"
+            android:maxLines="1"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
