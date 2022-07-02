@@ -50,6 +50,7 @@ public class GoogleMapsFragment extends Fragment {
     private String mUserLocation;
     private List<Result> nearBySearchResultList;
     private List<Prediction> mPredictionList;
+    private boolean firstTime = false;
 
     private MapsAndListSharedViewModel mViewModel;
 
@@ -120,9 +121,14 @@ public class GoogleMapsFragment extends Fragment {
                     setListenerOnMarker();
 
                     getLiveLocationAndFetchNearbySearchData();
-                    nearbySearchMarkersOnMap();
 
-                    fetchAutoCompleteData();
+                    // Condition.
+                    if (firstTime == false) {
+                        nearbySearchMarkersOnMap();
+                        firstTime = true;
+                    }
+
+                    searchViewSetup();
 
                 }
             });
@@ -163,6 +169,8 @@ public class GoogleMapsFragment extends Fragment {
     }
 
     private void nearbySearchMarkersOnMap() {
+        mGoogleMap.clear();
+
         mViewModel.getNearBySearchLiveData().observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
             @Override
             public void onChanged(MyNearBySearchData myNearBySearchData) {
@@ -177,7 +185,7 @@ public class GoogleMapsFragment extends Fragment {
         });
     }
 
-    private void fetchAutoCompleteData() {
+    private void searchViewSetup() {
         SearchView searchView = getActivity().findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -190,7 +198,7 @@ public class GoogleMapsFragment extends Fragment {
                 if (newText.length() > 2) {
                     mViewModel.fetchAutoCompleteData(newText, mUserLocation);
                     autoCompleteMarkersOnMap();
-                } else {
+                } else if(newText.length() == 0){
                     mViewModel.setAutoCompleteDataLiveDataAsNull();
                     nearbySearchMarkersOnMap();
                 }
@@ -201,14 +209,13 @@ public class GoogleMapsFragment extends Fragment {
 
     private void autoCompleteMarkersOnMap() {
         mGoogleMap.clear();
+        BitmapDescriptor markerIcon = setUpMapIcon();
 
         mViewModel.getAutoCompleteLiveData().observe(getViewLifecycleOwner(), new Observer<MyAutoCompleteData>() {
             @Override
             public void onChanged(MyAutoCompleteData myAutoCompleteData) {
                 if(myAutoCompleteData != null) {
                     mPredictionList = myAutoCompleteData.getPredictions();
-
-                    BitmapDescriptor markerIcon = setUpMapIcon();
 
                     for (Result result : nearBySearchResultList) {
                         for (Prediction prediction : mPredictionList) {

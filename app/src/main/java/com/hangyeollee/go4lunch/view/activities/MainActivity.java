@@ -1,7 +1,6 @@
 package com.hangyeollee.go4lunch.view.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -33,6 +32,8 @@ import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
 import com.hangyeollee.go4lunch.viewmodel.MainActivityViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
@@ -53,14 +54,12 @@ public class MainActivity extends AppCompatActivity {
 
         mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
 
-
         createLoggedInUserInFirestore();
         viewPagerSetup();
         navigationViewUserProfileSetup();
         navigationViewItemSelectedListener();
         linkDrawerLayoutWithToolbar();
         bottomNavigationBarSetup();
-
     }
 
     private void createLoggedInUserInFirestore() {
@@ -97,25 +96,16 @@ public class MainActivity extends AppCompatActivity {
     private void navigationViewUserProfileSetup() {
         MainActivityHeaderNavigationViewBinding navigationViewHeaderBinding = MainActivityHeaderNavigationViewBinding.bind(binding.NavigationView.getHeaderView(0));
 
-        FirebaseUser user = mViewModel.getCurrentUser();
-        if (mViewModel.getCurrentUser() != null) {
-            for (UserInfo profile : user.getProviderData()) {
-                // Id of the provider (ex: google.com)
-                String providerId = profile.getProviderId();
+        FirebaseUser currentUser = mViewModel.getCurrentUser();
 
-                // UID specific to the provider
-                String uid = profile.getUid();
+        if (currentUser != null) {
+            List<? extends UserInfo> userInfoList = currentUser.getProviderData();
 
-                // Name, email address, and profile photo Url
-                String name = profile.getDisplayName();
-                String email = profile.getEmail();
-                Uri photoUrl = profile.getPhotoUrl();
-            }
+            navigationViewHeaderBinding.textViewUserName.setText(userInfoList.get(0).getDisplayName());
+            navigationViewHeaderBinding.textViewUserEmail.setText(userInfoList.get(0).getEmail());
 
-            navigationViewHeaderBinding.textViewUserName.setText(mViewModel.getCurrentUser().getDisplayName());
-            navigationViewHeaderBinding.textViewUserEmail.setText(mViewModel.getCurrentUser().getEmail());
             if (mViewModel.getCurrentUser().getPhotoUrl() != null) {
-                Glide.with(this).load(mViewModel.getCurrentUser().getPhotoUrl()).into(navigationViewHeaderBinding.imageViewUserPhoto);
+                Glide.with(this).load(userInfoList.get(0).getPhotoUrl()).into(navigationViewHeaderBinding.imageViewUserPhoto);
             } else {
                 navigationViewHeaderBinding.imageViewUserPhoto.setImageResource(R.drawable.ic_baseline_person_outline_24);
             }
