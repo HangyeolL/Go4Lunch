@@ -123,7 +123,7 @@ public class GoogleMapsFragment extends Fragment {
                     getLiveLocationAndFetchNearbySearchData();
 
                     // Condition.
-                    if (firstTime == false) {
+                    if (!firstTime) {
                         nearbySearchMarkersOnMap();
                         firstTime = true;
                     }
@@ -198,7 +198,7 @@ public class GoogleMapsFragment extends Fragment {
                 if (newText.length() > 2) {
                     mViewModel.fetchAutoCompleteData(newText, mUserLocation);
                     autoCompleteMarkersOnMap();
-                } else if(newText.length() == 0){
+                } else if (newText.length() == 0) {
                     mViewModel.setAutoCompleteDataLiveDataAsNull();
                     nearbySearchMarkersOnMap();
                 }
@@ -214,7 +214,7 @@ public class GoogleMapsFragment extends Fragment {
         mViewModel.getAutoCompleteLiveData().observe(getViewLifecycleOwner(), new Observer<MyAutoCompleteData>() {
             @Override
             public void onChanged(MyAutoCompleteData myAutoCompleteData) {
-                if(myAutoCompleteData != null) {
+                if (myAutoCompleteData != null) {
                     mPredictionList = myAutoCompleteData.getPredictions();
 
                     for (Result result : nearBySearchResultList) {

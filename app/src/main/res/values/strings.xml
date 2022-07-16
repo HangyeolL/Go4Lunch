@@ -2,14 +2,20 @@
     <string name="app_name">Go4Lunch</string>
     <string name="connection_succeed">Log in succeeded!</string>
     <string name="error_authentication_canceled">Log in failed</string>
-    <string name="error_no_internet">No internet conncection</string>
-    <string name="error_unknown_error">Unknown error occured</string>
+    <string name="error_no_internet">No internet connection</string>
+    <string name="error_unknown_error">Unknown error occurred</string>
     <string name="app_description">Find a nice restaurants and invite your co-workers for lunch !</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="fb_login_protocol_scheme">fb3320128438266102</string>
     <string name="firebase_web_client_id">863376647598-1fs4tds46kqk8521gai41dtbekrd0glm.apps.googleusercontent.com</string>
+
     <string name="is_eating_at">is eating at</string>
+
+    <string name="shared_preferences_user_lunch_restaurant_boolean">shared preferences user lunch restaurant boolean</string>
+    <string name="shared_preferences_user_lunch_restaurant_name_string">shared preferences user lunch restaurant name string</string>
+    <string name="shared_preferences_user_lunch_restaurant_id_int">shared  preferences user lunch restaurant id int</string>
+
 
 </resources>
