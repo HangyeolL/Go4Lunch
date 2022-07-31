@@ -12,6 +12,7 @@ import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.view.activities.MainActivity;
 
 public class MyNotificationUtil {
+
     private Context mContext;
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mNotificationBuilder;

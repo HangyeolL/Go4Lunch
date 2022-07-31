@@ -5,13 +5,21 @@ import android.content.SharedPreferences;
 
 public class MySharedPreferenceUtil {
     Context mContext;
+    SharedPreferences mSharedPreferences;
     SharedPreferences.Editor mEditor;
 
     public MySharedPreferenceUtil(Context context) {
         mContext = context;
     }
 
-    public SharedPreferences.Editor getInstance() {
+    public SharedPreferences getInstanceOfSharedPref() {
+        if (mSharedPreferences == null ) {
+            mSharedPreferences = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        }
+        return mSharedPreferences;
+    }
+
+    public SharedPreferences.Editor getInstanceOfEditor() {
         if(mEditor == null) {
             mEditor = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE).edit();
         }

@@ -31,7 +31,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switch_notification"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -84,29 +84,18 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="@+id/textInputLayout_userName"
         app:layout_constraintStart_toStartOf="@+id/textInputLayout_userName"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_userName"
-        >
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout_userName">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/textInputEditText_userEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="email"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            tools:text="JhoneDoe@gmail.com"
             android:focusable="false"
-            android:maxLines="1"/>
+            android:hint="email"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            tools:text="JhoneDoe@gmail.com" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-    <Button
-        android:id="@+id/button_save"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:text="save"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

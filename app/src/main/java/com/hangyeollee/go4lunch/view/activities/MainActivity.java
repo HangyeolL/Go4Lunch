@@ -3,6 +3,7 @@ package com.hangyeollee.go4lunch.view.activities;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -29,6 +30,7 @@ import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainBinding;
 import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBinding;
 import com.hangyeollee.go4lunch.utility.AlarmReceiver;
+import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.view.fragments.GoogleMapsFragment;
 import com.hangyeollee.go4lunch.view.fragments.ListViewFragment;
 import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
@@ -68,17 +70,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void alarmSetup() {
-        AlarmManager mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        SharedPreferences mSharedPref = new MySharedPreferenceUtil(this).getInstanceOfSharedPref();
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 12);
-        calendar.set(Calendar.MINUTE,00);
-        calendar.set(Calendar.SECOND, 00);
+        if (mSharedPref.getBoolean("Notification boolean", true)) {
 
-        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pendingAlarmIntent = PendingIntent.getBroadcast(this, 1, alarmIntent, PendingIntent.FLAG_IMMUTABLE);
+            AlarmManager mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        mAlarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingAlarmIntent);
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, 12);
+            calendar.set(Calendar.MINUTE,00);
+            calendar.set(Calendar.SECOND, 00);
+
+            Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+            PendingIntent pendingAlarmIntent = PendingIntent.getBroadcast(this, 1, alarmIntent, PendingIntent.FLAG_IMMUTABLE);
+
+            mAlarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingAlarmIntent);
+
+        } else {
+
+        }
     }
 
     private void createLoggedInUserInFirestore() {

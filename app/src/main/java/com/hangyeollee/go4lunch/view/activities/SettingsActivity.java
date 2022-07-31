@@ -1,6 +1,10 @@
 package com.hangyeollee.go4lunch.view.activities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.CompoundButton;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.databinding.ActivitySettingsBinding;
+import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.viewmodel.SettingsActivityViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
@@ -28,6 +33,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         toolBarSetup();
         viewSetup();
+        switchSetup(this);
     }
 
     private void toolBarSetup() {
@@ -37,7 +43,9 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void viewSetup() {
-        Glide.with(this).load(mViewModel.getCurrentUser().getPhotoUrl()).into(binding.imageViewUserPhoto);
+        Glide.with(this)
+                .load(mViewModel.getCurrentUser().getPhotoUrl())
+                .into(binding.imageViewUserPhoto);
         binding.textInputEditTextUserName.setText(mViewModel.getCurrentUser().getDisplayName());
         if (mViewModel.getCurrentUser().getEmail() != null) {
             binding.textInputEditTextUserEmail.setText(mViewModel.getCurrentUser().getEmail());
@@ -46,17 +54,30 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    private void onClickListenerSetup() {
-        binding.imageViewUserPhoto.setOnClickListener(click -> {
+    private void switchSetup(Context context) {
+        SharedPreferences mSharedPref = new MySharedPreferenceUtil(this).getInstanceOfSharedPref();
 
-        });
+        if (mSharedPref.getBoolean("Notification boolean", true)) {
+            binding.switchNotification.setChecked(true);
+        } else {
+            binding.switchNotification.setChecked(false);
+        }
 
-        binding.textInputEditTextUserName.setOnClickListener(click -> {
-        });
+        binding.switchNotification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor mEditor = new MySharedPreferenceUtil(context).getInstanceOfEditor();
 
-        binding.buttonSave.setOnClickListener(click -> {
-            mViewModel.updateUserName(binding.textInputEditTextUserName.getText().toString());
-            mViewModel.updateUserPhoto(binding.imageViewUserPhoto.getDrawable().toString());
+                if (buttonView.isChecked()) {
+                    Log.e("switch", "is checked : " + isChecked);
+                    mEditor.putBoolean("Notification boolean", true);
+                    mEditor.commit();
+                } else {
+                    Log.e("switch", "is checked : " + isChecked);
+                    mEditor.putBoolean("Notification boolean", false);
+                    mEditor.commit();
+                }
+            }
         });
     }
 }
