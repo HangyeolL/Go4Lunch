@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -29,6 +31,8 @@ public class MyNotificationUtil {
     }
 
     public void buildNotification1() {
+        SharedPreferences mSharedPref = new MySharedPreferenceUtil(mContext).getInstanceOfSharedPref();
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("channel 1", "Today's lunch", NotificationManager.IMPORTANCE_DEFAULT);
             channel.setDescription("Here is your today's lunch");
@@ -38,10 +42,12 @@ public class MyNotificationUtil {
         Intent notificationIntent = new Intent(mContext, MainActivity.class);
         PendingIntent pendingNotificationIntent = PendingIntent.getActivity(mContext, 1, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
+        Log.e("LunchRestau", mSharedPref.getString("LunchRestaurant", ""));
+
         mNotificationBuilder = new NotificationCompat.Builder(mContext, "channel 1")
                 .setSmallIcon(R.drawable.ic_baseline_local_dining_24)
                 .setContentTitle("Today's lunch")
-                .setContentText("you will eat at")
+                .setContentText("you will eat at " + mSharedPref.getString("LunchRestaurant",""))
                 .setContentIntent(pendingNotificationIntent);
     }
 

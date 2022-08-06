@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
 
             Intent alarmIntent = new Intent(this, AlarmReceiver.class);
             PendingIntent pendingAlarmIntent = PendingIntent.getBroadcast(this, 1, alarmIntent, PendingIntent.FLAG_IMMUTABLE);
+
+            Log.e("TimeInMillisNow", calendar.getTimeInMillis() + "");
 
             mAlarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingAlarmIntent);
 

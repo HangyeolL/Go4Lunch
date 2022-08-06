@@ -1,10 +1,10 @@
 package com.hangyeollee.go4lunch.view.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -21,6 +21,7 @@ import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
 import com.hangyeollee.go4lunch.model.placedetailpojo.Result;
 import com.hangyeollee.go4lunch.utility.MyCalendar;
+import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.viewmodel.PlaceDetailActivityViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
@@ -132,10 +133,15 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         mLunchRestaurant = new LunchRestaurant(placeId, userId, result.getName(), MyCalendar.getCurrentDate());
 
+        SharedPreferences.Editor mSharedPrefEditor = new MySharedPreferenceUtil(this).getInstanceOfEditor();
+
         binding.floatingActionBtn.setOnClickListener(listener -> {
             mViewModel.setLunchRestaurant(mLunchRestaurant);
             Toast.makeText(this, "you decided to go " + result.getName() + " for lunch", Toast.LENGTH_SHORT)
                     .show();
+
+            mSharedPrefEditor.putString("LunchRestaurant", mLunchRestaurant.getName());
+            mSharedPrefEditor.commit();
         });
     }
 
