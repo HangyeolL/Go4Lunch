@@ -32,7 +32,6 @@ public class MapsAndListSharedViewModel extends ViewModel {
 
     // NearbySearch Repo //
 
-
     public void fetchNearBySearchData(String location) {
         mNearbySearchDataRepository.fetchData(location);
     }

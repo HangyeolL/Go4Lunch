@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -23,6 +24,7 @@ import com.hangyeollee.go4lunch.utility.MyCalendar;
 import com.hangyeollee.go4lunch.viewmodel.PlaceDetailActivityViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlaceDetailActivity extends AppCompatActivity {
@@ -38,6 +40,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private LunchRestaurant mLunchRestaurant;
     private LunchRestaurant usersLunch;
     private LikedRestaurant mLikedRestaurant;
+
     private List<LunchRestaurant> mLunchRestaurantList;
     private List<User> mUserList;
 
@@ -53,7 +56,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
         mAdapter = new PlaceDetailActivityWorkmatesRecyclerViewAdapter();
 
         toolBarSetup();
-
         fetchPlaceDetailData();
 
         mViewModel.getPlaceDetailLiveData().observe(this, new Observer<MyPlaceDetailData>() {
@@ -62,10 +64,12 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 mResult = myPlaceDetailData.getResult();
                 photoRatingTextsSetup(mResult);
                 listenerSetup(mResult);
+
+                mAdapter.setPlaceDetailResult(mResult);
             }
         });
 
-//        recyclerViewSetup();
+        recyclerViewSetup();
 
     }
 
@@ -87,7 +91,12 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private void photoRatingTextsSetup(@Nullable Result result) {
 
         if (result.getPhotos() != null) {
-            Glide.with(PlaceDetailActivity.this).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.MAPS_API_KEY).into(binding.imageViewRestaurant);
+            Glide.with(PlaceDetailActivity.this)
+                    .load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result
+                            .getPhotos()
+                            .get(0)
+                            .getPhotoReference() + "&key=" + BuildConfig.MAPS_API_KEY)
+                    .into(binding.imageViewRestaurant);
         }
 
         binding.textViewName.setText(result.getName());
@@ -106,7 +115,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 startActivity(callIntent);
             });
         } else {
-            Toast.makeText(PlaceDetailActivity.this, "Couldn't find restaurant phone number", Toast.LENGTH_SHORT).show();
+            Toast.makeText(PlaceDetailActivity.this, "Couldn't find restaurant phone number", Toast.LENGTH_SHORT)
+                    .show();
         }
 
         binding.buttonLike.setOnClickListener(listener -> {
@@ -114,7 +124,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
             mViewModel.setLikedRestaurant(mLikedRestaurant);
 
-            Toast.makeText(this, result.getName() + " has added to liked restaurant list", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, result.getName() + " has added to liked restaurant list", Toast.LENGTH_SHORT)
+                    .show();
         });
 
         String userId = mViewModel.getCurrentUser().getUid();
@@ -123,18 +134,51 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         binding.floatingActionBtn.setOnClickListener(listener -> {
             mViewModel.setLunchRestaurant(mLunchRestaurant);
-            Toast.makeText(this, "you decided to go " + result.getName() + " for lunch", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "you decided to go " + result.getName() + " for lunch", Toast.LENGTH_SHORT)
+                    .show();
         });
     }
 
-//    private void recyclerViewSetup() {
-//        mViewModel.getSortedUserList2().observe(this, new Observer<List<User>>() {
-//            @Override
-//            public void onChanged(List<User> userList) {
-//                mAdapter.setUserList(userList);
-//            }
-//        });
-//
-//        binding.recyclerViewWorkmates.setAdapter(mAdapter);
-//    }
+    private void recyclerViewSetup() {
+        mViewModel.getLunchRestaurantListOfAllUsers()
+                .observe(this, new Observer<List<LunchRestaurant>>() {
+                    @Override
+                    public void onChanged(List<LunchRestaurant> lunchRestaurantList) {
+                        mLunchRestaurantList = lunchRestaurantList;
+                        mAdapter.setLunchRestaurantList(lunchRestaurantList);
+                        binding.recyclerViewWorkmates.setAdapter(mAdapter);
+
+                    }
+                });
+
+        mViewModel.getUsersList().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> userList) {
+                mUserList = userList;
+
+                mAdapter.setUserList(userList);
+                binding.recyclerViewWorkmates.setAdapter(mAdapter);
+            }
+        });
+    }
+
+    public void recyclerViewLogicSetup() {
+        //        for(LunchRestaurant lunchRestaurant : mLunchRestaurantList) {
+        //            if (!mResult.getName().equals(lunchRestaurant.getName())) {
+        //                binding.recyclerViewWorkmates.setVisibility(View.INVISIBLE);
+        //            } else {
+        //
+        //            }
+        //        }
+
+        List<User> userList2 = new ArrayList<>();
+        for(User user : mUserList) {
+            for(LunchRestaurant lunchRestaurant : mLunchRestaurantList) {
+                if(user.getId().equals(lunchRestaurant.getUserId())) {
+                    userList2.add(user);
+                }
+            }
+        }
+        mAdapter.setListSize(userList2.size());
+    }
 }

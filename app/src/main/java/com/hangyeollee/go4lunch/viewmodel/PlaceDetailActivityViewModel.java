@@ -1,6 +1,7 @@
 package com.hangyeollee.go4lunch.viewmodel;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -57,34 +58,22 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         return mFirebaseRepository.getLunchRestaurantListOfAllUsers();
     }
 
+
     public LiveData<List<User>> getSortedUserList(List<User> userList, List<LunchRestaurant> lunchRestaurantList) {
         List<User> sortedUserList = new ArrayList<>();
-        for (User user : userList) {
-            for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-                if (user.getId().equals(lunchRestaurant.getUserId())) {
-                    sortedUserList.add(user);
-                    mSortedUserListLiveData.setValue(sortedUserList);
-                    break;
-                }
-            }
-        }
-        return mSortedUserListLiveData;
-    }
-
-    public LiveData<List<User>> getSortedUserList2() {
-        List<User> sortedUserList = new ArrayList<>();
-        List<User> userList = mFirebaseRepository.getUsersList2();
-        List<LunchRestaurant> lunchRestaurantList = mFirebaseRepository.getLunchRestaurantListOfAllUsers2();
 
         for (User user : userList) {
             for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
                 if (user.getId().equals(lunchRestaurant.getUserId())) {
                     sortedUserList.add(user);
-                    mSortedUserListLiveData.setValue(sortedUserList);
                     break;
                 }
             }
         }
+
+        mSortedUserListLiveData.setValue(sortedUserList);
+
         return mSortedUserListLiveData;
     }
+
 }

@@ -10,16 +10,18 @@ import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.databinding.PlaceDetailActivityWorkmatesJoiningListItemBinding;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
+import com.hangyeollee.go4lunch.model.placedetailpojo.Result;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<PlaceDetailActivityWorkmatesRecyclerViewAdapter.ViewHolder> {
 
-    private List<User> sortedUserList;
-
     private List<User> mUserList = new ArrayList<>();
-    private List<LunchRestaurant> mLunchRestaurantList;
+    private List<LunchRestaurant> mLunchRestaurantList = new ArrayList<>();
+    private Result mResult;
+
+    private int mListSize;
 
     public void setUserList(List<User> userList) {
         mUserList = userList;
@@ -29,10 +31,19 @@ public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerVie
         mLunchRestaurantList = lunchRestaurantList;
     }
 
+    public void setPlaceDetailResult(Result result) {
+        mResult = result;
+    }
+
+    public void setListSize(int listSize) {
+        mListSize = listSize;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        PlaceDetailActivityWorkmatesJoiningListItemBinding binding = PlaceDetailActivityWorkmatesJoiningListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        PlaceDetailActivityWorkmatesJoiningListItemBinding binding = PlaceDetailActivityWorkmatesJoiningListItemBinding
+                .inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new PlaceDetailActivityWorkmatesRecyclerViewAdapter.ViewHolder(binding);
     }
 
@@ -43,7 +54,7 @@ public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerVie
 
     @Override
     public int getItemCount() {
-        return mUserList.size();
+        return mListSize;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -55,9 +66,15 @@ public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerVie
         }
 
         public void bindViews(User user) {
-            binding.textViewUserName.setText(user.getName());
-            if (user.getPhotoUrl() != null) {
-                Glide.with(itemView).load(user.getPhotoUrl()).into(binding.viewUserPhoto);
+            for (LunchRestaurant lunchRestaurant : mLunchRestaurantList) {
+                if (user.getId().equals(lunchRestaurant.getUserId()) && lunchRestaurant.getName().equals(mResult.getName())) {
+
+                    binding.textViewUserName.setText(user.getName());
+                    if (user.getPhotoUrl() != null) {
+                        Glide.with(itemView).load(user.getPhotoUrl()).into(binding.viewUserPhoto);
+                    }
+
+                }
             }
 
         }

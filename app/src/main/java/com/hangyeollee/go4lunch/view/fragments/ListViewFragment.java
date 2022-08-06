@@ -56,20 +56,11 @@ public class ListViewFragment extends Fragment {
             alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings").create().show();
         }
 
-        //        mViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), new Observer<Location>() {
-        //            @Override
-        //            public void onChanged(Location location) {
-        //                mUserLocation = location;
-        //                        mViewModel.fetchNearBySearchData(location.toString());
-        //            }
-        //        });
-
         mViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), new Observer<Location>() {
             @Override
             public void onChanged(Location location) {
                 mUserLocation = location;
                 mUserLocationToString = location.getLatitude() + "," + location.getLongitude();
-                //                mViewModel.fetchNearBySearchData(location.toString());
             }
         });
 

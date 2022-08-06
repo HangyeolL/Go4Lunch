@@ -19,9 +19,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         resConfigs "en","fr","kr"
-//
-//        resValue 'string', 'facebook_application_id', FACEBOOK_APPLICATION_ID
-//        resValue 'string', 'facebook_client_token', FACEBOOK_CLIENT_TOKEN
     }
 
     buildTypes {
