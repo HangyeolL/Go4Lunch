@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int NUM_PAGES = 3;
     private FragmentStateAdapter mFragmentStateAdapter;
 
+    private SharedPreferences mSharedPref;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(MainActivityViewModel.class);
+
+        mSharedPref = new MySharedPreferenceUtil(this).getInstanceOfSharedPref();
 
         alarmSetup();
         createLoggedInUserInFirestore();
@@ -71,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void alarmSetup() {
-        SharedPreferences mSharedPref = new MySharedPreferenceUtil(this).getInstanceOfSharedPref();
 
         if (mSharedPref.getBoolean("Notification boolean", true)) {
 
@@ -163,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigationView_yourLunch:
+                        Toast.makeText(MainActivity.this,mSharedPref.getString("LunchRestaurant", ""), Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.navigationView_settings:
                         startActivity(new Intent(MainActivity.this, SettingsActivity.class));

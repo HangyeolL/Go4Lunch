@@ -2,7 +2,6 @@ package com.hangyeollee.go4lunch.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -21,7 +20,7 @@ public class PlaceDetailActivityViewModel extends ViewModel {
     private PlaceDetailDataRepository mPlaceDetailDataRepository;
     private FirebaseRepository mFirebaseRepository;
 
-    private MutableLiveData<List<User>> mSortedUserListLiveData = new MutableLiveData<>();
+    private MediatorLiveData<List<User>> mMediatorLiveData = new MediatorLiveData<>();
 
     public PlaceDetailActivityViewModel(PlaceDetailDataRepository placeDetailDataRepository, FirebaseRepository firebaseRepository) {
         mPlaceDetailDataRepository = placeDetailDataRepository;
@@ -50,30 +49,53 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         mFirebaseRepository.setLikeRestaurant(likedRestaurant);
     }
 
-    public LiveData<List<User>> getUsersList() {
-        return mFirebaseRepository.getUsersList();
+    public LiveData<List<User>> getMediatorLiveData() {
+        return mMediatorLiveData;
     }
 
-    public LiveData<List<LunchRestaurant>> getLunchRestaurantListOfAllUsers() {
-        return mFirebaseRepository.getLunchRestaurantListOfAllUsers();
+    public void fetchMediatorLivedata() {
+        mMediatorLiveData.addSource(mPlaceDetailDataRepository.getPlaceDetailLiveData(), placeDetailData -> {
+            PlaceDetailActivityViewModel.this.combineDataToMediatorLivedata(
+                    placeDetailData,
+                    mFirebaseRepository.getUsersList().getValue(),
+                    mFirebaseRepository.getLunchRestaurantListOfAllUsers().getValue());
+        });
+
+        mMediatorLiveData.addSource(mFirebaseRepository.getUsersList(), userList -> {
+            PlaceDetailActivityViewModel.this.combineDataToMediatorLivedata(mPlaceDetailDataRepository
+                    .getPlaceDetailLiveData().getValue(),
+                    userList,
+                    mFirebaseRepository.getLunchRestaurantListOfAllUsers().getValue());
+        });
+
+        mMediatorLiveData.addSource(mFirebaseRepository.getLunchRestaurantListOfAllUsers(), lunchRestaurantList -> {
+            PlaceDetailActivityViewModel.this.combineDataToMediatorLivedata(
+                    mPlaceDetailDataRepository.getPlaceDetailLiveData().getValue(),
+                    mFirebaseRepository.getUsersList().getValue(),
+                    lunchRestaurantList);
+        });
+
+
     }
 
+    private void combineDataToMediatorLivedata(MyPlaceDetailData myPlaceDetailData, List<User> userList, List<LunchRestaurant> lunchRestaurantList) {
+        if (myPlaceDetailData == null || userList == null || lunchRestaurantList == null) {
+            return;
+        }
 
-    public LiveData<List<User>> getSortedUserList(List<User> userList, List<LunchRestaurant> lunchRestaurantList) {
         List<User> sortedUserList = new ArrayList<>();
 
         for (User user : userList) {
             for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-                if (user.getId().equals(lunchRestaurant.getUserId())) {
+                if (user.getId().equals(lunchRestaurant.getUserId()) && myPlaceDetailData.getResult().getName()
+                        .equals(lunchRestaurant.getName())) {
                     sortedUserList.add(user);
-                    break;
                 }
             }
         }
 
-        mSortedUserListLiveData.setValue(sortedUserList);
+        mMediatorLiveData.setValue(sortedUserList);
 
-        return mSortedUserListLiveData;
     }
 
 }

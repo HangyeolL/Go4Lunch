@@ -25,7 +25,6 @@ import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.viewmodel.PlaceDetailActivityViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PlaceDetailActivity extends AppCompatActivity {
@@ -65,12 +64,18 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 mResult = myPlaceDetailData.getResult();
                 photoRatingTextsSetup(mResult);
                 listenerSetup(mResult);
-
-                mAdapter.setPlaceDetailResult(mResult);
             }
         });
 
-        recyclerViewSetup();
+        mViewModel.fetchMediatorLivedata();
+
+        mViewModel.getMediatorLiveData().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(List<User> userList) {
+                mAdapter.submitList(userList);
+                binding.recyclerViewWorkmates.setAdapter(mAdapter);
+            }
+        });
 
     }
 
@@ -120,6 +125,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     .show();
         }
 
+
         binding.buttonLike.setOnClickListener(listener -> {
             mLikedRestaurant = new LikedRestaurant(placeId, result.getName());
 
@@ -145,46 +151,4 @@ public class PlaceDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void recyclerViewSetup() {
-        mViewModel.getLunchRestaurantListOfAllUsers()
-                .observe(this, new Observer<List<LunchRestaurant>>() {
-                    @Override
-                    public void onChanged(List<LunchRestaurant> lunchRestaurantList) {
-                        mLunchRestaurantList = lunchRestaurantList;
-                        mAdapter.setLunchRestaurantList(lunchRestaurantList);
-                        binding.recyclerViewWorkmates.setAdapter(mAdapter);
-
-                    }
-                });
-
-        mViewModel.getUsersList().observe(this, new Observer<List<User>>() {
-            @Override
-            public void onChanged(List<User> userList) {
-                mUserList = userList;
-
-                mAdapter.setUserList(userList);
-                binding.recyclerViewWorkmates.setAdapter(mAdapter);
-            }
-        });
-    }
-
-    public void recyclerViewLogicSetup() {
-        //        for(LunchRestaurant lunchRestaurant : mLunchRestaurantList) {
-        //            if (!mResult.getName().equals(lunchRestaurant.getName())) {
-        //                binding.recyclerViewWorkmates.setVisibility(View.INVISIBLE);
-        //            } else {
-        //
-        //            }
-        //        }
-
-        List<User> userList2 = new ArrayList<>();
-        for(User user : mUserList) {
-            for(LunchRestaurant lunchRestaurant : mLunchRestaurantList) {
-                if(user.getId().equals(lunchRestaurant.getUserId())) {
-                    userList2.add(user);
-                }
-            }
-        }
-        mAdapter.setListSize(userList2.size());
-    }
 }

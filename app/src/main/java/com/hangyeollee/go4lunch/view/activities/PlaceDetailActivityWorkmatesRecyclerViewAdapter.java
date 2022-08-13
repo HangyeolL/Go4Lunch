@@ -17,26 +17,10 @@ import java.util.List;
 
 public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<PlaceDetailActivityWorkmatesRecyclerViewAdapter.ViewHolder> {
 
-    private List<User> mUserList = new ArrayList<>();
-    private List<LunchRestaurant> mLunchRestaurantList = new ArrayList<>();
-    private Result mResult;
+    private List<User> mUserList;
 
-    private int mListSize;
-
-    public void setUserList(List<User> userList) {
+    public void submitList(List<User> userList) {
         mUserList = userList;
-    }
-
-    public void setLunchRestaurantList(List<LunchRestaurant> lunchRestaurantList) {
-        mLunchRestaurantList = lunchRestaurantList;
-    }
-
-    public void setPlaceDetailResult(Result result) {
-        mResult = result;
-    }
-
-    public void setListSize(int listSize) {
-        mListSize = listSize;
     }
 
     @NonNull
@@ -54,7 +38,7 @@ public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerVie
 
     @Override
     public int getItemCount() {
-        return mListSize;
+        return mUserList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -66,16 +50,8 @@ public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerVie
         }
 
         public void bindViews(User user) {
-            for (LunchRestaurant lunchRestaurant : mLunchRestaurantList) {
-                if (user.getId().equals(lunchRestaurant.getUserId()) && lunchRestaurant.getName().equals(mResult.getName())) {
-
-                    binding.textViewUserName.setText(user.getName());
-                    if (user.getPhotoUrl() != null) {
-                        Glide.with(itemView).load(user.getPhotoUrl()).into(binding.viewUserPhoto);
-                    }
-
-                }
-            }
+            Glide.with(itemView).load(user.getPhotoUrl()).into(binding.viewUserPhoto);
+            binding.textViewUserName.setText(user.getName());
 
         }
     }
