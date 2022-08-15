@@ -14,18 +14,16 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.BuildConfig;
+import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityPlaceDetailBinding;
 import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.model.User;
-import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
+import com.hangyeollee.go4lunch.model.PlaceDetailActivityViewState;
 import com.hangyeollee.go4lunch.model.placedetailpojo.Result;
 import com.hangyeollee.go4lunch.utility.MyCalendar;
 import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.viewmodel.PlaceDetailActivityViewModel;
 import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
-
-import java.util.List;
 
 public class PlaceDetailActivity extends AppCompatActivity {
 
@@ -38,11 +36,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private Result mResult;
     private String placeId;
     private LunchRestaurant mLunchRestaurant;
-    private LunchRestaurant usersLunch;
     private LikedRestaurant mLikedRestaurant;
-
-    private List<LunchRestaurant> mLunchRestaurantList;
-    private List<User> mUserList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,25 +51,20 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         toolBarSetup();
         fetchPlaceDetailData();
-
-        mViewModel.getPlaceDetailLiveData().observe(this, new Observer<MyPlaceDetailData>() {
-            @Override
-            public void onChanged(MyPlaceDetailData myPlaceDetailData) {
-                mResult = myPlaceDetailData.getResult();
-                photoRatingTextsSetup(mResult);
-                listenerSetup(mResult);
-            }
-        });
-
         mViewModel.fetchMediatorLivedata();
 
-        mViewModel.getMediatorLiveData().observe(this, new Observer<List<User>>() {
+        mViewModel.getMediatorLiveData().observe(this, new Observer<PlaceDetailActivityViewState>() {
             @Override
-            public void onChanged(List<User> userList) {
-                mAdapter.submitList(userList);
+            public void onChanged(PlaceDetailActivityViewState placeDetailActivityViewState) {
+                basicViewSetup(placeDetailActivityViewState.getResult());
+                listenerSetup(placeDetailActivityViewState.getResult());
+
+                mAdapter.submitList(placeDetailActivityViewState.getUserList());
                 binding.recyclerViewWorkmates.setAdapter(mAdapter);
+
             }
         });
+
 
     }
 
@@ -94,7 +83,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
         mViewModel.fetchPlaceDetailData(placeId);
     }
 
-    private void photoRatingTextsSetup(@Nullable Result result) {
+    private void basicViewSetup(PlaceDetailActivityViewState placeDetailActivityViewState) {
+        Result result = placeDetailActivityViewState.getResult();
 
         if (result.getPhotos() != null) {
             Glide.with(PlaceDetailActivity.this)
@@ -111,9 +101,23 @@ public class PlaceDetailActivity extends AppCompatActivity {
         if (result.getRating() != null) {
             binding.ratingBar.setRating(result.getRating().floatValue());
         }
+
+        if (placeDetailActivityViewState.getSelectedAsLikedRestaurant()) {
+            binding.buttonLike.setBackgroundColor(getResources().getColor(R.color.orange));
+        } else {
+            binding.buttonLike.setBackgroundColor(getResources().getColor(R.color.white));
+        }
+
+        if (placeDetailActivityViewState.getSelectedAsLunchRestaurant()) {
+//                    binding.floatingActionBtn.setBackgroundColor(getResources().getColor(R.color.orange));
+        } else {
+//                    binding.floatingActionBtn.setBackgroundColor(getResources().getColor(R.color.black));
+        }
     }
 
-    private void listenerSetup(Result result) {
+    private void listenerSetup(PlaceDetailActivityViewState placeDetailActivityViewState) {
+        Result result = placeDetailActivityViewState.getResult();
+
         if (result.getInternationalPhoneNumber() != null) {
             binding.buttonCall.setOnClickListener(i -> {
                 Intent callIntent = new Intent(Intent.ACTION_DIAL);
@@ -121,33 +125,53 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 startActivity(callIntent);
             });
         } else {
-            Toast.makeText(PlaceDetailActivity.this, "Couldn't find restaurant phone number", Toast.LENGTH_SHORT)
-                    .show();
+            binding.buttonCall.setOnClickListener(i -> {
+                Toast.makeText(PlaceDetailActivity.this, "Couldn't find restaurant phone number", Toast.LENGTH_SHORT)
+                        .show();
+            });
         }
 
+        if (result.getWebsite() != null) {
+            binding.buttonLike.setOnClickListener(i -> {
+                Intent websiteIntent = new Intent(Intent.ACTION_VIEW);
+                websiteIntent.setData(Uri.parse(result.getWebsite()));
+                startActivity(websiteIntent);
+            });
+        } else {
+            binding.buttonLike.setOnClickListener(i -> {
+                Toast.makeText(this, "Website not available", Toast.LENGTH_SHORT).show();
+            });
+        }
 
         binding.buttonLike.setOnClickListener(listener -> {
-            mLikedRestaurant = new LikedRestaurant(placeId, result.getName());
+            if (placeDetailActivityViewState.getSelectedAsLikedRestaurant()) {
+                Toast.makeText(this, result.getName() + "is already liked", Toast.LENGTH_SHORT).show();
+            } else {
+                mLikedRestaurant = new LikedRestaurant(placeId, result.getName());
+                mViewModel.setLikedRestaurant(mLikedRestaurant);
 
-            mViewModel.setLikedRestaurant(mLikedRestaurant);
-
-            Toast.makeText(this, result.getName() + " has added to liked restaurant list", Toast.LENGTH_SHORT)
-                    .show();
+                Toast.makeText(this, result.getName() + " has added to liked restaurant list", Toast.LENGTH_SHORT)
+                        .show();
+            }
         });
 
-        String userId = mViewModel.getCurrentUser().getUid();
-
-        mLunchRestaurant = new LunchRestaurant(placeId, userId, result.getName(), MyCalendar.getCurrentDate());
-
-        SharedPreferences.Editor mSharedPrefEditor = new MySharedPreferenceUtil(this).getInstanceOfEditor();
-
         binding.floatingActionBtn.setOnClickListener(listener -> {
-            mViewModel.setLunchRestaurant(mLunchRestaurant);
-            Toast.makeText(this, "you decided to go " + result.getName() + " for lunch", Toast.LENGTH_SHORT)
-                    .show();
+            if (placeDetailActivityViewState.getSelectedAsLunchRestaurant()) {
+                Toast.makeText(this, "You already decided to go " + result.getName(), Toast.LENGTH_SHORT).show();
+            } else {
+                mLunchRestaurant = new LunchRestaurant(placeId, mViewModel.getCurrentUser().getUid(), result.getName(), MyCalendar.getCurrentDate());
 
-            mSharedPrefEditor.putString("LunchRestaurant", mLunchRestaurant.getName());
-            mSharedPrefEditor.commit();
+                mViewModel.setLunchRestaurant(mLunchRestaurant);
+
+                Toast.makeText(this, "you will go to " + result.getName() + " for lunch", Toast.LENGTH_SHORT)
+                        .show();
+
+                SharedPreferences.Editor mSharedPrefEditor = new MySharedPreferenceUtil(this).getInstanceOfEditor();
+
+                mSharedPrefEditor.putString("LunchRestaurant", mLunchRestaurant.getName());
+                mSharedPrefEditor.commit();
+            }
+
         });
     }
 
