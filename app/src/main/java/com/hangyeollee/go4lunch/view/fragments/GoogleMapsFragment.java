@@ -9,9 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -34,7 +31,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hangyeollee.go4lunch.R;
-import com.hangyeollee.go4lunch.databinding.FragmentGoogleMapsBinding;
 import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.model.autocompletepojo.Prediction;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
@@ -45,7 +41,7 @@ import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
 
 import java.util.List;
 
-public class GoogleMapsFragment extends Fragment {
+public class GoogleMapsFragment extends SupportMapFragment {
 
     private String mUserLocation;
     private List<Result> nearBySearchResultList;
@@ -55,17 +51,13 @@ public class GoogleMapsFragment extends Fragment {
     private MapsAndListSharedViewModel mViewModel;
 
     private GoogleMap mGoogleMap;
-    private FragmentGoogleMapsBinding binding;
 
     private ActivityResultLauncher<String> requestPermissionLauncher;
 
-
     @SuppressLint("MissingPermission")
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentGoogleMapsBinding.inflate(inflater, container, false);
-        Log.i("GoogleMapsFragment", "onCreateView launched");
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MapsAndListSharedViewModel.class);
 
@@ -95,22 +87,16 @@ public class GoogleMapsFragment extends Fragment {
             Log.d("Permission", "is not granted launch permission dialog");
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
-
-
-        return binding.getRoot();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         mViewModel.stopLocationRequest();
-        binding = null;
     }
 
     private void onMapReady() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
+        getMapAsync(new OnMapReadyCallback() {
                 @SuppressLint("MissingPermission")
                 @Override
                 public void onMapReady(@NonNull GoogleMap googleMap) {
@@ -132,7 +118,6 @@ public class GoogleMapsFragment extends Fragment {
 
                 }
             });
-        }
     }
 
     private void setListenerOnMarker() {
@@ -154,8 +139,6 @@ public class GoogleMapsFragment extends Fragment {
     }
 
     private void getLiveLocationAndFetchNearbySearchData() {
-        binding.progressBar.setVisibility(View.INVISIBLE);
-
         mViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), new Observer<Location>() {
             @Override
             public void onChanged(Location location) {
