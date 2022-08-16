@@ -64,7 +64,7 @@ public class LogInActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(FirebaseViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(FirebaseViewModel.class);
 
         mCallbackManager = CallbackManager.Factory.create();
 

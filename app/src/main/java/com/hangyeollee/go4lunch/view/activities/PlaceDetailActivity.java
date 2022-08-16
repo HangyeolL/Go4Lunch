@@ -45,7 +45,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
         binding = ActivityPlaceDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(this)).get(PlaceDetailActivityViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(PlaceDetailActivityViewModel.class);
 
         mAdapter = new PlaceDetailActivityWorkmatesRecyclerViewAdapter();
 

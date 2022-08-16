@@ -29,23 +29,24 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     /**
      * Singleton
      */
-    public static ViewModelFactory getInstance(Context context) {
+    public static ViewModelFactory getInstance() {
 
         if (mViewModelFactory == null) {
             synchronized (ViewModelFactory.class) {
-                mViewModelFactory = new ViewModelFactory(context);
+                mViewModelFactory = new ViewModelFactory();
             }
         }
         return mViewModelFactory;
     }
 
-    private ViewModelFactory(Context context) {
+    private ViewModelFactory() {
+        mApplication = MainApplication.getInstance();
         mNearbySearchDataRepository = new NearbySearchDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
         mPlaceDetailDataRepository = new PlaceDetailDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
         mAutoCompleteDataRepository = new AutoCompleteDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
 
-        mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(context.getApplicationContext()));
         mFirebaseRepository = new FirebaseRepository(MyFirestoreUtil.getFirestoreInstance());
+        mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(mApplication));
     }
 
     @NonNull

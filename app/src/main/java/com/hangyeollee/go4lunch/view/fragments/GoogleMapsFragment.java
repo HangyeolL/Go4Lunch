@@ -67,7 +67,7 @@ public class GoogleMapsFragment extends Fragment {
         binding = FragmentGoogleMapsBinding.inflate(inflater, container, false);
         Log.i("GoogleMapsFragment", "onCreateView launched");
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance(getActivity())).get(MapsAndListSharedViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MapsAndListSharedViewModel.class);
 
         // Register the permissions callback, which handles the user's response to the
         // system permissions dialog. Save the return value, an instance of
