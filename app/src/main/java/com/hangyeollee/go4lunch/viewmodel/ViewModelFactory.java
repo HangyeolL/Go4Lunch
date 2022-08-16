@@ -1,26 +1,32 @@
 package com.hangyeollee.go4lunch.viewmodel;
 
-import android.content.Context;
+import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.hangyeollee.go4lunch.MainApplication;
+import com.hangyeollee.go4lunch.api.GoogleMapsApi;
 import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
-import com.hangyeollee.go4lunch.utility.MyFirestoreUtil;
 import com.hangyeollee.go4lunch.utility.MyRetrofitBuilder;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
+    private final Application mApplication;
+    private final FirebaseAuth firebaseAuth;
+    private final FirebaseFirestore firebaseFirestore;
+
     private NearbySearchDataRepository mNearbySearchDataRepository;
     private PlaceDetailDataRepository mPlaceDetailDataRepository;
     private AutoCompleteDataRepository mAutoCompleteDataRepository;
-
     private LocationRepository mLocationRepository;
     private FirebaseRepository mFirebaseRepository;
 
@@ -41,12 +47,15 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private ViewModelFactory() {
         mApplication = MainApplication.getInstance();
-        mNearbySearchDataRepository = new NearbySearchDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
-        mPlaceDetailDataRepository = new PlaceDetailDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
-        mAutoCompleteDataRepository = new AutoCompleteDataRepository(MyRetrofitBuilder.getGoogleMapsApi());
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseFirestore = FirebaseFirestore.getInstance();
 
-        mFirebaseRepository = new FirebaseRepository(MyFirestoreUtil.getFirestoreInstance());
+        GoogleMapsApi googleMapsApi = MyRetrofitBuilder.getGoogleMapsApi();
+        mNearbySearchDataRepository = new NearbySearchDataRepository(googleMapsApi);
+        mPlaceDetailDataRepository = new PlaceDetailDataRepository(googleMapsApi);
+        mAutoCompleteDataRepository = new AutoCompleteDataRepository(googleMapsApi);
         mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(mApplication));
+        mFirebaseRepository = new FirebaseRepository(firebaseAuth, firebaseFirestore);
     }
 
     @NonNull
