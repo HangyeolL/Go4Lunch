@@ -56,8 +56,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
         mViewModel.getMediatorLiveData().observe(this, new Observer<PlaceDetailActivityViewState>() {
             @Override
             public void onChanged(PlaceDetailActivityViewState placeDetailActivityViewState) {
-                basicViewSetup(placeDetailActivityViewState.getResult());
-                listenerSetup(placeDetailActivityViewState.getResult());
+                basicViewSetup(placeDetailActivityViewState);
+                listenerSetup(placeDetailActivityViewState);
 
                 mAdapter.submitList(placeDetailActivityViewState.getUserList());
                 binding.recyclerViewWorkmates.setAdapter(mAdapter);
