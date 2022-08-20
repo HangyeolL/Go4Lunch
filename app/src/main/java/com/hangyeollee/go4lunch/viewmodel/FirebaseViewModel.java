@@ -20,7 +20,7 @@ public class FirebaseViewModel extends ViewModel {
     }
 
     public FirebaseAuth getFirebaseInstance() {
-        return mFirebaseRepository.getFirebaseAuthInstance();
+        return mFirebaseRepository.getFirebaseInstance();
     }
 
     public FirebaseUser getCurrentUser() {

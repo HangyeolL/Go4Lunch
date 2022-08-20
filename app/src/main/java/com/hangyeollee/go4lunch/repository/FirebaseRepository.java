@@ -39,15 +39,16 @@ public class FirebaseRepository {
     private MutableLiveData<List<User>> mUserListWithLunch = new MutableLiveData<>();
 
     // Dependency Injection for unit test purpose
-    public FirebaseRepository(
-        FirebaseAuth firebaseAuth,
-        FirebaseFirestore firestore
-    ) {
-        mAuth = mAuth;
+    public FirebaseRepository(FirebaseAuth firebaseAuth, FirebaseFirestore firestore) {
+        mAuth = firebaseAuth;
         mFirestore = firestore;
     }
 
     // -----------FirebaseAuth method starts----------- //
+    public FirebaseAuth getFirebaseInstance() {
+        return mAuth;
+    }
+
 
     public FirebaseUser getCurrentUser() {
         return mAuth.getCurrentUser();

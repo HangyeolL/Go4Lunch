@@ -49,8 +49,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         mApplication = MainApplication.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
-
         GoogleMapsApi googleMapsApi = MyRetrofitBuilder.getGoogleMapsApi();
+
         mNearbySearchDataRepository = new NearbySearchDataRepository(googleMapsApi);
         mPlaceDetailDataRepository = new PlaceDetailDataRepository(googleMapsApi);
         mAutoCompleteDataRepository = new AutoCompleteDataRepository(googleMapsApi);
