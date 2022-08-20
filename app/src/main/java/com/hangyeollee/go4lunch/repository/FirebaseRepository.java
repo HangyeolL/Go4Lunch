@@ -22,14 +22,13 @@ import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.utility.MyCalendar;
-import com.hangyeollee.go4lunch.utility.MyFirestoreUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseRepository {
 
-    private static FirebaseAuth FIREBASEAUTH;
+    private FirebaseAuth mAuth;
     private FirebaseFirestore mFirestore;
 
     private MutableLiveData<List<User>> mUserListMutableLiveData = new MutableLiveData<>();
@@ -40,21 +39,18 @@ public class FirebaseRepository {
     private MutableLiveData<List<User>> mUserListWithLunch = new MutableLiveData<>();
 
     // Dependency Injection for unit test purpose
-    public FirebaseRepository(FirebaseFirestore firestore) {
+    public FirebaseRepository(
+        FirebaseAuth firebaseAuth,
+        FirebaseFirestore firestore
+    ) {
+        mAuth = mAuth;
         mFirestore = firestore;
     }
 
     // -----------FirebaseAuth method starts----------- //
 
-    public FirebaseAuth getFirebaseAuthInstance() {
-        if (FIREBASEAUTH != null) {
-            return FIREBASEAUTH;
-        }
-        return FirebaseAuth.getInstance();
-    }
-
     public FirebaseUser getCurrentUser() {
-        return getFirebaseAuthInstance().getCurrentUser();
+        return mAuth.getCurrentUser();
     }
 
     public void updateUserName(String newName) {
@@ -72,25 +68,21 @@ public class FirebaseRepository {
     }
 
     public void signOutFromFirebaseAuth() {
-        getFirebaseAuthInstance().signOut();
+        mAuth.signOut();
     }
 
     // -----------Firestore method starts----------- //
 
-    public FirebaseFirestore getFirestoreInstance() {
-        return MyFirestoreUtil.getFirestoreInstance();
-    }
-
     public CollectionReference getUsersCollection() {
-        return getFirestoreInstance().collection("users");
+        return mFirestore.collection("users");
     }
 
     public CollectionReference getDateCollection() {
-        return getFirestoreInstance().collection(MyCalendar.getCurrentDate());
+        return mFirestore.collection(MyCalendar.getCurrentDate());
     }
 
     public CollectionReference getLikedRestaurantCollection() {
-        return getFirestoreInstance().collection("likedRestaurant");
+        return mFirestore.collection("likedRestaurant");
     }
 
     public void saveUserInFirestore() {
