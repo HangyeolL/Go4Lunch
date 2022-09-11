@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view.fragments;
+package com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,9 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.BuildConfig;
-import com.hangyeollee.go4lunch.databinding.ListViewFragmentListItemBinding;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
-import com.hangyeollee.go4lunch.view.activities.PlaceDetailActivity;
+import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
 
 import java.util.List;
 

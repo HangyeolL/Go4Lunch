@@ -62,7 +62,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.activities.LogInActivity"
+            android:name=".view.LogInActivity.LogInActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -70,15 +70,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.activities.MainActivity"
+            android:name=".view.MainHomeActivity.MainHomeActivity"
             android:exported="true"
-            android:parentActivityName=".view.activities.LogInActivity"
+            android:parentActivityName=".view.LogInActivity.LogInActivity"
             android:theme="@style/Theme.Go4Lunch.MainActivityTheme" />
         <activity
-            android:name=".view.activities.PlaceDetailActivity"
-            android:parentActivityName=".view.activities.MainActivity" />
-        <activity android:name=".view.activities.SettingsActivity"
-            android:parentActivityName=".view.activities.MainActivity"/>
+            android:name=".view.PlaceDetailActivity.PlaceDetailActivity"
+            android:parentActivityName=".view.MainHomeActivity.MainHomeActivity" />
+        <activity android:name=".view.SettingsActivity.SettingsActivity"
+            android:parentActivityName=".view.MainHomeActivity.MainHomeActivity"/>
 
         <receiver android:name=".utility.AlarmReceiver"/>
     </application>

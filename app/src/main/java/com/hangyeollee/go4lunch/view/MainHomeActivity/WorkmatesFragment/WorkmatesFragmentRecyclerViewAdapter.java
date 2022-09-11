@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view.fragments;
+package com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -9,10 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.hangyeollee.go4lunch.databinding.WorkmatesFragmentListItemBinding;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
-import com.hangyeollee.go4lunch.view.activities.PlaceDetailActivity;
+import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view.activities;
+package com.hangyeollee.go4lunch.view.LogInActivity;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -39,14 +39,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.hangyeollee.go4lunch.R;
-import com.hangyeollee.go4lunch.databinding.ActivityLogInBinding;
-import com.hangyeollee.go4lunch.viewmodel.FirebaseViewModel;
-import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.MainHomeActivity;
+import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 import java.util.Collections;
 
 public class LogInActivity extends AppCompatActivity {
-    // Todo : I wanna show SnackBar at MainActivity to inform users, should I code here or in MainActivity ?
+    // Todo : I wanna show SnackBar at MainHomeActivity to inform users, should I code here or in MainHomeActivity ?
     // Todo : When pressing back button from the phone either the one from the activity, it should go back to previous activity
     private ActivityLogInBinding binding;
 
@@ -83,10 +82,10 @@ public class LogInActivity extends AppCompatActivity {
     }
 
     /**
-     * Start the next activity(MainActivity)
+     * Start the next activity(MainHomeActivity)
      */
     private void startMainActivity() {
-        startActivity(new Intent(LogInActivity.this, MainActivity.class));
+        startActivity(new Intent(LogInActivity.this, MainHomeActivity.class));
         finish();
     }
 

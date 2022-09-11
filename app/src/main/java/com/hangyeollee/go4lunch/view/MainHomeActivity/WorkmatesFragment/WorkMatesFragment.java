@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view.fragments;
+package com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,8 +14,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.hangyeollee.go4lunch.databinding.FragmentWorkmatesBinding;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
-import com.hangyeollee.go4lunch.viewmodel.FirebaseViewModel;
-import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
+import com.hangyeollee.go4lunch.view.LogInActivity.FirebaseViewModel;
+import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 import java.util.List;
 

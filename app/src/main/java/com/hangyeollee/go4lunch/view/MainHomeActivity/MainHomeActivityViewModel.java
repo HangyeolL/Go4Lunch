@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.viewmodel;
+package com.hangyeollee.go4lunch.view.MainHomeActivity;
 
 import android.location.Location;
 
@@ -11,13 +11,13 @@ import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 
-public class MainActivityViewModel extends ViewModel {
+public class MainHomeActivityViewModel extends ViewModel {
 
     private FirebaseRepository mFirebaseRepository;
     private AutoCompleteDataRepository mAutoCompleteDataRepository;
     private LocationRepository mLocationRepository;
 
-    public MainActivityViewModel(FirebaseRepository firebaseRepository, AutoCompleteDataRepository autoCompleteDataRepository, LocationRepository locationRepository) {
+    public MainHomeActivityViewModel(FirebaseRepository firebaseRepository, AutoCompleteDataRepository autoCompleteDataRepository, LocationRepository locationRepository) {
         mFirebaseRepository = firebaseRepository;
         mAutoCompleteDataRepository = autoCompleteDataRepository;
         mLocationRepository = locationRepository;

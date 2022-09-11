@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="450dp"
         android:background="@drawable/main_background_image"
-        tools:context=".view.activities.LogInActivity">
+        tools:context=".view.LogInActivity.LogInActivity">
 
         <ImageView
             android:id="@+id/imageView_icon"

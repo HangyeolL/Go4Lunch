@@ -11,7 +11,7 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.hangyeollee.go4lunch.R;
-import com.hangyeollee.go4lunch.view.activities.MainActivity;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.MainHomeActivity;
 
 public class MyNotificationUtil {
 
@@ -39,7 +39,7 @@ public class MyNotificationUtil {
             getInstance().createNotificationChannel(channel);
         }
 
-        Intent notificationIntent = new Intent(mContext, MainActivity.class);
+        Intent notificationIntent = new Intent(mContext, MainHomeActivity.class);
         PendingIntent pendingNotificationIntent = PendingIntent.getActivity(mContext, 1, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         Log.e("LunchRestau", mSharedPref.getString("LunchRestaurant", ""));

@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view.activities;
+package com.hangyeollee.go4lunch.view.MainHomeActivity;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -33,25 +33,23 @@ import com.hangyeollee.go4lunch.databinding.ActivityMainBinding;
 import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBinding;
 import com.hangyeollee.go4lunch.utility.AlarmReceiver;
 import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
-import com.hangyeollee.go4lunch.view.fragments.GoogleMapsFragment;
-import com.hangyeollee.go4lunch.view.fragments.ListViewFragment;
-import com.hangyeollee.go4lunch.view.fragments.WorkMatesFragment;
-import com.hangyeollee.go4lunch.viewmodel.MainActivityViewModel;
-import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
+import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivity;
+import com.hangyeollee.go4lunch.view.SettingsActivity.SettingsActivity;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.GoogleMapsFragment;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment.ListViewFragment;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment.WorkMatesFragment;
+import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 import java.util.Calendar;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainHomeActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
-    private MainActivityViewModel mViewModel;
-
-    private GoogleSignInClient mSignInClient;
+    private MainHomeActivityViewModel mViewModel;
 
     private static final int NUM_PAGES = 3;
-    private FragmentStateAdapter mFragmentStateAdapter;
 
     private SharedPreferences mSharedPref;
 
@@ -62,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MainActivityViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MainHomeActivityViewModel.class);
 
         mSharedPref = new MySharedPreferenceUtil(this).getInstanceOfSharedPref();
 
@@ -83,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, 12);
-            calendar.set(Calendar.MINUTE,00);
-            calendar.set(Calendar.SECOND, 00);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
 
             Intent alarmIntent = new Intent(this, AlarmReceiver.class);
             PendingIntent pendingAlarmIntent = PendingIntent.getBroadcast(this, 1, alarmIntent, PendingIntent.FLAG_IMMUTABLE);
@@ -105,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void viewPagerSetup() {
-        mFragmentStateAdapter = new ViewPagerAdapter(this);
+        FragmentStateAdapter mFragmentStateAdapter = new ViewPagerAdapter(this);
         binding.viewPager.setAdapter(mFragmentStateAdapter);
 
         binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -152,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         switch (mViewModel.getCurrentUser().getProviderId()) {
             case "google.com":
                 GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
-                mSignInClient = GoogleSignIn.getClient(this, gso);
+                GoogleSignInClient mSignInClient = GoogleSignIn.getClient(this, gso);
                 mSignInClient.signOut();
                 break;
             case "facebook.com":
@@ -167,15 +165,15 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigationView_yourLunch:
-                        Toast.makeText(MainActivity.this,mSharedPref.getString("LunchRestaurant", ""), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainHomeActivity.this,mSharedPref.getString("LunchRestaurant", ""), Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.navigationView_settings:
-                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                        startActivity(new Intent(MainHomeActivity.this, SettingsActivity.class));
                         break;
                     case R.id.navigationView_logout:
                         signOutAccordingToProviders();
                         mViewModel.signOutFromFirebaseAuth();
-                        startActivity(new Intent(MainActivity.this, LogInActivity.class));
+                        startActivity(new Intent(MainHomeActivity.this, LogInActivity.class));
                         finish();
                         break;
                 }
@@ -228,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * ViewPagerAdapter for MainActivity
+     * ViewPagerAdapter for MainHomeActivity
      */
     private class ViewPagerAdapter extends FragmentStateAdapter {
         public ViewPagerAdapter(FragmentActivity fa) {

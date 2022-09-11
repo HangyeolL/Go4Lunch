@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view.fragments;
+package com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -35,9 +35,9 @@ import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.model.autocompletepojo.Prediction;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
-import com.hangyeollee.go4lunch.view.activities.PlaceDetailActivity;
-import com.hangyeollee.go4lunch.viewmodel.MapsAndListSharedViewModel;
-import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
+import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsAndListSharedViewModel;
+import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 import java.util.List;
 
@@ -52,8 +52,6 @@ public class GoogleMapsFragment extends SupportMapFragment {
 
     private GoogleMap mGoogleMap;
 
-    private ActivityResultLauncher<String> requestPermissionLauncher;
-
     @SuppressLint("MissingPermission")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -64,7 +62,9 @@ public class GoogleMapsFragment extends SupportMapFragment {
         // Register the permissions callback, which handles the user's response to the
         // system permissions dialog. Save the return value, an instance of
         // ActivityResultLauncher, as an instance variable.
-        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
+        // Permission is granted. Continue the action or workflow in your
+        // app.
+        ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
             @Override
             public void onActivityResult(Boolean isGranted) {
                 if (isGranted) {
@@ -218,8 +218,7 @@ public class GoogleMapsFragment extends SupportMapFragment {
         Drawable markerIconDrawable = getResources().getDrawable(R.drawable.ic_baseline_local_dining_24);
         Drawable wrappedDrawable = DrawableCompat.wrap(markerIconDrawable);
         DrawableCompat.setTint(wrappedDrawable, getResources().getColor(R.color.orange));
-        BitmapDescriptor markerIcon = mViewModel.makeDrawableIntoBitmap(wrappedDrawable);
-        return markerIcon;
+        return mViewModel.makeDrawableIntoBitmap(wrappedDrawable);
     }
 
 }

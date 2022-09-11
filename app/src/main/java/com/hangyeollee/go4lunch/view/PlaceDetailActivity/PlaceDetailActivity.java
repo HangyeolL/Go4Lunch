@@ -1,7 +1,10 @@
-package com.hangyeollee.go4lunch.view.activities;
+package com.hangyeollee.go4lunch.view.PlaceDetailActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -18,12 +22,10 @@ import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityPlaceDetailBinding;
 import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.model.PlaceDetailActivityViewState;
 import com.hangyeollee.go4lunch.model.placedetailpojo.Result;
 import com.hangyeollee.go4lunch.utility.MyCalendar;
 import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
-import com.hangyeollee.go4lunch.viewmodel.PlaceDetailActivityViewModel;
-import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
+import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 public class PlaceDetailActivity extends AppCompatActivity {
 
@@ -33,7 +35,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     private PlaceDetailActivityWorkmatesRecyclerViewAdapter mAdapter;
 
-    private Result mResult;
     private String placeId;
     private LunchRestaurant mLunchRestaurant;
     private LikedRestaurant mLikedRestaurant;
@@ -102,17 +103,23 @@ public class PlaceDetailActivity extends AppCompatActivity {
             binding.ratingBar.setRating(result.getRating().floatValue());
         }
 
+        Drawable btnLikeDrawable = DrawableCompat.wrap(getResources().getDrawable(R.drawable.ic_baseline_star_24));
+
         if (placeDetailActivityViewState.getSelectedAsLikedRestaurant()) {
-            binding.buttonLike.setBackgroundColor(getResources().getColor(R.color.orange));
+            DrawableCompat.setTint(btnLikeDrawable, getResources().getColor(R.color.orange));
         } else {
-            binding.buttonLike.setBackgroundColor(getResources().getColor(R.color.white));
+            DrawableCompat.setTint(btnLikeDrawable, getResources().getColor(R.color.white));
         }
+        binding.buttonLike.setCompoundDrawables(null, btnLikeDrawable, null, null);
+
+        Drawable fabDrawable = getResources().getDrawable(R.drawable.ic_baseline_check_24).getConstantState().newDrawable();
 
         if (placeDetailActivityViewState.getSelectedAsLunchRestaurant()) {
-//                    binding.floatingActionBtn.setBackgroundColor(getResources().getColor(R.color.orange));
+            fabDrawable.mutate().setColorFilter(getResources().getColor(R.color.orange), PorterDuff.Mode.MULTIPLY);
         } else {
-//                    binding.floatingActionBtn.setBackgroundColor(getResources().getColor(R.color.black));
+            fabDrawable.mutate().setColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY);
         }
+        binding.floatingActionBtn.setImageDrawable(fabDrawable);
     }
 
     private void listenerSetup(PlaceDetailActivityViewState placeDetailActivityViewState) {

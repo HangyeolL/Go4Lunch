@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view.activities;
+package com.hangyeollee.go4lunch.view.SettingsActivity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,8 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.databinding.ActivitySettingsBinding;
 import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
-import com.hangyeollee.go4lunch.viewmodel.SettingsActivityViewModel;
-import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
+import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 public class SettingsActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.viewmodel;
+package com.hangyeollee.go4lunch.view.MainHomeActivity;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

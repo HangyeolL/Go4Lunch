@@ -6,5 +6,5 @@
     android:id="@+id/recyclerView_workmates"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.fragments.WorkMatesFragment"
+    tools:context=".view.MainHomeActivity.WorkmatesFragment.WorkMatesFragment"
     tools:listitem="@layout/workmates_fragment_list_item" />

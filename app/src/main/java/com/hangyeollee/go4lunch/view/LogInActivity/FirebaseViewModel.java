@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.viewmodel;
+package com.hangyeollee.go4lunch.view.LogInActivity;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;

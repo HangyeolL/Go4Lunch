@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.viewmodel;
+package com.hangyeollee.go4lunch.view;
 
 import android.app.Application;
 
@@ -17,6 +17,11 @@ import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
 import com.hangyeollee.go4lunch.utility.MyRetrofitBuilder;
+import com.hangyeollee.go4lunch.view.LogInActivity.FirebaseViewModel;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.MainHomeActivityViewModel;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsAndListSharedViewModel;
+import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivityViewModel;
+import com.hangyeollee.go4lunch.view.SettingsActivity.SettingsActivityViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
@@ -68,8 +73,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new PlaceDetailActivityViewModel(mPlaceDetailDataRepository, mFirebaseRepository);
         } else if (modelClass.isAssignableFrom(FirebaseViewModel.class)) {
             return (T) new FirebaseViewModel(mFirebaseRepository);
-        } else if (modelClass.isAssignableFrom(MainActivityViewModel.class)) {
-            return (T) new MainActivityViewModel(mFirebaseRepository, mAutoCompleteDataRepository, mLocationRepository);
+        } else if (modelClass.isAssignableFrom(MainHomeActivityViewModel.class)) {
+            return (T) new MainHomeActivityViewModel(mFirebaseRepository, mAutoCompleteDataRepository, mLocationRepository);
         } else if (modelClass.isAssignableFrom(SettingsActivityViewModel.class)) {
             return (T) new SettingsActivityViewModel(mFirebaseRepository);
         }

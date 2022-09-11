@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view.activities;
+package com.hangyeollee.go4lunch.view.PlaceDetailActivity;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -7,12 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.hangyeollee.go4lunch.databinding.PlaceDetailActivityWorkmatesJoiningListItemBinding;
-import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
-import com.hangyeollee.go4lunch.model.placedetailpojo.Result;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<PlaceDetailActivityWorkmatesRecyclerViewAdapter.ViewHolder> {

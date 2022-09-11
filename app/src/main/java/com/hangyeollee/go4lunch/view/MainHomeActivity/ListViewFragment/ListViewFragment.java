@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view.fragments;
+package com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -24,8 +24,8 @@ import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.model.autocompletepojo.Prediction;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
-import com.hangyeollee.go4lunch.viewmodel.MapsAndListSharedViewModel;
-import com.hangyeollee.go4lunch.viewmodel.ViewModelFactory;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsAndListSharedViewModel;
+import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.List;

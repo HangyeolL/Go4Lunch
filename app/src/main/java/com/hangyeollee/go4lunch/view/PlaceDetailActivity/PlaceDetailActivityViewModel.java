@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.viewmodel;
+package com.hangyeollee.go4lunch.view.PlaceDetailActivity;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
@@ -7,10 +7,8 @@ import androidx.lifecycle.ViewModel;
 import com.google.firebase.auth.FirebaseUser;
 import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.model.PlaceDetailActivityViewState;
 import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
-import com.hangyeollee.go4lunch.model.placedetailpojo.Result;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
 
@@ -93,7 +91,6 @@ public class PlaceDetailActivityViewModel extends ViewModel {
             );
         });
 
-
     }
 
     private void combineDataToMediatorLivedata(MyPlaceDetailData myPlaceDetailData, List<User> userList, List<LunchRestaurant> lunchRestaurantList, List<LikedRestaurant> likedRestaurantList) {
@@ -129,7 +126,6 @@ public class PlaceDetailActivityViewModel extends ViewModel {
                 break;
             }
         }
-
 
         PlaceDetailActivityViewState placeDetailActivityViewState =
                 new PlaceDetailActivityViewState(sortedUserList, isSelectedAsLikedRestaurant,isSelectedAsLunchRestaurant, myPlaceDetailData.getResult());
