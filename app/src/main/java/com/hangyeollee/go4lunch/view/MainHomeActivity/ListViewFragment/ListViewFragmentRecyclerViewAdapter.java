@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.BuildConfig;
+import com.hangyeollee.go4lunch.databinding.ListViewFragmentListItemBinding;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
 

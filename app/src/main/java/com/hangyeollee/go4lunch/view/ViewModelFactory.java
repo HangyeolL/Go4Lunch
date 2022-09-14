@@ -20,6 +20,7 @@ import com.hangyeollee.go4lunch.utility.MyRetrofitBuilder;
 import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivityViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MainHomeActivityViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsAndListSharedViewModel;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment.WorkmatesFragmentViewModel;
 import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivityViewModel;
 import com.hangyeollee.go4lunch.view.SettingsActivity.SettingsActivityViewModel;
 
@@ -67,14 +68,16 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
 
-        if (modelClass.isAssignableFrom(MapsAndListSharedViewModel.class)) {
+        if (modelClass.isAssignableFrom(LogInActivityViewModel.class)) {
+            return (T) new LogInActivityViewModel(mFirebaseRepository);
+        } else if (modelClass.isAssignableFrom(MapsAndListSharedViewModel.class)) {
             return (T) new MapsAndListSharedViewModel(mNearbySearchDataRepository, mLocationRepository, mAutoCompleteDataRepository);
+        } else if (modelClass.isAssignableFrom(WorkmatesFragmentViewModel.class)) {
+            return (T) new WorkmatesFragmentViewModel(mFirebaseRepository);
         } else if (modelClass.isAssignableFrom(PlaceDetailActivityViewModel.class)) {
             return (T) new PlaceDetailActivityViewModel(mPlaceDetailDataRepository, mFirebaseRepository);
-        } else if (modelClass.isAssignableFrom(LogInActivityViewModel.class)) {
-            return (T) new LogInActivityViewModel(mFirebaseRepository);
         } else if (modelClass.isAssignableFrom(MainHomeActivityViewModel.class)) {
-            return (T) new MainHomeActivityViewModel(mFirebaseRepository, mAutoCompleteDataRepository, mLocationRepository);
+            return (T) new MainHomeActivityViewModel(mFirebaseRepository,mLocationRepository);
         } else if (modelClass.isAssignableFrom(SettingsActivityViewModel.class)) {
             return (T) new SettingsActivityViewModel(mFirebaseRepository);
         }

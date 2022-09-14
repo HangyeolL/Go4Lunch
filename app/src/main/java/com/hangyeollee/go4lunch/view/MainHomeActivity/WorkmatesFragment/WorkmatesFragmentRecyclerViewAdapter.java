@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.hangyeollee.go4lunch.databinding.WorkmatesFragmentListItemBinding;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;

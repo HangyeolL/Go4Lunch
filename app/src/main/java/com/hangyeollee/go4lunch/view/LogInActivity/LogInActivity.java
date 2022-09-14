@@ -1,6 +1,10 @@
 package com.hangyeollee.go4lunch.view.LogInActivity;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.facebook.AccessToken;
@@ -54,6 +59,7 @@ public class LogInActivity extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> mActivityResultLauncher;
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,16 +87,15 @@ public class LogInActivity extends AppCompatActivity {
     }
 
     /**
-     * Start the next activity(MainHomeActivity)
+     * Start the next activity (MainHomeActivity)
      */
-    private void startMainActivity() {
+    private void startMainHomeActivity() {
         startActivity(new Intent(LogInActivity.this, MainHomeActivity.class));
         finish();
     }
 
     /**
      * Show snack bar at the bottom of logInActivity to inform users
-     *
      * @param message
      */
     private void showSnackBarInLogInActivity(String message) {
@@ -130,7 +135,6 @@ public class LogInActivity extends AppCompatActivity {
 
     /**
      * Retrieve the result of google log in activity
-     *
      * @param result
      */
     private void onGoogleLogInResult(ActivityResult result) {
@@ -167,7 +171,7 @@ public class LogInActivity extends AppCompatActivity {
             @Override
             public void onSuccess(AuthResult authResult) {
                 Log.d("firebaseAuthWithGoogle", ":success");
-                startMainActivity();
+                startMainHomeActivity();
             }
         }).addOnFailureListener(this, new OnFailureListener() {
             @Override
@@ -204,7 +208,6 @@ public class LogInActivity extends AppCompatActivity {
 
     /**
      * Link firebase and facebook log in
-     *
      * @param accessToken
      */
     private void firebaseAuthWithFacebook(AccessToken accessToken) {
@@ -215,7 +218,7 @@ public class LogInActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     // Firebase linking success
                     Log.e("firebaseAuthWithFb", ":success");
-                    startMainActivity();
+                    startMainHomeActivity();
                 } else {
                     // Firebase linking fails
                     Log.e("firebaseAuthWithFb", ":failure", task.getException());
@@ -223,5 +226,6 @@ public class LogInActivity extends AppCompatActivity {
             }
         });
     }
+
 
 }

@@ -1,17 +1,25 @@
 package com.hangyeollee.go4lunch.view.MainHomeActivity;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -63,6 +71,32 @@ public class MainHomeActivity extends AppCompatActivity {
         mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MainHomeActivityViewModel.class);
 
         mSharedPref = new MySharedPreferenceUtil(this).getInstanceOfSharedPref();
+
+        // Register the permissions callback, which handles the user's response to the
+        // system permissions dialog. Save the return value, an instance of
+        // ActivityResultLauncher, as an instance variable.
+        // Permission is granted. Continue the action or workflow in your
+        // app.
+        ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onActivityResult(Boolean isGranted) {
+                if (isGranted) {
+                    mViewModel.startLocationRequest();
+                } else {
+                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainHomeActivity.this);
+                    alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings").create().show();
+                }
+            }
+        });
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Log.d("Permission", "is already granted");
+            mViewModel.startLocationRequest();
+        } else {
+            Log.d("Permission", "is not granted launch permission dialog");
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
 
         alarmSetup();
         createLoggedInUserInFirestore();
@@ -224,6 +258,11 @@ public class MainHomeActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mViewModel.stopLocationRequest();
+    }
 
     /**
      * ViewPagerAdapter for MainHomeActivity

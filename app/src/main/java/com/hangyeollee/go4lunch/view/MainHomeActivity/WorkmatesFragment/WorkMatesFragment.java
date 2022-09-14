@@ -23,7 +23,7 @@ public class WorkMatesFragment extends Fragment {
 
     private FragmentWorkmatesBinding binding;
 
-    private LogInActivityViewModel mViewModel;
+    private WorkmatesFragmentViewModel mViewModel;
 
     private WorkmatesFragmentRecyclerViewAdapter mAdapter;
 
@@ -32,7 +32,7 @@ public class WorkMatesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentWorkmatesBinding.inflate(inflater, container, false);
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(LogInActivityViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(WorkmatesFragmentViewModel.class);
 
         mAdapter = new WorkmatesFragmentRecyclerViewAdapter();
 
