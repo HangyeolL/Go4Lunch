@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.hangyeollee.go4lunch.databinding.FragmentWorkmatesBinding;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
-import com.hangyeollee.go4lunch.view.LogInActivity.FirebaseViewModel;
+import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivityViewModel;
 import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class WorkMatesFragment extends Fragment {
 
     private FragmentWorkmatesBinding binding;
 
-    private FirebaseViewModel mViewModel;
+    private LogInActivityViewModel mViewModel;
 
     private WorkmatesFragmentRecyclerViewAdapter mAdapter;
 
@@ -32,7 +32,7 @@ public class WorkMatesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentWorkmatesBinding.inflate(inflater, container, false);
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(FirebaseViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(LogInActivityViewModel.class);
 
         mAdapter = new WorkmatesFragmentRecyclerViewAdapter();
 

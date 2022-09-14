@@ -41,7 +41,7 @@ import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 import java.util.List;
 
-public class GoogleMapsFragment extends SupportMapFragment {
+public class MapsFragment extends SupportMapFragment {
 
     private String mUserLocation;
     private List<Result> nearBySearchResultList;

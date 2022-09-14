@@ -39,17 +39,16 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.hangyeollee.go4lunch.R;
+import com.hangyeollee.go4lunch.databinding.ActivityLogInBinding;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MainHomeActivity;
 import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 import java.util.Collections;
 
 public class LogInActivity extends AppCompatActivity {
-    // Todo : I wanna show SnackBar at MainHomeActivity to inform users, should I code here or in MainHomeActivity ?
-    // Todo : When pressing back button from the phone either the one from the activity, it should go back to previous activity
     private ActivityLogInBinding binding;
 
-    private FirebaseViewModel mViewModel;
+    private LogInActivityViewModel mViewModel;
 
     private CallbackManager mCallbackManager;
 
@@ -63,7 +62,7 @@ public class LogInActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(FirebaseViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(LogInActivityViewModel.class);
 
         mCallbackManager = CallbackManager.Factory.create();
 

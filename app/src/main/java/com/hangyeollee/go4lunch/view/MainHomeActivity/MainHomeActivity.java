@@ -35,7 +35,7 @@ import com.hangyeollee.go4lunch.utility.AlarmReceiver;
 import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivity;
 import com.hangyeollee.go4lunch.view.SettingsActivity.SettingsActivity;
-import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.GoogleMapsFragment;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.MapsFragment;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment.ListViewFragment;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment.WorkMatesFragment;
 import com.hangyeollee.go4lunch.view.ViewModelFactory;
@@ -237,7 +237,7 @@ public class MainHomeActivity extends AppCompatActivity {
         public Fragment createFragment(int position) {
             switch (position) {
                 case 0:
-                    return new GoogleMapsFragment();
+                    return new MapsFragment();
                 case 1:
                     return new ListViewFragment();
                 case 2:

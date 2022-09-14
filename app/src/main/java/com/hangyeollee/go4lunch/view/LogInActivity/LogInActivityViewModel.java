@@ -11,11 +11,11 @@ import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 
 import java.util.List;
 
-public class FirebaseViewModel extends ViewModel {
+public class LogInActivityViewModel extends ViewModel {
 
     private FirebaseRepository mFirebaseRepository;
 
-    public FirebaseViewModel(FirebaseRepository firebaseRepository) {
+    public LogInActivityViewModel(FirebaseRepository firebaseRepository) {
         mFirebaseRepository = firebaseRepository;
     }
 
