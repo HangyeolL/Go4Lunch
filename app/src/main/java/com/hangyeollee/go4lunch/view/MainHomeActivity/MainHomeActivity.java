@@ -85,11 +85,6 @@ public class MainHomeActivity extends AppCompatActivity {
             public void onActivityResult(Boolean isGranted) {
                 if (isGranted) {
                     mViewModel.startLocationRequest();
-
-//                    FragmentManager manager = getSupportFragmentManager();
-//                    MapsFragment mapsFragment = (MapsFragment) manager.findFragmentById(R.id.viewPager);
-//                    mapsFragment.receiveLiveLocation(mViewModel.getLiveLocationLiveData());
-
                 } else {
                     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainHomeActivity.this);
                     alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings").create().show();

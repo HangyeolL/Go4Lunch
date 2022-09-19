@@ -44,10 +44,9 @@ public class MapsFragment extends SupportMapFragment {
     private List<Result> nearBySearchResultList;
     private List<Prediction> mPredictionList;
 
-    private LiveData<Location> mLocationLiveData;
     private boolean firstTime = false;
 
-    private MapsAndListSharedViewModel mViewModel;
+    private MapsFragmentViewModel mViewModel;
 
     private GoogleMap mGoogleMap;
 
@@ -56,7 +55,7 @@ public class MapsFragment extends SupportMapFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MapsAndListSharedViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MapsFragmentViewModel.class);
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d("Permission", "Is already granted");
@@ -65,42 +64,8 @@ public class MapsFragment extends SupportMapFragment {
             Log.d("Permission", "is not granted launch permission dialog");
         }
 
-
-//        // Register the permissions callback, which handles the user's response to the
-//        // system permissions dialog. Save the return value, an instance of
-//        // ActivityResultLauncher, as an instance variable.
-//        // Permission is granted. Continue the action or workflow in your
-//        // app.
-//        ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
-//            @Override
-//            public void onActivityResult(Boolean isGranted) {
-//                if (isGranted) {
-//                    // Permission is granted. Continue the action or workflow in your
-//                    // app.
-//                    mViewModel.startLocationRequest();
-//                    onMapReady();
-//                } else {
-//                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
-//                    alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings").create().show();
-//                }
-//            }
-//        });
-//
-//        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//            Log.d("Permission", "Is already granted");
-//            mViewModel.startLocationRequest();
-//            onMapReady();
-//        } else {
-//            Log.d("Permission", "is not granted launch permission dialog");
-//            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-//        }
     }
 
-//    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//        mViewModel.stopLocationRequest();
-//    }
 
     private void onMapReady() {
         getMapAsync(new OnMapReadyCallback() {

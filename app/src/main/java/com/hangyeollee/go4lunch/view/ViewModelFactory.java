@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.LocationServices;
+import com.google.common.collect.Maps;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hangyeollee.go4lunch.MainApplication;
@@ -20,6 +21,7 @@ import com.hangyeollee.go4lunch.utility.MyRetrofitBuilder;
 import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivityViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MainHomeActivityViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsAndListSharedViewModel;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.MapsFragmentViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment.WorkmatesFragmentViewModel;
 import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivityViewModel;
 import com.hangyeollee.go4lunch.view.SettingsActivity.SettingsActivityViewModel;
@@ -70,15 +72,23 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
         if (modelClass.isAssignableFrom(LogInActivityViewModel.class)) {
             return (T) new LogInActivityViewModel(mFirebaseRepository);
-        } else if (modelClass.isAssignableFrom(MapsAndListSharedViewModel.class)) {
+        }
+        else if (modelClass.isAssignableFrom(MainHomeActivityViewModel.class)) {
+            return (T) new MainHomeActivityViewModel(mFirebaseRepository, mLocationRepository);
+        }
+        else if (modelClass.isAssignableFrom(MapsFragmentViewModel.class)) {
+            return (T) new MapsFragmentViewModel(mLocationRepository, mNearbySearchDataRepository, mAutoCompleteDataRepository);
+        }
+        else if (modelClass.isAssignableFrom(MapsAndListSharedViewModel.class)) {
             return (T) new MapsAndListSharedViewModel(mNearbySearchDataRepository, mLocationRepository, mAutoCompleteDataRepository);
-        } else if (modelClass.isAssignableFrom(WorkmatesFragmentViewModel.class)) {
+        }
+        else if (modelClass.isAssignableFrom(WorkmatesFragmentViewModel.class)) {
             return (T) new WorkmatesFragmentViewModel(mFirebaseRepository);
-        } else if (modelClass.isAssignableFrom(PlaceDetailActivityViewModel.class)) {
+        }
+        else if (modelClass.isAssignableFrom(PlaceDetailActivityViewModel.class)) {
             return (T) new PlaceDetailActivityViewModel(mPlaceDetailDataRepository, mFirebaseRepository);
-        } else if (modelClass.isAssignableFrom(MainHomeActivityViewModel.class)) {
-            return (T) new MainHomeActivityViewModel(mFirebaseRepository,mLocationRepository);
-        } else if (modelClass.isAssignableFrom(SettingsActivityViewModel.class)) {
+        }
+        else if (modelClass.isAssignableFrom(SettingsActivityViewModel.class)) {
             return (T) new SettingsActivityViewModel(mFirebaseRepository);
         }
 
