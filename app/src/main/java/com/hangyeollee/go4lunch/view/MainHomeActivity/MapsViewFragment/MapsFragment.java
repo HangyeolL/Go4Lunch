@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -42,6 +43,8 @@ public class MapsFragment extends SupportMapFragment {
     private String mUserLocation;
     private List<Result> nearBySearchResultList;
     private List<Prediction> mPredictionList;
+
+    private LiveData<Location> mLocationLiveData;
     private boolean firstTime = false;
 
     private MapsAndListSharedViewModel mViewModel;
@@ -124,7 +127,7 @@ public class MapsFragment extends SupportMapFragment {
         mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(@NonNull Marker marker) {
-                Log.e("markerName", marker.getTitle());
+                Log.i("markerName", marker.getTitle());
 
                 Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
                 for (Result result : nearBySearchResultList) {

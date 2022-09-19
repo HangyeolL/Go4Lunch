@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
@@ -34,6 +35,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.common.collect.Maps;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.hangyeollee.go4lunch.R;
@@ -83,6 +85,11 @@ public class MainHomeActivity extends AppCompatActivity {
             public void onActivityResult(Boolean isGranted) {
                 if (isGranted) {
                     mViewModel.startLocationRequest();
+
+//                    FragmentManager manager = getSupportFragmentManager();
+//                    MapsFragment mapsFragment = (MapsFragment) manager.findFragmentById(R.id.viewPager);
+//                    mapsFragment.receiveLiveLocation(mViewModel.getLiveLocationLiveData());
+
                 } else {
                     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainHomeActivity.this);
                     alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings").create().show();
@@ -265,7 +272,7 @@ public class MainHomeActivity extends AppCompatActivity {
     }
 
     /**
-     * ViewPagerAdapter for MainHomeActivity
+     * ViewPagerAdapter of MainHomeActivity
      */
     private class ViewPagerAdapter extends FragmentStateAdapter {
         public ViewPagerAdapter(FragmentActivity fa) {

@@ -1,5 +1,9 @@
 package com.hangyeollee.go4lunch.view.MainHomeActivity;
 
+import android.annotation.SuppressLint;
+import android.location.Location;
+
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -36,12 +40,17 @@ public class MainHomeActivityViewModel extends ViewModel {
      * Location Repository
      */
 
+    @SuppressLint("MissingPermission")
     public void startLocationRequest() {
-        mLocationRepository.stopLocationRequest();
+        mLocationRepository.startLocationRequest();
     }
 
     public void stopLocationRequest() {
         mLocationRepository.stopLocationRequest();
+    }
+
+    public LiveData<Location> getLiveLocationLiveData() {
+        return mLocationRepository.getLocationLiveData();
     }
 
 }
