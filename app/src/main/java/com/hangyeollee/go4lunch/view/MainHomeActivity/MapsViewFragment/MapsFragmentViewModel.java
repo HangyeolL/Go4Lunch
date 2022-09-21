@@ -5,14 +5,17 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 
+import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
-import com.hangyeollee.go4lunch.model.autocompletepojo.Prediction;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
@@ -39,47 +42,46 @@ public class MapsFragmentViewModel extends ViewModel {
         this.mAutoCompleteDataRepository = mAutoCompleteDataRepository;
 
         LiveData<Location> locationLiveData = mLocationRepository.getLocationLiveData();
-        LiveData<MyNearBySearchData> myNearBySearchDataLiveData = mNearbySearchDataRepository.getNearbySearchLiveData();
-        LiveData<MyAutoCompleteData> myAutoCompleteDataLiveData = mAutoCompleteDataRepository.getAutoCompleteLiveData();
+
+        LiveData<MyNearBySearchData> myNearBySearchDataLiveData = Transformations.switchMap(locationLiveData, new Function<Location, LiveData<MyNearBySearchData>>() {
+            @Override
+            public LiveData<MyNearBySearchData> apply(Location location) {
+                String locationToString = location.getLatitude() + "," + location.getLongitude();
+                return  mNearbySearchDataRepository.fetchAndGetMyNearBySearchLiveData(locationToString);
+            }
+        });
 
         mapsFragmentViewStateMediatorLiveData.addSource(locationLiveData, location -> {
-            combine(location, myNearBySearchDataLiveData.getValue(), myAutoCompleteDataLiveData.getValue());
+            combine(location, myNearBySearchDataLiveData.getValue());
         });
 
         mapsFragmentViewStateMediatorLiveData.addSource(myNearBySearchDataLiveData, myNearBySearchData -> {
-            combine(locationLiveData.getValue(), myNearBySearchData, myAutoCompleteDataLiveData.getValue());
-        });
-
-        mapsFragmentViewStateMediatorLiveData.addSource(myAutoCompleteDataLiveData, myAutoCompleteData -> {
-            combine(locationLiveData.getValue(), myNearBySearchDataLiveData.getValue(), myAutoCompleteData);
+            combine(locationLiveData.getValue(), myNearBySearchData);
         });
 
     }
 
-    private void combine(@Nullable Location location, @Nullable MyNearBySearchData myNearBySearchData, @Nullable MyAutoCompleteData myAutoCompleteData) {
-        if(location == null || myNearBySearchData == null || myAutoCompleteData == null) {
+    private void combine(@Nullable Location location, @Nullable MyNearBySearchData myNearBySearchData) {
+        if(location == null || myNearBySearchData == null) {
             return;
         }
 
         String userLocation = null;
+        LatLng userLatLng = null;
 
         if(location != null) {
             userLocation = location.getLatitude() + "," + location.getLongitude();
+            userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         }
 
         List<Result> nearBySearchResultList = new ArrayList<>();
-        List<Prediction> myAutoCompletePredictionList = new ArrayList<>();
 
         for(Result result : myNearBySearchData.getResults()) {
             nearBySearchResultList.add(result);
         }
 
-        for(Prediction prediction : myAutoCompleteData.getPredictions()) {
-            myAutoCompletePredictionList.add(prediction);
-        }
-
         mapsFragmentViewStateMediatorLiveData.setValue(
-                new MapsFragmentViewState(userLocation, nearBySearchResultList, myAutoCompletePredictionList)
+                new MapsFragmentViewState(userLocation, userLatLng, nearBySearchResultList, false)
         );
     }
 
@@ -95,14 +97,6 @@ public class MapsFragmentViewModel extends ViewModel {
     }
 
     // NearbySearch Repo //
-
-    public void fetchNearBySearchData(String location) {
-        mNearbySearchDataRepository.fetchData(location);
-    }
-
-    public LiveData<MyNearBySearchData> getNearBySearchLiveData() {
-        return mNearbySearchDataRepository.getNearbySearchLiveData();
-    }
 
     // AutoComplete Repo //
 

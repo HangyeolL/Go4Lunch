@@ -64,7 +64,7 @@ public class ListViewFragment extends Fragment {
             }
         });
 
-        nearbySearchRecyclerViewSetup();
+//        nearbySearchRecyclerViewSetup();
         searchViewSetup();
 
         return binding.getRoot();
@@ -77,15 +77,15 @@ public class ListViewFragment extends Fragment {
         binding = null;
     }
 
-    private void nearbySearchRecyclerViewSetup() {
-        mViewModel.getNearBySearchLiveData().observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
-            @Override
-            public void onChanged(MyNearBySearchData myNearBySearchData) {
-                mNearbySearchResultList = myNearBySearchData.getResults();
-                binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(mNearbySearchResultList, mUserLocation));
-            }
-        });
-    }
+//    private void nearbySearchRecyclerViewSetup() {
+//        mViewModel.getNearBySearchLiveData().observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
+//            @Override
+//            public void onChanged(MyNearBySearchData myNearBySearchData) {
+//                mNearbySearchResultList = myNearBySearchData.getResults();
+//                binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(mNearbySearchResultList, mUserLocation));
+//            }
+//        });
+//    }
 
     private void searchViewSetup() {
         SearchView searchView = getActivity().findViewById(R.id.searchView);
@@ -102,7 +102,7 @@ public class ListViewFragment extends Fragment {
                     autoCompleteRecyclerViewSetup();
                 } else {
                     mViewModel.setAutoCompleteDataLiveDataAsNull();
-                    nearbySearchRecyclerViewSetup();
+//                    nearbySearchRecyclerViewSetup();
                 }
                 return false;
             }

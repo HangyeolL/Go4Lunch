@@ -76,13 +76,29 @@ public class MapsFragment extends SupportMapFragment {
                     mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
                     mGoogleMap.clear();
                     mGoogleMap.setMyLocationEnabled(true);
-                    setListenerOnMarker();
 
-                    getLiveLocationAndFetchNearbySearchData();
+                    BitmapDescriptor markerIcon = setUpMapIcon();
 
-                    nearbySearchMarkersOnMap();
+                    mViewModel.getMapsFragmentViewStateMediatorLiveData().observe(getViewLifecycleOwner(), new Observer<MapsFragmentViewState>() {
+                        @Override
+                        public void onChanged(MapsFragmentViewState mapsFragmentViewState) {
+                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapsFragmentViewState.getUserLatLng(), 15));
 
-                    searchViewSetup();
+                            for (Result mResult : mapsFragmentViewState.getMyNearBySearchDataResultList()) {
+                                LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
+                                mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
+                            }
+                        }
+                    });
+//
+//
+//                    setListenerOnMarker();
+//
+//                    getLiveLocationAndFetchNearbySearchData();
+//
+//                    nearbySearchMarkersOnMap();
+//
+//                    searchViewSetup();
 
                 }
             });
@@ -111,7 +127,7 @@ public class MapsFragment extends SupportMapFragment {
             @Override
             public void onChanged(Location location) {
                 mUserLocation = location.getLatitude() + "," + location.getLongitude();
-                mViewModel.fetchNearBySearchData(mUserLocation);
+//                mViewModel.fetchNearBySearchData(mUserLocation);
 
                 LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
@@ -122,18 +138,18 @@ public class MapsFragment extends SupportMapFragment {
     private void nearbySearchMarkersOnMap() {
         mGoogleMap.clear();
 
-        mViewModel.getNearBySearchLiveData().observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
-            @Override
-            public void onChanged(MyNearBySearchData myNearBySearchData) {
-                nearBySearchResultList = myNearBySearchData.getResults();
-
-                BitmapDescriptor markerIcon = setUpMapIcon();
-                for (Result mResult : nearBySearchResultList) {
-                    LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
-                    mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
-                }
-            }
-        });
+//        mViewModel.getNearBySearchLiveData().observe(getViewLifecycleOwner(), new Observer<MyNearBySearchData>() {
+//            @Override
+//            public void onChanged(MyNearBySearchData myNearBySearchData) {
+//                nearBySearchResultList = myNearBySearchData.getResults();
+//
+//                BitmapDescriptor markerIcon = setUpMapIcon();
+//                for (Result mResult : nearBySearchResultList) {
+//                    LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
+//                    mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
+//                }
+//            }
+//        });
     }
 
     private void searchViewSetup() {

@@ -31,14 +31,14 @@ public class MapsAndListSharedViewModel extends ViewModel {
     }
 
     // NearbySearch Repo //
-
-    public void fetchNearBySearchData(String location) {
-        mNearbySearchDataRepository.fetchData(location);
-    }
-
-    public LiveData<MyNearBySearchData> getNearBySearchLiveData() {
-        return mNearbySearchDataRepository.getNearbySearchLiveData();
-    }
+//
+//    public void fetchNearBySearchData(String location) {
+//        mNearbySearchDataRepository.fetchData(location);
+//    }
+//
+//    public LiveData<MyNearBySearchData> getNearBySearchLiveData() {
+//        return mNearbySearchDataRepository.getNearbySearchLiveData();
+//    }
 
     // Location Repo //
 
