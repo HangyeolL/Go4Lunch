@@ -51,6 +51,10 @@ public class MapsFragmentViewModel extends ViewModel {
             }
         });
 
+        mapsFragmentViewStateMediatorLiveData.setValue(
+                new MapsFragmentViewState(new LatLng(0,0), new ArrayList<>(), true)
+        );
+
         mapsFragmentViewStateMediatorLiveData.addSource(locationLiveData, location -> {
             combine(location, myNearBySearchDataLiveData.getValue());
         });
@@ -66,11 +70,9 @@ public class MapsFragmentViewModel extends ViewModel {
             return;
         }
 
-        String userLocation = null;
         LatLng userLatLng = null;
 
         if(location != null) {
-            userLocation = location.getLatitude() + "," + location.getLongitude();
             userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         }
 
@@ -81,7 +83,7 @@ public class MapsFragmentViewModel extends ViewModel {
         }
 
         mapsFragmentViewStateMediatorLiveData.setValue(
-                new MapsFragmentViewState(userLocation, userLatLng, nearBySearchResultList, false)
+                new MapsFragmentViewState(userLatLng, nearBySearchResultList, false)
         );
     }
 
