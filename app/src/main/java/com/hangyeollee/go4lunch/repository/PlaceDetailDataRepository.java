@@ -27,7 +27,7 @@ public class PlaceDetailDataRepository {
     }
 
     public void fetchData(String placeId) {
-        Call<MyPlaceDetailData> call = mGoogleMapsApi.getPlaceDetails(FIELDS, placeId, BuildConfig.MAPS_API_KEY);
+        Call<MyPlaceDetailData> call = mGoogleMapsApi.getPlaceDetails(FIELDS, placeId, BuildConfig.PLACES_API_KEY);
         call.enqueue(new Callback<MyPlaceDetailData>() {
             @Override
             public void onResponse(Call<MyPlaceDetailData> call, Response<MyPlaceDetailData> response) {

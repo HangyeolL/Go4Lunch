@@ -92,7 +92,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new SettingsActivityViewModel(mFirebaseRepository);
         }
 
-        throw new IllegalArgumentException("Unknown ViewModel class");
+        throw new IllegalArgumentException("Unknown ViewModel class : " + modelClass);
     }
 
 }

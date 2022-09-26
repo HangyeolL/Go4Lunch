@@ -31,7 +31,7 @@ public class AutoCompleteDataRepository {
     }
 
     public void fetchData(String input, String location) {
-        Call<MyAutoCompleteData> call = mGoogleMapsApi.getAutoCompleteData(input, location, 1000, "restaurant", "en", true , BuildConfig.MAPS_API_KEY);
+        Call<MyAutoCompleteData> call = mGoogleMapsApi.getAutoCompleteData(input, location, 1000, "restaurant", "en", true , BuildConfig.PLACES_API_KEY);
         call.enqueue(new Callback<MyAutoCompleteData>() {
             @Override
             public void onResponse(Call<MyAutoCompleteData> call, Response<MyAutoCompleteData> response) {

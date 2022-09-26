@@ -92,7 +92,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                     .load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result
                             .getPhotos()
                             .get(0)
-                            .getPhotoReference() + "&key=" + BuildConfig.MAPS_API_KEY)
+                            .getPhotoReference() + "&key=" + BuildConfig.PLACES_API_KEY)
                     .into(binding.imageViewRestaurant);
         }
 

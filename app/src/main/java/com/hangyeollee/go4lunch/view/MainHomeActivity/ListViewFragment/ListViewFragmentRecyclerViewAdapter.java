@@ -70,7 +70,7 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
             }
 
             if (result.getPhotos() != null) {
-                Glide.with(itemView).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.MAPS_API_KEY).into(binding.imageViewRestaurant);
+                Glide.with(itemView).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.PLACES_API_KEY).into(binding.imageViewRestaurant);
             }
 
             itemView.setOnClickListener(i -> {
