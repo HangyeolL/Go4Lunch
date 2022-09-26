@@ -23,9 +23,7 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
     private Location mLocation;
 
 
-    public ListViewFragmentRecyclerViewAdapter(List<Result> resultList, Location location) {
-        mResultList = resultList;
-        mLocation = location;
+    public ListViewFragmentRecyclerViewAdapter(ListViewFragmentViewState listViewFragmentViewState) {
     }
 
     @NonNull

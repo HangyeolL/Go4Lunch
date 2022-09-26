@@ -37,7 +37,7 @@ public class ListViewFragment extends Fragment {
     private String mUserLocationToString;
     private List<Result> mNearbySearchResultList;
 
-    private MapsAndListSharedViewModel mViewModel;
+    private ListViewFragmentViewModel mViewModel;
 
     private FragmentListViewBinding binding;
 
@@ -47,34 +47,24 @@ public class ListViewFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentListViewBinding.inflate(inflater, container, false);
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MapsAndListSharedViewModel.class);
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ListViewFragmentViewModel.class);
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mViewModel.startLocationRequest();
-        } else {
-            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
-            alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings").create().show();
+
         }
 
-        mViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), new Observer<Location>() {
+        mViewModel.getListViewFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<List<ListViewFragmentViewState>>() {
             @Override
-            public void onChanged(Location location) {
-                mUserLocation = location;
-                mUserLocationToString = location.getLatitude() + "," + location.getLongitude();
+            public void onChanged(List<ListViewFragmentViewState> listViewFragmentViewStates) {
+//                if(listViewFragmentViewState.isProgressBarVisible()) {
+//                    getActivity().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+//                } else {
+//                    getActivity().findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+//                }
             }
         });
 
-//        nearbySearchRecyclerViewSetup();
-        searchViewSetup();
-
         return binding.getRoot();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mViewModel.stopLocationRequest();
-        binding = null;
     }
 
 //    private void nearbySearchRecyclerViewSetup() {
@@ -87,48 +77,48 @@ public class ListViewFragment extends Fragment {
 //        });
 //    }
 
-    private void searchViewSetup() {
-        SearchView searchView = getActivity().findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
+//    private void searchViewSetup() {
+//        SearchView searchView = getActivity().findViewById(R.id.searchView);
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                if (newText.length() > 2) {
+//                    mViewModel.fetchAutoCompleteData(newText, mUserLocationToString);
+//                    autoCompleteRecyclerViewSetup();
+//                } else {
+//                    mViewModel.setAutoCompleteDataLiveDataAsNull();
+////                    nearbySearchRecyclerViewSetup();
+//                }
+//                return false;
+//            }
+//        });
+//    }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (newText.length() > 2) {
-                    mViewModel.fetchAutoCompleteData(newText, mUserLocationToString);
-                    autoCompleteRecyclerViewSetup();
-                } else {
-                    mViewModel.setAutoCompleteDataLiveDataAsNull();
-//                    nearbySearchRecyclerViewSetup();
-                }
-                return false;
-            }
-        });
-    }
-
-    private void autoCompleteRecyclerViewSetup() {
-        mViewModel.getAutoCompleteLiveData().observe(getViewLifecycleOwner(), new Observer<MyAutoCompleteData>() {
-            @Override
-            public void onChanged(MyAutoCompleteData myAutoCompleteData) {
-                if (myAutoCompleteData != null) {
-                    List<Prediction> mPredictionList = myAutoCompleteData.getPredictions();
-
-                    List<Result> sortedResultList = new ArrayList<>();
-                    for (Result result : mNearbySearchResultList) {
-                        for (Prediction prediction : mPredictionList) {
-                            if (prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
-                                sortedResultList.add(result);
-                            }
-                        }
-                    }
-                    binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(sortedResultList, mUserLocation));
-                }
-
-            }
-        });
-    }
+//    private void autoCompleteRecyclerViewSetup() {
+//        mViewModel.getAutoCompleteLiveData().observe(getViewLifecycleOwner(), new Observer<MyAutoCompleteData>() {
+//            @Override
+//            public void onChanged(MyAutoCompleteData myAutoCompleteData) {
+//                if (myAutoCompleteData != null) {
+//                    List<Prediction> mPredictionList = myAutoCompleteData.getPredictions();
+//
+//                    List<Result> sortedResultList = new ArrayList<>();
+//                    for (Result result : mNearbySearchResultList) {
+//                        for (Prediction prediction : mPredictionList) {
+//                            if (prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
+//                                sortedResultList.add(result);
+//                            }
+//                        }
+//                    }
+//                    binding.recyclerViewRestaurantList.setAdapter(new ListViewFragmentRecyclerViewAdapter(sortedResultList, mUserLocation));
+//                }
+//
+//            }
+//        });
+//    }
 
 }

@@ -71,7 +71,7 @@ public class MapsFragment extends SupportMapFragment {
                     mGoogleMap.clear();
                     mGoogleMap.setMyLocationEnabled(true);
 
-                    mViewModel.getMapsFragmentViewStateMediatorLiveData().observe(getViewLifecycleOwner(), new Observer<MapsFragmentViewState>() {
+                    mViewModel.getMapsFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<MapsFragmentViewState>() {
                         @Override
                         public void onChanged(MapsFragmentViewState mapsFragmentViewState) {
 

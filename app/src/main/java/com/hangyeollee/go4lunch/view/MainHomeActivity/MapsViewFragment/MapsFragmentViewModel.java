@@ -35,7 +35,6 @@ public class MapsFragmentViewModel extends ViewModel {
 
     private MediatorLiveData<MapsFragmentViewState> mapsFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
 
-
     public MapsFragmentViewModel(LocationRepository mLocationRepository, NearbySearchDataRepository mNearbySearchDataRepository, AutoCompleteDataRepository mAutoCompleteDataRepository) {
         this.mLocationRepository = mLocationRepository;
         this.mNearbySearchDataRepository = mNearbySearchDataRepository;
@@ -50,10 +49,6 @@ public class MapsFragmentViewModel extends ViewModel {
                 return  mNearbySearchDataRepository.fetchAndGetMyNearBySearchLiveData(locationToString);
             }
         });
-
-        mapsFragmentViewStateMediatorLiveData.setValue(
-                new MapsFragmentViewState(new LatLng(0,0), new ArrayList<>(), true)
-        );
 
         mapsFragmentViewStateMediatorLiveData.addSource(locationLiveData, location -> {
             combine(location, myNearBySearchDataLiveData.getValue());
@@ -87,35 +82,11 @@ public class MapsFragmentViewModel extends ViewModel {
         );
     }
 
-    // Mediator //
-    public LiveData<MapsFragmentViewState> getMapsFragmentViewStateMediatorLiveData() {
+    public LiveData<MapsFragmentViewState> getMapsFragmentViewStateLiveData() {
         return mapsFragmentViewStateMediatorLiveData;
     }
 
-    // Location Repo //
-
-    public LiveData<Location> getLocationLiveData() {
-        return mLocationRepository.getLocationLiveData();
-    }
-
-    // NearbySearch Repo //
-
-    // AutoComplete Repo //
-
-    public LiveData<MyAutoCompleteData> getAutoCompleteLiveData() {
-        return mAutoCompleteDataRepository.getAutoCompleteLiveData();
-    }
-
-    public void setAutoCompleteDataLiveDataAsNull() {
-        mAutoCompleteDataRepository.setAutoCompleteDataLiveDataAsNull();
-    }
-
-    public void fetchAutoCompleteData(String input, String location) {
-        mAutoCompleteDataRepository.fetchData(input, location);
-    }
-
     // Etc.... //
-
     public BitmapDescriptor makeDrawableIntoBitmap(Drawable drawable) {
         Canvas canvas = new Canvas();
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
