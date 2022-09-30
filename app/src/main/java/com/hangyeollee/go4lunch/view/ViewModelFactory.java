@@ -19,6 +19,7 @@ import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
 import com.hangyeollee.go4lunch.utility.MyRetrofitBuilder;
 import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivityViewModel;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment.ListViewFragmentViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MainHomeActivityViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsAndListSharedViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.MapsFragmentViewModel;
@@ -79,8 +80,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         else if (modelClass.isAssignableFrom(MapsFragmentViewModel.class)) {
             return (T) new MapsFragmentViewModel(mLocationRepository, mNearbySearchDataRepository, mAutoCompleteDataRepository);
         }
-        else if (modelClass.isAssignableFrom(MapsAndListSharedViewModel.class)) {
-            return (T) new MapsAndListSharedViewModel(mNearbySearchDataRepository, mLocationRepository, mAutoCompleteDataRepository);
+        else if (modelClass.isAssignableFrom(ListViewFragmentViewModel.class)) {
+            return (T) new ListViewFragmentViewModel(mLocationRepository, mNearbySearchDataRepository);
         }
         else if (modelClass.isAssignableFrom(WorkmatesFragmentViewModel.class)) {
             return (T) new WorkmatesFragmentViewModel(mFirebaseRepository);

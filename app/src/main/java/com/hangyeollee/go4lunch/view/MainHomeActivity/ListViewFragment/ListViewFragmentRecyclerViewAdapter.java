@@ -19,11 +19,11 @@ import java.util.List;
 
 public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<ListViewFragmentRecyclerViewAdapter.ViewHolder> {
 
-    private List<Result> mResultList;
-    private Location mLocation;
+    private List<ListViewFragmentRecyclerViewItemViewState> listViewFragmentRecyclerViewItemViewStateList;
 
-
-    public ListViewFragmentRecyclerViewAdapter(ListViewFragmentViewState listViewFragmentViewState) {
+    public void submitList(List<ListViewFragmentRecyclerViewItemViewState> itemViewStateList) {
+        listViewFragmentRecyclerViewItemViewStateList = itemViewStateList;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -35,12 +35,12 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bindViews(mResultList.get(position));
+        holder.bindViews(listViewFragmentRecyclerViewItemViewStateList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mResultList.size();
+        return listViewFragmentRecyclerViewItemViewStateList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -51,40 +51,28 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
             binding = mListViewItemBinding;
         }
 
-        public void bindViews(@NonNull Result result) {
-            binding.textViewName.setText(result.getName());
-            binding.textViewAddress.setText(result.getVicinity());
+        public void bindViews(ListViewFragmentRecyclerViewItemViewState itemViewState) {
+            binding.textViewName.setText(itemViewState.getName());
+            binding.textViewAddress.setText(itemViewState.getVicinity());
 
-            if (result.getOpeningHours() != null) {
-                if (result.getOpeningHours().getOpenNow()) {
-                    binding.textViewIsOpenNow.setText("OPEN");
-                    binding.textViewIsOpenNow.setTextColor(Color.BLUE);
-                } else {
-                    binding.textViewIsOpenNow.setText("CLOSED");
-                    binding.textViewIsOpenNow.setTextColor(Color.RED);
-                }
+            if (itemViewState.isOpen()) {
+                binding.textViewIsOpenNow.setText("OPEN");
+                binding.textViewIsOpenNow.setTextColor(Color.BLUE);
+            } else {
+                binding.textViewIsOpenNow.setText("CLOSED");
+                binding.textViewIsOpenNow.setTextColor(Color.RED);
             }
 
-            if (result.getRating() != null) {
-                binding.ratingBar.setRating(result.getRating().floatValue());
-            }
-
-            if (result.getPhotos() != null) {
-                Glide.with(itemView).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + result.getPhotos().get(0).getPhotoReference() + "&key=" + BuildConfig.PLACES_API_KEY).into(binding.imageViewRestaurant);
-            }
+            binding.ratingBar.setRating(itemViewState.getRating());
+            Glide.with(itemView).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + itemViewState.getPhotoReference() + "&key=" + BuildConfig.PLACES_API_KEY).into(binding.imageViewRestaurant);
 
             itemView.setOnClickListener(i -> {
                 Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
-                intent.putExtra("place id", result.getPlaceId());
+                intent.putExtra("place id", itemViewState.getPlaceId());
                 itemView.getContext().startActivity(intent);
             });
 
-            Location restauLocation = new Location("restaurant location");
-            restauLocation.setLatitude(result.getGeometry().getLocation().getLat());
-            restauLocation.setLongitude(result.getGeometry().getLocation().getLng());
-            float distance = mLocation.distanceTo(restauLocation);
-
-            binding.textViewDistance.setText(String.format("%.0f", distance) + "m");
+            binding.textViewDistance.setText(itemViewState.getDistanceFromUserLocation());
         }
 
     }

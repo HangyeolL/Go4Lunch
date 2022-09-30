@@ -8,12 +8,10 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
-import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.MapsFragmentViewState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +23,7 @@ public class ListViewFragmentViewModel extends ViewModel {
     private LocationRepository mLocationRepository;
     private NearbySearchDataRepository mNearbySearchDataRepository;
 
-    private MediatorLiveData<List<ListViewFragmentViewState>> listViewFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
+    private MediatorLiveData<ListViewFragmentViewState> listViewFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
 
     public ListViewFragmentViewModel(LocationRepository mLocationRepository, NearbySearchDataRepository mNearbySearchDataRepository) {
         this.mLocationRepository = mLocationRepository;
@@ -51,31 +49,50 @@ public class ListViewFragmentViewModel extends ViewModel {
             return;
         }
 
-        List<ListViewFragmentViewState> listViewFragmentViewStateList = new ArrayList<>();
+        List<ListViewFragmentRecyclerViewItemViewState> recyclerViewItemViewStateList = new ArrayList<>();
 
         String name;
         String vicinity;
-        boolean isOpen;
-        double rating;
-        String photoReference;
+        Boolean isOpen = null;
+        float rating = 0;
+        String photoReference = "";
         String placeId;
+        Location resultLocation = new Location("restaurant location");
+        String distanceBetween = "";
+
+        if (mLocationRepository.getLocationLiveData().getValue() != null) {
+            distanceBetween = String.format("%.0f", mLocationRepository.getLocationLiveData().getValue().distanceTo(resultLocation)) + "m";
+        }
 
         for (Result result : myNearBySearchData.getResults()) {
             name = result.getName();
             vicinity = result.getVicinity();
-            isOpen = result.getOpeningHours().getOpenNow();
-            rating = result.getRating();
-            photoReference = result.getPhotos().get(0).getPhotoReference();
+            if (result.getOpeningHours() != null) {
+                isOpen = result.getOpeningHours().getOpenNow();
+            }
+            if (result.getRating() != null) {
+                rating = result.getRating().floatValue();
+            }
+            if (result.getPhotos() != null) {
+                photoReference = result.getPhotos().get(0).getPhotoReference();
+            }
+
             placeId = result.getPlaceId();
+            resultLocation.setLatitude(result.getGeometry().getLocation().getLat());
+            resultLocation.setLongitude(result.getGeometry().getLocation().getLng());
+
+            ListViewFragmentRecyclerViewItemViewState recyclerViewItemViewState = new ListViewFragmentRecyclerViewItemViewState(
+                            name, vicinity, isOpen, rating, photoReference, placeId, distanceBetween
+            );
+
+            recyclerViewItemViewStateList.add(recyclerViewItemViewState);
         }
 
-        if (mLocationRepository.getLocationLiveData().getValue() != null) {
-            mLocationRepository.getLocationLiveData().getValue().getLatitude();
-        }
+        listViewFragmentViewStateMediatorLiveData.setValue(new ListViewFragmentViewState(recyclerViewItemViewStateList, false));
 
     }
 
-    public LiveData<List<ListViewFragmentViewState>> getListViewFragmentViewStateLiveData() {
+    public LiveData<ListViewFragmentViewState> getListViewFragmentViewStateLiveData() {
         return listViewFragmentViewStateMediatorLiveData;
     }
 }

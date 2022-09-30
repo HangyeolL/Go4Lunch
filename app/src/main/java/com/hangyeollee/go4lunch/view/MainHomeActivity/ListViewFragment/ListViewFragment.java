@@ -40,6 +40,7 @@ public class ListViewFragment extends Fragment {
     private ListViewFragmentViewModel mViewModel;
 
     private FragmentListViewBinding binding;
+    private ListViewFragmentRecyclerViewAdapter mListViewFragmentRecyclerViewAdapter;
 
     @SuppressLint("MissingPermission")
     @Nullable
@@ -49,20 +50,25 @@ public class ListViewFragment extends Fragment {
 
         mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ListViewFragmentViewModel.class);
 
+        mListViewFragmentRecyclerViewAdapter = new ListViewFragmentRecyclerViewAdapter();
+        binding.recyclerViewRestaurantList.setAdapter(mListViewFragmentRecyclerViewAdapter);
+
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-        }
+            mViewModel.getListViewFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<ListViewFragmentViewState>() {
+                @Override
+                public void onChanged(ListViewFragmentViewState listViewFragmentViewState) {
+                    if(listViewFragmentViewState.isProgressBarVisible()) {
+                        getActivity().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+                    } else {
+                        getActivity().findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+                    }
 
-        mViewModel.getListViewFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<List<ListViewFragmentViewState>>() {
-            @Override
-            public void onChanged(List<ListViewFragmentViewState> listViewFragmentViewStates) {
-//                if(listViewFragmentViewState.isProgressBarVisible()) {
-//                    getActivity().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-//                } else {
-//                    getActivity().findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-//                }
-            }
-        });
+                    mListViewFragmentRecyclerViewAdapter.submitList(listViewFragmentViewState.getListViewFragmentRecyclerViewItemViewStateList());
+                }
+            });
+
+        } else {}
 
         return binding.getRoot();
     }

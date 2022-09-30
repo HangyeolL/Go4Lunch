@@ -6,53 +6,16 @@ import java.util.List;
 
 public class ListViewFragmentViewState {
 
-    private final String name;
-    private final String vicinity;
-    private final boolean isOpen;
-    private final double rating;
-    private final String photoReference;
-    private final String placeId;
-    private final float distanceFromUserLocation;
-
+    private final List<ListViewFragmentRecyclerViewItemViewState> listViewFragmentRecyclerViewItemViewStateList;
     private final boolean isProgressBarVisible;
 
-    public ListViewFragmentViewState(String name, String vicinity, boolean isOpen, double rating, String photoReference, String placeId, float distanceFromUserLocation, boolean isProgressBarVisible) {
-        this.name = name;
-        this.vicinity = vicinity;
-        this.isOpen = isOpen;
-        this.rating = rating;
-        this.photoReference = photoReference;
-        this.placeId = placeId;
-        this.distanceFromUserLocation = distanceFromUserLocation;
+    public ListViewFragmentViewState(List<ListViewFragmentRecyclerViewItemViewState> listViewFragmentRecyclerViewItemViewStateList, boolean isProgressBarVisible) {
+        this.listViewFragmentRecyclerViewItemViewStateList = listViewFragmentRecyclerViewItemViewStateList;
         this.isProgressBarVisible = isProgressBarVisible;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getVicinity() {
-        return vicinity;
-    }
-
-    public boolean isOpen() {
-        return isOpen;
-    }
-
-    public double getRating() {
-        return rating;
-    }
-
-    public String getPhotoReference() {
-        return photoReference;
-    }
-
-    public String getPlaceId() {
-        return placeId;
-    }
-
-    public float getDistanceFromUserLocation() {
-        return distanceFromUserLocation;
+    public List<ListViewFragmentRecyclerViewItemViewState> getListViewFragmentRecyclerViewItemViewStateList() {
+        return listViewFragmentRecyclerViewItemViewStateList;
     }
 
     public boolean isProgressBarVisible() {
