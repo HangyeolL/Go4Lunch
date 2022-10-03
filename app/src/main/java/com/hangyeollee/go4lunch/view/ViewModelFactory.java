@@ -63,6 +63,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         mNearbySearchDataRepository = new NearbySearchDataRepository(googleMapsApi);
         mPlaceDetailDataRepository = new PlaceDetailDataRepository(googleMapsApi);
         mAutoCompleteDataRepository = new AutoCompleteDataRepository(googleMapsApi);
+        mUserSearchRepository = new UserSearchRepository();
         mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(mApplication));
         mFirebaseRepository = new FirebaseRepository(firebaseAuth, firebaseFirestore);
     }
