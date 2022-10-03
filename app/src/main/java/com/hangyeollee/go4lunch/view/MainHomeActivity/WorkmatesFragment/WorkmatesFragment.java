@@ -19,7 +19,7 @@ import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 import java.util.List;
 
-public class WorkMatesFragment extends Fragment {
+public class WorkmatesFragment extends Fragment {
 
     private FragmentWorkmatesBinding binding;
 
@@ -35,22 +35,14 @@ public class WorkMatesFragment extends Fragment {
         mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(WorkmatesFragmentViewModel.class);
 
         mAdapter = new WorkmatesFragmentRecyclerViewAdapter();
-
-        mViewModel.getUsersList().observe(getViewLifecycleOwner(), new Observer<List<User>>() {
-            @Override
-            public void onChanged(List<User> users) {
-                mAdapter.updateUserLists(users);
-            }
-        });
-
-        mViewModel.getLunchRestaurantListOfAllUsers().observe(getViewLifecycleOwner(), new Observer<List<LunchRestaurant>>() {
-            @Override
-            public void onChanged(List<LunchRestaurant> lunchRestaurantList) {
-                mAdapter.updateRestaurantList(lunchRestaurantList);
-            }
-        });
-
         binding.recyclerViewWorkmates.setAdapter(mAdapter);
+
+        mViewModel.getWorkmatesFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<WorkmatesFragmentViewState>() {
+            @Override
+            public void onChanged(WorkmatesFragmentViewState workmatesFragmentViewState) {
+                mAdapter.submitList(workmatesFragmentViewState.getRecyclerViewItemViewStateList());
+            }
+        });
 
         return binding.getRoot();
     }

@@ -1,7 +1,6 @@
 package com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -10,30 +9,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.databinding.WorkmatesFragmentListItemBinding;
-import com.hangyeollee.go4lunch.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<WorkmatesFragmentRecyclerViewAdapter.ViewHolder> {
 
-    private List<User> mUserList = new ArrayList<>();
-    private List<LunchRestaurant> mLunchRestaurantList = new ArrayList<>();
+    private List<WorkmatesFragmentRecyclerViewItemViewState> workmatesFragmentRecyclerViewItemViewStateList;
 
     public WorkmatesFragmentRecyclerViewAdapter() {
     }
 
-    public void updateUserLists(List<User> userList) {
-        mUserList = userList;
+    public void submitList(List<WorkmatesFragmentRecyclerViewItemViewState> workmatesFragmentRecyclerViewItemViewStateList) {
+        this.workmatesFragmentRecyclerViewItemViewStateList = workmatesFragmentRecyclerViewItemViewStateList;
         notifyDataSetChanged();
     }
 
-    public void updateRestaurantList(List<LunchRestaurant> lunchRestaurantList) {
-        mLunchRestaurantList = lunchRestaurantList;
-        notifyDataSetChanged();
-    }
 
     @NonNull
     @Override
@@ -44,12 +35,12 @@ public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<W
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bindViews(mUserList.get(position));
+        holder.bindViews(workmatesFragmentRecyclerViewItemViewStateList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mUserList.size();
+        return workmatesFragmentRecyclerViewItemViewStateList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -60,38 +51,23 @@ public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<W
             binding = workmatesListItemBinding;
         }
 
-        public void bindViews(User user) {
-            if (user.getPhotoUrl() != null) {
-                Glide.with(itemView).load(user.getPhotoUrl()).into(binding.viewUserPhoto);
-            }
+        public void bindViews(WorkmatesFragmentRecyclerViewItemViewState itemViewState) {
+            Glide.with(itemView).load(itemViewState.getUserPhotoUrl()).into(binding.viewUserPhoto);
+            binding.textViewUserName.setText(itemViewState.getUserName());
+            binding.textViewRestaruantName.setText(itemViewState.getUserLunchRestaurantName());
 
-            binding.textViewUserName.setText(user.getName());
+            itemView.setOnClickListener(listener -> {
+                Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
+                intent.putExtra("place id", itemViewState.getGetUserLunchRestaurantId());
+                itemView.getContext().startActivity(intent);
+            });
 
-            LunchRestaurant usersLunch = null;
-
-            for (LunchRestaurant lunchRestaurant : mLunchRestaurantList) {
-                if (lunchRestaurant.getUserId().equals(user.getId())) {
-                    usersLunch = lunchRestaurant;
-                    break;
-                }
-            }
-            
-            if(usersLunch != null) {
-                binding.textViewRestaruantName.setText(usersLunch.getName());
-
-                LunchRestaurant finalUsersLunch = usersLunch;
-                itemView.setOnClickListener(listener -> {
-                    Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
-                    intent.putExtra("place id", finalUsersLunch.getRestaurantId());
-                    itemView.getContext().startActivity(intent);
-                });
-            } else {
-                binding.textViewRestaruantName.setText("not decided yet");
-                binding.textViewUserName.setTextColor(Color.GRAY);
-            }
+//            How to change textColor if lunchRestau is null ?
+//            binding.textViewUserName.setTextColor(Color.GRAY);
         }
     }
 }
+
 
 
 

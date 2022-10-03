@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
@@ -35,19 +34,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.common.collect.Maps;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.hangyeollee.go4lunch.R;
-import com.hangyeollee.go4lunch.databinding.ActivityMainBinding;
-import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBinding;
 import com.hangyeollee.go4lunch.utility.AlarmReceiver;
 import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivity;
 import com.hangyeollee.go4lunch.view.SettingsActivity.SettingsActivity;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.MapsFragment;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment.ListViewFragment;
-import com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment.WorkMatesFragment;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment.WorkmatesFragment;
 import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 import java.util.Calendar;
@@ -282,7 +278,7 @@ public class MainHomeActivity extends AppCompatActivity {
                 case 1:
                     return new ListViewFragment();
                 case 2:
-                    return new WorkMatesFragment();
+                    return new WorkmatesFragment();
             }
             return null;
         }
