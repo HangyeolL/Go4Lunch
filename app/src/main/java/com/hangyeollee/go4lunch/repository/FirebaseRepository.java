@@ -35,10 +35,6 @@ public class FirebaseRepository {
     private MutableLiveData<List<LunchRestaurant>> mLunchRestaurantMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<List<LikedRestaurant>> mLikedRestaurantMutableLiveData = new MutableLiveData<>();
 
-    private List<LunchRestaurant> mLunchRestaurantListOfSpecificPlace = new ArrayList<>();
-    private MutableLiveData<List<User>> mUserListWithLunch = new MutableLiveData<>();
-
-    // Dependency Injection for unit test purpose
     public FirebaseRepository(FirebaseAuth firebaseAuth, FirebaseFirestore firestore) {
         mAuth = firebaseAuth;
         mFirestore = firestore;
