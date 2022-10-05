@@ -32,39 +32,29 @@ import java.util.List;
 
 public class ListViewFragment extends Fragment {
 
-    private Location mUserLocation;
-
-    private String mUserLocationToString;
-    private List<Result> mNearbySearchResultList;
-
-    private ListViewFragmentViewModel mViewModel;
-
-    private FragmentListViewBinding binding;
-    private ListViewFragmentRecyclerViewAdapter mListViewFragmentRecyclerViewAdapter;
-
     @SuppressLint("MissingPermission")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentListViewBinding.inflate(inflater, container, false);
+        FragmentListViewBinding binding = FragmentListViewBinding.inflate(inflater, container, false);
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ListViewFragmentViewModel.class);
+        ListViewFragmentViewModel viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ListViewFragmentViewModel.class);
 
-        mListViewFragmentRecyclerViewAdapter = new ListViewFragmentRecyclerViewAdapter();
-        binding.recyclerViewRestaurantList.setAdapter(mListViewFragmentRecyclerViewAdapter);
+        ListViewFragmentRecyclerViewAdapter listViewFragmentRecyclerViewAdapter = new ListViewFragmentRecyclerViewAdapter();
+        binding.recyclerViewRestaurantList.setAdapter(listViewFragmentRecyclerViewAdapter);
 
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            mViewModel.getListViewFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<ListViewFragmentViewState>() {
+            viewModel.getListViewFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<ListViewFragmentViewState>() {
                 @Override
                 public void onChanged(ListViewFragmentViewState listViewFragmentViewState) {
                     if(listViewFragmentViewState.isProgressBarVisible()) {
-                        getActivity().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+                        binding.progressBar.setVisibility(View.VISIBLE);
                     } else {
-                        getActivity().findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+                        binding.progressBar.setVisibility(View.INVISIBLE);
                     }
 
-                    mListViewFragmentRecyclerViewAdapter.submitList(listViewFragmentViewState.getListViewFragmentRecyclerViewItemViewStateList());
+                    listViewFragmentRecyclerViewAdapter.submitList(listViewFragmentViewState.getListViewFragmentRecyclerViewItemViewStateList());
                 }
             });
 
