@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.LocationServices;
-import com.google.common.collect.Maps;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hangyeollee.go4lunch.MainApplication;
@@ -21,7 +20,6 @@ import com.hangyeollee.go4lunch.utility.MyRetrofitBuilder;
 import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivityViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment.ListViewFragmentViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MainHomeActivityViewModel;
-import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsAndListSharedViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.MapsFragmentViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment.WorkmatesFragmentViewModel;
 import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivityViewModel;
@@ -63,7 +61,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         mNearbySearchDataRepository = new NearbySearchDataRepository(googleMapsApi);
         mPlaceDetailDataRepository = new PlaceDetailDataRepository(googleMapsApi);
         mAutoCompleteDataRepository = new AutoCompleteDataRepository(googleMapsApi);
-        mUserSearchRepository = new UserSearchRepository();
+//        mUserSearchRepository = new UserSearchRepository();
         mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(mApplication));
         mFirebaseRepository = new FirebaseRepository(firebaseAuth, firebaseFirestore);
     }
@@ -76,7 +74,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new LogInActivityViewModel(mFirebaseRepository);
         }
         else if (modelClass.isAssignableFrom(MainHomeActivityViewModel.class)) {
-            return (T) new MainHomeActivityViewModel(mFirebaseRepository, mLocationRepository);
+            return (T) new MainHomeActivityViewModel(mFirebaseRepository, mLocationRepository, mAutoCompleteDataRepository);
         }
         else if (modelClass.isAssignableFrom(MapsFragmentViewModel.class)) {
             return (T) new MapsFragmentViewModel(mLocationRepository, mNearbySearchDataRepository, mAutoCompleteDataRepository);

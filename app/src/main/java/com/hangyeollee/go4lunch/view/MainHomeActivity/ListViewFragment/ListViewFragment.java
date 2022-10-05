@@ -2,9 +2,7 @@ package com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,23 +10,13 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.FragmentListViewBinding;
-import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
-import com.hangyeollee.go4lunch.model.autocompletepojo.Prediction;
-import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
-import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
-import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsAndListSharedViewModel;
 import com.hangyeollee.go4lunch.view.ViewModelFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ListViewFragment extends Fragment {
 
@@ -84,7 +72,7 @@ public class ListViewFragment extends Fragment {
 //            @Override
 //            public boolean onQueryTextChange(String newText) {
 //                if (newText.length() > 2) {
-//                    mViewModel.fetchAutoCompleteData(newText, mUserLocationToString);
+//                    mViewModel.fetchAndGetAutoCompleteData(newText, mUserLocationToString);
 //                    autoCompleteRecyclerViewSetup();
 //                } else {
 //                    mViewModel.setAutoCompleteDataLiveDataAsNull();

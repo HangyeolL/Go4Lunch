@@ -18,19 +18,17 @@ public class AutoCompleteDataRepository {
     private GoogleMapsApi mGoogleMapsApi;
     private MutableLiveData<MyAutoCompleteData> mAutoCompleteDataMutableLiveData = new MutableLiveData<>();
 
+    private String input;
+
     public AutoCompleteDataRepository(GoogleMapsApi googleMapsApi) {
         mGoogleMapsApi = googleMapsApi;
     }
 
-    public LiveData<MyAutoCompleteData> getAutoCompleteLiveData() {
-        return mAutoCompleteDataMutableLiveData;
+    public void setUserSearchTextQuery(String userSearchTextQuery) {
+        input = userSearchTextQuery;
     }
 
-    public void setAutoCompleteDataLiveDataAsNull() {
-        mAutoCompleteDataMutableLiveData.setValue(null);
-    }
-
-    public void fetchData(String input, String location) {
+    public LiveData<MyAutoCompleteData> fetchAndGetAutoCompleteData(String location) {
         Call<MyAutoCompleteData> call = mGoogleMapsApi.getAutoCompleteData(input, location, 1000, "restaurant", "en", true , BuildConfig.PLACES_API_KEY);
         call.enqueue(new Callback<MyAutoCompleteData>() {
             @Override
@@ -45,5 +43,6 @@ public class AutoCompleteDataRepository {
             }
         });
 
+        return mAutoCompleteDataMutableLiveData;
     }
 }

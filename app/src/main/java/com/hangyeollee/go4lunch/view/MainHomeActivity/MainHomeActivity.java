@@ -2,9 +2,7 @@ package com.hangyeollee.go4lunch.view.MainHomeActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -19,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
@@ -35,22 +34,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainHomeBinding;
 import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBinding;
-import com.hangyeollee.go4lunch.utility.AlarmReceiver;
 import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivity;
-import com.hangyeollee.go4lunch.view.SettingsActivity.SettingsActivity;
-import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.MapsFragment;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment.ListViewFragment;
+import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.MapsFragment;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment.WorkmatesFragment;
+import com.hangyeollee.go4lunch.view.SettingsActivity.SettingsActivity;
 import com.hangyeollee.go4lunch.view.ViewModelFactory;
-
-import java.util.Calendar;
-import java.util.List;
 
 public class MainHomeActivity extends AppCompatActivity {
 
@@ -106,12 +99,13 @@ public class MainHomeActivity extends AppCompatActivity {
         navigationViewItemSelectedListener();
         linkDrawerLayoutWithToolbar();
         bottomNavigationBarSetup();
+        searchViewSetup();
 
         mViewModel.getMainHomeActivityViewStateLiveData().observe(this, new Observer<MainHomeActivityViewState>() {
             @Override
             public void onChanged(MainHomeActivityViewState mainHomeActivityViewState) {
                 if (mainHomeActivityViewState.isUserLoggedIn()) {
-                    mViewModel.onUserLogInEvent();
+                    mViewModel.onUserLogInEvent(mainHomeActivityViewState.getProviderId());
 
                     navigationViewHeaderBinding.textViewUserName.setText(mainHomeActivityViewState.getUserInfoList().get(0).getDisplayName());
                     navigationViewHeaderBinding.textViewUserEmail.setText(mainHomeActivityViewState.getUserInfoList().get(0).getEmail());
@@ -122,8 +116,6 @@ public class MainHomeActivity extends AppCompatActivity {
                         Glide.with(MainHomeActivity.this).load(R.drawable.ic_baseline_person_outline_24).into(navigationViewHeaderBinding.imageViewUserPhoto);
                     }
                 }
-
-                signOutAccordingToProviders(mainHomeActivityViewState.getProviderId());
             }
         });
 
@@ -189,8 +181,8 @@ public class MainHomeActivity extends AppCompatActivity {
                         startActivity(new Intent(MainHomeActivity.this, SettingsActivity.class));
                         break;
                     case R.id.navigationView_logout:
-//                        signOutAccordingToProviders();
-                        mViewModel.signOutFromFirebaseAuth();
+                        signOutAccordingToProviders(mViewModel.getProviderId());
+                        mViewModel.onUserLogOutEvent();
                         startActivity(new Intent(MainHomeActivity.this, LogInActivity.class));
                         finish();
                         break;
@@ -240,6 +232,21 @@ public class MainHomeActivity extends AppCompatActivity {
                 LoginManager.getInstance().logOut();
                 break;
         }
+    }
+
+    private void searchViewSetup() {
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mViewModel.onSearchViewTextChanged(newText);
+                return false;
+            }
+        });
     }
 
     @Override

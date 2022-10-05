@@ -5,17 +5,14 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -28,11 +25,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hangyeollee.go4lunch.R;
-import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
-import com.hangyeollee.go4lunch.model.autocompletepojo.Prediction;
-import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
-import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsAndListSharedViewModel;
 import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
 import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
@@ -127,28 +120,6 @@ public class MapsFragment extends SupportMapFragment {
             }
         });
     }
-
-//    private void searchViewSetup() {
-//        SearchView searchView = getActivity().findViewById(R.id.searchView);
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                if (newText.length() > 2) {
-//                    mViewModel.fetchAutoCompleteData(newText, mUserLocation);
-//                    autoCompleteMarkersOnMap();
-//                } else if (newText.length() == 0) {
-//                    mViewModel.setAutoCompleteDataLiveDataAsNull();
-//                    nearbySearchMarkersOnMap();
-//                }
-//                return false;
-//            }
-//        });
-//    }
 
 //    private void autoCompleteMarkersOnMap() {
 //        mGoogleMap.clear();

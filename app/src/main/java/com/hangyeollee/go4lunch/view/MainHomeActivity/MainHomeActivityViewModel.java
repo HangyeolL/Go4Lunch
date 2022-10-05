@@ -1,13 +1,19 @@
 package com.hangyeollee.go4lunch.view.MainHomeActivity;
 
 import android.annotation.SuppressLint;
+import android.location.Location;
 import android.net.Uri;
 
+import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.UserInfo;
+import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
+import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 
@@ -17,17 +23,42 @@ public class MainHomeActivityViewModel extends ViewModel {
 
     private FirebaseRepository mFirebaseRepository;
     private LocationRepository mLocationRepository;
+    private AutoCompleteDataRepository mAutoCompleteDataRepository;
 
-    private MutableLiveData<MainHomeActivityViewState> mainHomeActivityViewStateMutableLiveData = new MutableLiveData<>();
+    private MediatorLiveData<MainHomeActivityViewState> mainHomeActivityViewStateMediatorLiveData = new MediatorLiveData<>();
 
-    public MainHomeActivityViewModel(FirebaseRepository firebaseRepository, LocationRepository locationRepository) {
+    private String providerId;
+
+    public MainHomeActivityViewModel(FirebaseRepository firebaseRepository, LocationRepository locationRepository, AutoCompleteDataRepository autoCompleteDataRepository) {
         mFirebaseRepository = firebaseRepository;
         mLocationRepository = locationRepository;
+        mAutoCompleteDataRepository = autoCompleteDataRepository;
 
-        transformation();
+        LiveData<Location> locationLiveData = mLocationRepository.getLocationLiveData();
+
+        LiveData<MyAutoCompleteData> myAutoCompleteLiveData = Transformations.switchMap(locationLiveData, new Function<Location, LiveData<MyAutoCompleteData>>() {
+            @Override
+            public LiveData<MyAutoCompleteData> apply(Location location) {
+                String locationToString = location.getLatitude() + "," + location.getLongitude();
+                return  mAutoCompleteDataRepository.fetchAndGetAutoCompleteData(locationToString);
+            }
+        });
+
+        mainHomeActivityViewStateMediatorLiveData.addSource(locationLiveData, location -> {
+            combine(location, myAutoCompleteLiveData.getValue());
+        });
+
+        mainHomeActivityViewStateMediatorLiveData.addSource(myAutoCompleteLiveData, myAutoCompleteData -> {
+            combine(locationLiveData.getValue(), myAutoCompleteData);
+        });
+
     }
 
-    private void transformation() {
+    private void combine(Location location, MyAutoCompleteData myAutoCompleteData) {
+        if(location == null || myAutoCompleteData == null) {
+            return;
+        }
+
         String providerId = "";
         String userName = "";
         String userEmail = "";
@@ -39,36 +70,37 @@ public class MainHomeActivityViewModel extends ViewModel {
             isUserLoggedIn = true;
             userName = mFirebaseRepository.getCurrentUser().getDisplayName();
             userEmail = mFirebaseRepository.getCurrentUser().getEmail();
-
-            if(mFirebaseRepository.getCurrentUser().getPhotoUrl() != null) {
-                userPhotoUrl = mFirebaseRepository.getCurrentUser().getPhotoUrl();
-            }
-
+            userPhotoUrl = mFirebaseRepository.getCurrentUser().getPhotoUrl();
             userInfoList = mFirebaseRepository.getCurrentUser().getProviderData();
             providerId = mFirebaseRepository.getCurrentUser().getProviderId();
-
         } else {
-            mainHomeActivityViewStateMutableLiveData.setValue(null);
         }
 
         MainHomeActivityViewState mainHomeActivityViewState = new MainHomeActivityViewState(providerId, userName, userEmail, userPhotoUrl, isUserLoggedIn, userInfoList);
 
-        mainHomeActivityViewStateMutableLiveData.setValue(mainHomeActivityViewState);
+        mainHomeActivityViewStateMediatorLiveData.setValue(mainHomeActivityViewState);
     }
 
     public LiveData<MainHomeActivityViewState> getMainHomeActivityViewStateLiveData() {
-        return mainHomeActivityViewStateMutableLiveData;
+        return mainHomeActivityViewStateMediatorLiveData;
     }
 
-    public void onUserLogInEvent() {
+    public void onUserLogInEvent(String providerId) {
+        this.providerId = providerId;
         mFirebaseRepository.saveUserInFirestore();
     }
 
-    public void signOutFromFirebaseAuth() {
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void onUserLogOutEvent() {
         mFirebaseRepository.signOutFromFirebaseAuth();
     }
 
-
+    public void onSearchViewTextChanged(String searchViewText) {
+        mAutoCompleteDataRepository.setUserSearchTextQuery(searchViewText);
+    }
 
     /**
      * Location Repository
@@ -82,5 +114,6 @@ public class MainHomeActivityViewModel extends ViewModel {
     public void stopLocationRequest() {
         mLocationRepository.stopLocationRequest();
     }
+
 
 }
