@@ -68,11 +68,6 @@ public class MainHomeActivity extends AppCompatActivity {
 
         mSharedPref = new MySharedPreferenceUtil(this).getInstanceOfSharedPref();
 
-        // Register the permissions callback, which handles the user's response to the
-        // system permissions dialog. Save the return value, an instance of
-        // ActivityResultLauncher, as an instance variable.
-        // Permission is granted. Continue the action or workflow in your
-        // app.
         ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
             @SuppressLint("MissingPermission")
             @Override
@@ -107,11 +102,16 @@ public class MainHomeActivity extends AppCompatActivity {
                 if (mainHomeActivityViewState.isUserLoggedIn()) {
                     mViewModel.onUserLogInEvent(mainHomeActivityViewState.getProviderId());
 
-                    navigationViewHeaderBinding.textViewUserName.setText(mainHomeActivityViewState.getUserInfoList().get(0).getDisplayName());
-                    navigationViewHeaderBinding.textViewUserEmail.setText(mainHomeActivityViewState.getUserInfoList().get(0).getEmail());
+                    navigationViewHeaderBinding.textViewUserName.setText(mainHomeActivityViewState.getUserName());
+
+                    if (mainHomeActivityViewState.getUserEmail() != null) {
+                        navigationViewHeaderBinding.textViewUserEmail.setText(mainHomeActivityViewState.getUserEmail());
+                    } else {
+                        navigationViewHeaderBinding.textViewUserEmail.setText("Email unavailable");
+                    }
 
                     if (mainHomeActivityViewState.getUserPhotoUrl() != null) {
-                        Glide.with(MainHomeActivity.this).load(mainHomeActivityViewState.getUserInfoList().get(0).getPhotoUrl()).into(navigationViewHeaderBinding.imageViewUserPhoto);
+                        Glide.with(MainHomeActivity.this).load(mainHomeActivityViewState.getUserPhotoUrl()).into(navigationViewHeaderBinding.imageViewUserPhoto);
                     } else {
                         Glide.with(MainHomeActivity.this).load(R.drawable.ic_baseline_person_outline_24).into(navigationViewHeaderBinding.imageViewUserPhoto);
                     }

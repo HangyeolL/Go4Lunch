@@ -13,15 +13,15 @@ public class MainHomeActivityViewState {
     private final String userEmail;
     private final Uri userPhotoUrl;
     private final boolean isUserLoggedIn;
-    private final List<? extends UserInfo> userInfoList;
 
-    public MainHomeActivityViewState(String providerId, String userName, String userEmail, Uri userPhotoUrl, boolean isUserLoggedIn, List<? extends UserInfo> userInfoList) {
+
+    public MainHomeActivityViewState(String providerId, String userName, String userEmail, Uri userPhotoUrl, boolean isUserLoggedIn) {
         this.providerId = providerId;
         this.userName = userName;
         this.userEmail = userEmail;
         this.userPhotoUrl = userPhotoUrl;
         this.isUserLoggedIn = isUserLoggedIn;
-        this.userInfoList = userInfoList;
+
     }
 
     public String getProviderId() {
@@ -44,7 +44,5 @@ public class MainHomeActivityViewState {
         return isUserLoggedIn;
     }
 
-    public List<? extends UserInfo> getUserInfoList() {
-        return userInfoList;
-    }
+
 }

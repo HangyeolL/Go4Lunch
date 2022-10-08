@@ -40,15 +40,12 @@ public class ListViewFragmentViewModel extends ViewModel {
         });
 
         listViewFragmentViewStateMediatorLiveData.addSource(myNearBySearchDataLiveData, myNearBySearchData -> {
-            combine(myNearBySearchData, userSearchQuery);
+            combine(myNearBySearchData);
         });
 
-        listViewFragmentViewStateMediatorLiveData.addSource(userSearchRepository.getUserSearchQueryLiveData(), userSearchQuery -> {
-            combine(myNearBySearchDataLiveData.getValue(), userSearchQuery);
-        });
     }
 
-    private void combine(@Nullable MyNearBySearchData myNearBySearchData, String userSearchQuery) {
+    private void combine(@Nullable MyNearBySearchData myNearBySearchData) {
         if (myNearBySearchData == null) {
             return;
         }
@@ -69,7 +66,7 @@ public class ListViewFragmentViewModel extends ViewModel {
         }
 
         for (Result result : myNearBySearchData.getResults()) {
-            if (userSearchQuery == null || userSearchQuery.isEmpty() || result.getName().contains(userSearchQuery)) {
+//            if (userSearchQuery == null || userSearchQuery.isEmpty() || result.getName().contains(userSearchQuery)) {
                 name = result.getName();
                 vicinity = result.getVicinity();
                 if (result.getOpeningHours() != null) {
@@ -91,7 +88,7 @@ public class ListViewFragmentViewModel extends ViewModel {
                 );
 
                 recyclerViewItemViewStateList.add(recyclerViewItemViewState);
-            }
+//            }
         }
 
         listViewFragmentViewStateMediatorLiveData.setValue(new ListViewFragmentViewState(recyclerViewItemViewStateList, false));

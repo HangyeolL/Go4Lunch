@@ -68,11 +68,11 @@ public class MapsFragment extends SupportMapFragment {
                         @Override
                         public void onChanged(MapsFragmentViewState mapsFragmentViewState) {
 
-                            if(mapsFragmentViewState.isProgressBarVisible()) {
-                                getActivity().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-                            } else {
-                                getActivity().findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-                            }
+//                            if(mapsFragmentViewState.isProgressBarVisible()) {
+//                                getActivity().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+//                            } else {
+//                                getActivity().findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+//                            }
 
                             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapsFragmentViewState.getUserLatLng(), 15));
 

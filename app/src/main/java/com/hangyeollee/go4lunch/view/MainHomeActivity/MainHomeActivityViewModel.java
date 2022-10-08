@@ -4,15 +4,11 @@ import android.annotation.SuppressLint;
 import android.location.Location;
 import android.net.Uri;
 
-import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.UserInfo;
-import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
@@ -36,26 +32,14 @@ public class MainHomeActivityViewModel extends ViewModel {
 
         LiveData<Location> locationLiveData = mLocationRepository.getLocationLiveData();
 
-        LiveData<MyAutoCompleteData> myAutoCompleteLiveData = Transformations.switchMap(locationLiveData, new Function<Location, LiveData<MyAutoCompleteData>>() {
-            @Override
-            public LiveData<MyAutoCompleteData> apply(Location location) {
-                String locationToString = location.getLatitude() + "," + location.getLongitude();
-                return  mAutoCompleteDataRepository.fetchAndGetAutoCompleteData(locationToString);
-            }
-        });
-
         mainHomeActivityViewStateMediatorLiveData.addSource(locationLiveData, location -> {
-            combine(location, myAutoCompleteLiveData.getValue());
-        });
-
-        mainHomeActivityViewStateMediatorLiveData.addSource(myAutoCompleteLiveData, myAutoCompleteData -> {
-            combine(locationLiveData.getValue(), myAutoCompleteData);
+            combine(location);
         });
 
     }
 
-    private void combine(Location location, MyAutoCompleteData myAutoCompleteData) {
-        if(location == null || myAutoCompleteData == null) {
+    private void combine(Location location) {
+        if(location == null) {
             return;
         }
 
@@ -64,19 +48,17 @@ public class MainHomeActivityViewModel extends ViewModel {
         String userEmail = "";
         Uri userPhotoUrl = null;
         boolean isUserLoggedIn = false;
-        List<? extends UserInfo> userInfoList = null;
 
         if (mFirebaseRepository.getCurrentUser() != null) {
             isUserLoggedIn = true;
-            userName = mFirebaseRepository.getCurrentUser().getDisplayName();
-            userEmail = mFirebaseRepository.getCurrentUser().getEmail();
-            userPhotoUrl = mFirebaseRepository.getCurrentUser().getPhotoUrl();
-            userInfoList = mFirebaseRepository.getCurrentUser().getProviderData();
-            providerId = mFirebaseRepository.getCurrentUser().getProviderId();
+            userName = mFirebaseRepository.getCurrentUser().getProviderData().get(1).getDisplayName();
+            userEmail = mFirebaseRepository.getCurrentUser().getProviderData().get(1).getEmail();
+            userPhotoUrl = mFirebaseRepository.getCurrentUser().getProviderData().get(1).getPhotoUrl();
+            providerId = mFirebaseRepository.getCurrentUser().getProviderData().get(1).getProviderId();
         } else {
         }
 
-        MainHomeActivityViewState mainHomeActivityViewState = new MainHomeActivityViewState(providerId, userName, userEmail, userPhotoUrl, isUserLoggedIn, userInfoList);
+        MainHomeActivityViewState mainHomeActivityViewState = new MainHomeActivityViewState(providerId, userName, userEmail, userPhotoUrl, isUserLoggedIn);
 
         mainHomeActivityViewStateMediatorLiveData.setValue(mainHomeActivityViewState);
     }

@@ -30,7 +30,6 @@ android {
         debug {
             resValue "string", "facebook_application_id", properties.getProperty("FACEBOOK_APPLICATION_ID", "")
             resValue "string", "facebook_client_token", properties.getProperty("FACEBOOK_CLIENT_TOKEN", "")
-            minifyEnabled true
         }
     }
 
