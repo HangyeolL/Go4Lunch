@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
+import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 
 import java.util.ArrayList;
@@ -13,27 +14,28 @@ import java.util.List;
 
 public class WorkmatesFragmentViewModel extends ViewModel {
 
-    private FirebaseRepository mFirebaseRepository;
-
     private MediatorLiveData<WorkmatesFragmentViewState> workMatesFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
 
-    public WorkmatesFragmentViewModel(FirebaseRepository firebaseRepository) {
-        mFirebaseRepository = firebaseRepository;
+    public WorkmatesFragmentViewModel(FirebaseRepository firebaseRepository, AutoCompleteDataRepository autoCompleteDataRepository) {
 
-        LiveData<List<User>> userListLiveData = mFirebaseRepository.getUsersList();
-        LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = mFirebaseRepository.getLunchRestaurantListOfAllUsers();
+        LiveData<List<User>> userListLiveData = firebaseRepository.getUsersList();
+        LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
+        LiveData<String> userInputLiveData = autoCompleteDataRepository.getUserInputMutableLiveData();
 
         workMatesFragmentViewStateMediatorLiveData.addSource(userListLiveData, userList -> {
-            combine(userList, lunchRestaurantListLiveData.getValue());
+            combine(userList, lunchRestaurantListLiveData.getValue(), userInputLiveData.getValue());
         });
 
         workMatesFragmentViewStateMediatorLiveData.addSource(lunchRestaurantListLiveData, lunchRestaurantList -> {
-            combine(userListLiveData.getValue(), lunchRestaurantList);
+            combine(userListLiveData.getValue(), lunchRestaurantList, userInputLiveData.getValue());
         });
+
+        workMatesFragmentViewStateMediatorLiveData.addSource(userInputLiveData, userInput ->
+                combine(userListLiveData.getValue(), lunchRestaurantListLiveData.getValue(), userInput));
 
     }
 
-    private void combine(List<User> userList, List<LunchRestaurant> lunchRestaurantList) {
+    private void combine(List<User> userList, List<LunchRestaurant> lunchRestaurantList, String userInput) {
         if (userList == null || lunchRestaurantList == null) {
             return;
         }
@@ -41,20 +43,32 @@ public class WorkmatesFragmentViewModel extends ViewModel {
         List<WorkmatesFragmentRecyclerViewItemViewState> recyclerViewItemViewStateList = new ArrayList<>();
 
         String userPhotoUrl = "";
-        String lunchRestaurantName= "not decided yet";
-        String lunchRestaurantId= "";
+        String lunchRestaurantName = "not decided yet";
+        String lunchRestaurantId = "";
 
-        for (User user: userList) {
-            for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-                if (lunchRestaurant.getUserId().equals(user.getId())) {
-
-                    if(user.getPhotoUrl() != null) {
+        if (userInput == null) {
+            if (lunchRestaurantList.isEmpty()) {
+                for (User user : userList) {
+                    if (user.getPhotoUrl() != null) {
                         userPhotoUrl = user.getPhotoUrl();
                     }
+                    WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
+                            new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
 
-                    if(lunchRestaurant != null) {
-                        lunchRestaurantName = lunchRestaurant.getName();
-                        lunchRestaurantId = lunchRestaurant.getRestaurantId();
+                    recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+                }
+            } else {
+                for (User user : userList) {
+                    for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                        if (lunchRestaurant.getUserId().equals(user.getId())) {
+                            if (lunchRestaurant != null) {
+                                lunchRestaurantName = lunchRestaurant.getName();
+                                lunchRestaurantId = lunchRestaurant.getRestaurantId();
+                            }
+                        }
+                    }
+                    if (user.getPhotoUrl() != null) {
+                        userPhotoUrl = user.getPhotoUrl();
                     }
 
                     WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
@@ -64,21 +78,71 @@ public class WorkmatesFragmentViewModel extends ViewModel {
                     recyclerViewItemViewStateList.add(recyclerViewItemViewState);
                 }
             }
-        }
+        } else {
+            if (lunchRestaurantList.isEmpty()) {
+                for (User user : userList) {
+                    if (user.getName().contains(userInput)) {
+                        if (user.getPhotoUrl() != null) {
+                            userPhotoUrl = user.getPhotoUrl();
+                        }
+                        WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
+                                new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
 
-        if (recyclerViewItemViewStateList.isEmpty()) {
-            for (User user : userList) {
-                if(user.getPhotoUrl() != null) {
-                    userPhotoUrl = user.getPhotoUrl();
+                        recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+                        break;
+                    } else {
+                        if (user.getPhotoUrl() != null) {
+                            userPhotoUrl = user.getPhotoUrl();
+                        }
+                        WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
+                                new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
+
+                        recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+                    }
                 }
-                WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
-                        new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
+            } else {
+                for (User user : userList) {
+                    for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                        if (lunchRestaurant.getUserId().equals(user.getId())) {
 
-                recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+                            if (lunchRestaurant != null) {
+                                lunchRestaurantName = lunchRestaurant.getName();
+                                lunchRestaurantId = lunchRestaurant.getRestaurantId();
+                            }
+
+                            if (user.getPhotoUrl() != null) {
+                                userPhotoUrl = user.getPhotoUrl();
+                            }
+
+                            WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
+                                    new WorkmatesFragmentRecyclerViewItemViewState(
+                                            userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
+
+                            recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+
+                        } else if (lunchRestaurant.getUserId().equals(user.getId()) && user.getName().contains(userInput)) {
+                            if (user.getPhotoUrl() != null) {
+                                userPhotoUrl = user.getPhotoUrl();
+                            }
+
+                            if (lunchRestaurant != null) {
+                                lunchRestaurantName = lunchRestaurant.getName();
+                                lunchRestaurantId = lunchRestaurant.getRestaurantId();
+                            }
+
+                            WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
+                                    new WorkmatesFragmentRecyclerViewItemViewState(
+                                            userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
+
+                            recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+                        }
+                    }
+                }
             }
         }
 
         workMatesFragmentViewStateMediatorLiveData.setValue(new WorkmatesFragmentViewState(recyclerViewItemViewStateList));
+
     }
 
     public LiveData<WorkmatesFragmentViewState> getWorkmatesFragmentViewStateLiveData() {

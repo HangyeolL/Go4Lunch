@@ -47,6 +47,10 @@ public class AutoCompleteDataRepository {
         return mAutoCompleteDataLiveData;
     }
 
+    public LiveData<String> getUserInputMutableLiveData() {
+        return userInputMutableLiveData;
+    }
+
     public void setUserSearchTextQuery(String userSearchTextQuery) {
         userInputMutableLiveData.setValue(userSearchTextQuery);
     }

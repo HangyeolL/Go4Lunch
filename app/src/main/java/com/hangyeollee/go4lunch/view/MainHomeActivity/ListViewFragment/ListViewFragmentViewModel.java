@@ -8,8 +8,11 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
+import com.hangyeollee.go4lunch.model.autocompletepojo.Prediction;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
+import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
 
@@ -21,13 +24,11 @@ import javax.annotation.Nullable;
 public class ListViewFragmentViewModel extends ViewModel {
 
     private LocationRepository mLocationRepository;
-    private NearbySearchDataRepository mNearbySearchDataRepository;
 
     private MediatorLiveData<ListViewFragmentViewState> listViewFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
 
-    public ListViewFragmentViewModel(LocationRepository mLocationRepository, NearbySearchDataRepository mNearbySearchDataRepository) {
+    public ListViewFragmentViewModel(LocationRepository mLocationRepository, NearbySearchDataRepository mNearbySearchDataRepository, AutoCompleteDataRepository autoCompleteDataRepository) {
         this.mLocationRepository = mLocationRepository;
-        this.mNearbySearchDataRepository = mNearbySearchDataRepository;
 
         LiveData<Location> locationLiveData = mLocationRepository.getLocationLiveData();
 
@@ -39,15 +40,18 @@ public class ListViewFragmentViewModel extends ViewModel {
             }
         });
 
-        listViewFragmentViewStateMediatorLiveData.setValue(new ListViewFragmentViewState(new ArrayList<>(), true));
+        LiveData<MyAutoCompleteData> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
 
         listViewFragmentViewStateMediatorLiveData.addSource(myNearBySearchDataLiveData, myNearBySearchData -> {
-            combine(myNearBySearchData);
+            combine(myNearBySearchData, myAutoCompleteDataLiveData.getValue());
         });
+
+        listViewFragmentViewStateMediatorLiveData.addSource(myAutoCompleteDataLiveData, myAutoCompleteData ->
+                combine(myNearBySearchDataLiveData.getValue(), myAutoCompleteData));
 
     }
 
-    private void combine(@Nullable MyNearBySearchData myNearBySearchData) {
+    private void combine(@Nullable MyNearBySearchData myNearBySearchData, @Nullable MyAutoCompleteData autoCompleteData) {
         if (myNearBySearchData == null) {
             return;
         }
@@ -63,40 +67,105 @@ public class ListViewFragmentViewModel extends ViewModel {
         Location resultLocation = new Location("restaurant location");
         String distanceBetween = "";
 
-        for (Result result : myNearBySearchData.getResults()) {
-//            if (userSearchQuery == null || userSearchQuery.isEmpty() || result.getName().contains(userSearchQuery)) {
-            name = result.getName();
-            vicinity = result.getVicinity();
-            if (result.getOpeningHours() != null) {
-                isOpen = result.getOpeningHours().getOpenNow();
-            } else {
-                isOpen = false;
-            }
-            if (result.getRating() != null) {
-                rating = result.getRating().floatValue();
-            }
-            if (result.getPhotos() != null) {
-                photoReference = result.getPhotos().get(0).getPhotoReference();
-            }
+        if (autoCompleteData == null) {
+            for (Result result : myNearBySearchData.getResults()) {
+                name = result.getName();
+                vicinity = result.getVicinity();
+                if (result.getOpeningHours() != null) {
+                    isOpen = result.getOpeningHours().getOpenNow();
+                } else {
+                    isOpen = false;
+                }
+                if (result.getRating() != null) {
+                    rating = result.getRating().floatValue();
+                }
+                if (result.getPhotos() != null) {
+                    photoReference = result.getPhotos().get(0).getPhotoReference();
+                }
 
-            placeId = result.getPlaceId();
-            resultLocation.setLatitude(result.getGeometry().getLocation().getLat());
-            resultLocation.setLongitude(result.getGeometry().getLocation().getLng());
+                placeId = result.getPlaceId();
+                resultLocation.setLatitude(result.getGeometry().getLocation().getLat());
+                resultLocation.setLongitude(result.getGeometry().getLocation().getLng());
 
-            if (mLocationRepository.getLocationLiveData().getValue() != null) {
-                distanceBetween = String.format("%.0f", mLocationRepository.getLocationLiveData().getValue().distanceTo(resultLocation)) + "m";
+                if (mLocationRepository.getLocationLiveData().getValue() != null) {
+                    distanceBetween = String.format("%.0f", mLocationRepository.getLocationLiveData().getValue().distanceTo(resultLocation)) + "m";
+                }
+
+                ListViewFragmentRecyclerViewItemViewState recyclerViewItemViewState = new ListViewFragmentRecyclerViewItemViewState(
+                        name, vicinity, isOpen, rating, photoReference, placeId, distanceBetween
+                );
+
+                recyclerViewItemViewStateList.add(recyclerViewItemViewState);
             }
+        } else if (autoCompleteData.getPredictions().isEmpty()) {
+            for (Result result : myNearBySearchData.getResults()) {
+                name = result.getName();
+                vicinity = result.getVicinity();
+                if (result.getOpeningHours() != null) {
+                    isOpen = result.getOpeningHours().getOpenNow();
+                } else {
+                    isOpen = false;
+                }
+                if (result.getRating() != null) {
+                    rating = result.getRating().floatValue();
+                }
+                if (result.getPhotos() != null) {
+                    photoReference = result.getPhotos().get(0).getPhotoReference();
+                }
 
-            ListViewFragmentRecyclerViewItemViewState recyclerViewItemViewState = new ListViewFragmentRecyclerViewItemViewState(
-                    name, vicinity, isOpen, rating, photoReference, placeId, distanceBetween
-            );
+                placeId = result.getPlaceId();
+                resultLocation.setLatitude(result.getGeometry().getLocation().getLat());
+                resultLocation.setLongitude(result.getGeometry().getLocation().getLng());
 
-            recyclerViewItemViewStateList.add(recyclerViewItemViewState);
-//            }
+                if (mLocationRepository.getLocationLiveData().getValue() != null) {
+                    distanceBetween = String.format("%.0f", mLocationRepository.getLocationLiveData().getValue().distanceTo(resultLocation)) + "m";
+                }
+
+                ListViewFragmentRecyclerViewItemViewState recyclerViewItemViewState = new ListViewFragmentRecyclerViewItemViewState(
+                        name, vicinity, isOpen, rating, photoReference, placeId, distanceBetween
+                );
+
+                recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+            }
+        } else {
+            for (Result result : myNearBySearchData.getResults()) {
+                for (Prediction prediction : autoCompleteData.getPredictions()) {
+                    if (prediction.getPlaceId().equals(result.getPlaceId()) &&
+                            prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
+
+                        name = result.getName();
+                        vicinity = result.getVicinity();
+                        if (result.getOpeningHours() != null) {
+                            isOpen = result.getOpeningHours().getOpenNow();
+                        } else {
+                            isOpen = false;
+                        }
+                        if (result.getRating() != null) {
+                            rating = result.getRating().floatValue();
+                        }
+                        if (result.getPhotos() != null) {
+                            photoReference = result.getPhotos().get(0).getPhotoReference();
+                        }
+
+                        placeId = result.getPlaceId();
+                        resultLocation.setLatitude(result.getGeometry().getLocation().getLat());
+                        resultLocation.setLongitude(result.getGeometry().getLocation().getLng());
+
+                        if (mLocationRepository.getLocationLiveData().getValue() != null) {
+                            distanceBetween = String.format("%.0f", mLocationRepository.getLocationLiveData().getValue().distanceTo(resultLocation)) + "m";
+                        }
+
+                        ListViewFragmentRecyclerViewItemViewState recyclerViewItemViewState = new ListViewFragmentRecyclerViewItemViewState(
+                                name, vicinity, isOpen, rating, photoReference, placeId, distanceBetween
+                        );
+
+                        recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+                    }
+                }
+            }
         }
 
-        listViewFragmentViewStateMediatorLiveData.setValue(new ListViewFragmentViewState(recyclerViewItemViewStateList, false));
-
+        listViewFragmentViewStateMediatorLiveData.setValue(new ListViewFragmentViewState(recyclerViewItemViewStateList));
     }
 
     public LiveData<ListViewFragmentViewState> getListViewFragmentViewStateLiveData() {

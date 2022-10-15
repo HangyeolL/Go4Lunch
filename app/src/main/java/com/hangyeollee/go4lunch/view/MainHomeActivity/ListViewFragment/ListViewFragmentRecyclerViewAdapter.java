@@ -2,7 +2,6 @@ package com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,14 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.databinding.ListViewFragmentListItemBinding;
-import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<ListViewFragmentRecyclerViewAdapter.ViewHolder> {
 
-    private List<ListViewFragmentRecyclerViewItemViewState> listViewFragmentRecyclerViewItemViewStateList;
+    private List<ListViewFragmentRecyclerViewItemViewState> listViewFragmentRecyclerViewItemViewStateList = new ArrayList<>();
 
     public void submitList(List<ListViewFragmentRecyclerViewItemViewState> itemViewStateList) {
         listViewFragmentRecyclerViewItemViewStateList = itemViewStateList;
