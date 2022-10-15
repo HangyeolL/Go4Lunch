@@ -12,12 +12,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hangyeollee.go4lunch.databinding.FragmentWorkmatesBinding;
-import com.hangyeollee.go4lunch.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.model.User;
-import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivityViewModel;
 import com.hangyeollee.go4lunch.view.ViewModelFactory;
-
-import java.util.List;
 
 public class WorkmatesFragment extends Fragment {
 
@@ -26,6 +21,10 @@ public class WorkmatesFragment extends Fragment {
     private WorkmatesFragmentViewModel mViewModel;
 
     private WorkmatesFragmentRecyclerViewAdapter mAdapter;
+
+    public static WorkmatesFragment newInstance() {
+        return new WorkmatesFragment();
+    }
 
     @Nullable
     @Override

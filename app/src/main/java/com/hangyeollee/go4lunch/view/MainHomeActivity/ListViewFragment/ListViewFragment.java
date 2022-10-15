@@ -20,6 +20,10 @@ import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 public class ListViewFragment extends Fragment {
 
+    public static ListViewFragment newInstance() {
+        return new ListViewFragment();
+    }
+
     @SuppressLint("MissingPermission")
     @Nullable
     @Override
@@ -46,7 +50,7 @@ public class ListViewFragment extends Fragment {
                 }
             });
 
-        } else {}
+        }
 
         return binding.getRoot();
     }

@@ -27,10 +27,6 @@ import com.hangyeollee.go4lunch.view.SettingsActivity.SettingsActivityViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
-    private final Application mApplication;
-    private final FirebaseAuth firebaseAuth;
-    private final FirebaseFirestore firebaseFirestore;
-
     private NearbySearchDataRepository mNearbySearchDataRepository;
     private PlaceDetailDataRepository mPlaceDetailDataRepository;
     private AutoCompleteDataRepository mAutoCompleteDataRepository;
@@ -53,17 +49,16 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     }
 
     private ViewModelFactory() {
-        mApplication = MainApplication.getInstance();
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseFirestore = FirebaseFirestore.getInstance();
+        Application mApplication = MainApplication.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         GoogleMapsApi googleMapsApi = MyRetrofitBuilder.getGoogleMapsApi();
 
-        mNearbySearchDataRepository = new NearbySearchDataRepository(googleMapsApi);
-        mPlaceDetailDataRepository = new PlaceDetailDataRepository(googleMapsApi);
-        mAutoCompleteDataRepository = new AutoCompleteDataRepository(googleMapsApi);
-//        mUserSearchRepository = new UserSearchRepository();
         mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(mApplication));
         mFirebaseRepository = new FirebaseRepository(firebaseAuth, firebaseFirestore);
+        mNearbySearchDataRepository = new NearbySearchDataRepository(googleMapsApi);
+        mPlaceDetailDataRepository = new PlaceDetailDataRepository(googleMapsApi);
+        mAutoCompleteDataRepository = new AutoCompleteDataRepository(googleMapsApi, mLocationRepository);
     }
 
     @NonNull

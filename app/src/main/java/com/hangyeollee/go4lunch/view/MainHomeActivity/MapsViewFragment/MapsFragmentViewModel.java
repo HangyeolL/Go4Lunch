@@ -8,7 +8,6 @@ import android.location.Location;
 import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
@@ -16,6 +15,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
+import com.hangyeollee.go4lunch.model.autocompletepojo.Prediction;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
@@ -46,39 +46,57 @@ public class MapsFragmentViewModel extends ViewModel {
             @Override
             public LiveData<MyNearBySearchData> apply(Location location) {
                 String locationToString = location.getLatitude() + "," + location.getLongitude();
-                return  mNearbySearchDataRepository.fetchAndGetMyNearBySearchLiveData(locationToString);
+                return mNearbySearchDataRepository.fetchAndGetMyNearBySearchLiveData(locationToString);
             }
         });
 
+        LiveData<MyAutoCompleteData> myAutoCompleteDataLiveData = mAutoCompleteDataRepository.getAutoCompleteDataLiveData();
+
         mapsFragmentViewStateMediatorLiveData.addSource(locationLiveData, location -> {
-            combine(location, myNearBySearchDataLiveData.getValue());
+            combine(location, myNearBySearchDataLiveData.getValue(), myAutoCompleteDataLiveData.getValue());
         });
 
         mapsFragmentViewStateMediatorLiveData.addSource(myNearBySearchDataLiveData, myNearBySearchData -> {
-            combine(locationLiveData.getValue(), myNearBySearchData);
+            combine(locationLiveData.getValue(), myNearBySearchData, myAutoCompleteDataLiveData.getValue());
         });
+
+        mapsFragmentViewStateMediatorLiveData.addSource(myAutoCompleteDataLiveData, myAutoCompleteData ->
+                combine(locationLiveData.getValue(), myNearBySearchDataLiveData.getValue(), myAutoCompleteData)
+        );
+
 
     }
 
-    private void combine(@Nullable Location location, @Nullable MyNearBySearchData myNearBySearchData) {
-        if(location == null || myNearBySearchData == null) {
+    private void combine(@Nullable Location location, @Nullable MyNearBySearchData myNearBySearchData, @Nullable MyAutoCompleteData myAutoCompleteData) {
+        if (location == null || myNearBySearchData == null || myAutoCompleteData == null) {
             return;
         }
 
         LatLng userLatLng = null;
 
-        if(location != null) {
+        if (location != null) {
             userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         }
 
-        List<Result> nearBySearchResultList = new ArrayList<>();
+        List<MapMarkerViewState> mapMarkerViewStateList = new ArrayList<>();
 
-        for(Result result : myNearBySearchData.getResults()) {
-            nearBySearchResultList.add(result);
+        for (Result result : myNearBySearchData.getResults()) {
+            for (Prediction prediction : myAutoCompleteData.getPredictions()) {
+                if (prediction.getPlaceId().equals(result.getPlaceId()) &&
+                    prediction.getStructuredFormatting().getMainText().contains(result.getName()) || prediction == null) {
+
+                    MapMarkerViewState mapMarkerViewState = new MapMarkerViewState(
+                            result.getPlaceId(), new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()),
+                        result.getName()
+                    );
+
+                    mapMarkerViewStateList.add(mapMarkerViewState);
+                }
+            }
         }
 
         mapsFragmentViewStateMediatorLiveData.setValue(
-                new MapsFragmentViewState(userLatLng, nearBySearchResultList, false)
+                new MapsFragmentViewState(userLatLng, mapMarkerViewStateList)
         );
     }
 
@@ -95,6 +113,5 @@ public class MapsFragmentViewModel extends ViewModel {
         drawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
-
 
 }

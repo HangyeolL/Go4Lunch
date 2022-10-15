@@ -20,12 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.facebook.login.LoginManager;
@@ -50,8 +46,6 @@ public class MainHomeActivity extends AppCompatActivity {
     private ActivityMainHomeBinding binding;
 
     private MainHomeActivityViewModel mViewModel;
-
-    private static final int NUM_PAGES = 3;
 
     private SharedPreferences mSharedPref;
 
@@ -90,7 +84,6 @@ public class MainHomeActivity extends AppCompatActivity {
         }
 
 //        alarmSetup();
-        viewPagerSetup();
         navigationViewItemSelectedListener();
         linkDrawerLayoutWithToolbar();
         bottomNavigationBarSetup();
@@ -119,6 +112,10 @@ public class MainHomeActivity extends AppCompatActivity {
             }
         });
 
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, MapsFragment.newInstance()).commit();
+        }
+
     }
 
 //    private void alarmSetup() {
@@ -143,31 +140,6 @@ public class MainHomeActivity extends AppCompatActivity {
 //
 //        }
 //    }
-
-    private void viewPagerSetup() {
-        FragmentStateAdapter mFragmentStateAdapter = new ViewPagerAdapter(this);
-        binding.viewPager.setAdapter(mFragmentStateAdapter);
-
-        binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                switch (position) {
-                    case 0:
-                        binding.toolBar.setTitle("I am Hungry!");
-                        binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationView_menu_mapView).setChecked(true);
-                        break;
-                    case 1:
-                        binding.toolBar.setTitle("I am Hungry!");
-                        binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationView_menu_listView).setChecked(true);
-                        break;
-                    case 2:
-                        binding.toolBar.setTitle("Available Workmates");
-                        binding.bottomNavigationView.getMenu().findItem(R.id.bottomNavigationView_menu_workMates).setChecked(true);
-                        break;
-                }
-            }
-        });
-    }
 
     private void navigationViewItemSelectedListener() {
         binding.NavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -207,13 +179,25 @@ public class MainHomeActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.bottomNavigationView_menu_mapView:
-                        binding.viewPager.setCurrentItem(0);
+                        binding.toolBar.setTitle("I am Hungry!");
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fragmentContainerView, MapsFragment.newInstance())
+                                .commitNow();
                         break;
                     case R.id.bottomNavigationView_menu_listView:
-                        binding.viewPager.setCurrentItem(1);
+                        binding.toolBar.setTitle("I am Hungry!");
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fragmentContainerView, ListViewFragment.newInstance())
+                                .commitNow();
                         break;
                     case R.id.bottomNavigationView_menu_workMates:
-                        binding.viewPager.setCurrentItem(2);
+                        binding.toolBar.setTitle("Available Workmates");
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.fragmentContainerView, WorkmatesFragment.newInstance())
+                                .commitNow();
                         break;
                 }
                 return true;
@@ -251,14 +235,24 @@ public class MainHomeActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (binding.viewPager.getCurrentItem() == 0 && !binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            super.onBackPressed();
-
-        } else if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START);
-
-        } else if (!binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.viewPager.setCurrentItem(binding.viewPager.getCurrentItem() - 1);
+        int FragmentId = 0;
+        switch (FragmentId) {
+            case R.id.bottomNavigationView_menu_mapView:
+                if (!binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    super.onBackPressed();
+                } else if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START);
+                }
+            case R.id.bottomNavigationView_menu_listView:
+                binding.bottomNavigationView.setSelectedItemId(R.id.bottomNavigationView_menu_mapView);
+                if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START);
+                }
+            case R.id.bottomNavigationView_menu_workMates:
+                binding.bottomNavigationView.setSelectedItemId(R.id.bottomNavigationView_menu_listView);
+                if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START);
+                }
         }
     }
 
@@ -267,32 +261,5 @@ public class MainHomeActivity extends AppCompatActivity {
         super.onDestroy();
         mViewModel.stopLocationRequest();
         binding = null;
-    }
-
-    /**
-     * ViewPagerAdapter of MainHomeActivity
-     */
-    private class ViewPagerAdapter extends FragmentStateAdapter {
-        public ViewPagerAdapter(FragmentActivity fa) {
-            super(fa);
-        }
-
-        @Override
-        public Fragment createFragment(int position) {
-            switch (position) {
-                case 0:
-                    return new MapsFragment();
-                case 1:
-                    return new ListViewFragment();
-                case 2:
-                    return new WorkmatesFragment();
-            }
-            return null;
-        }
-
-        @Override
-        public int getItemCount() {
-            return NUM_PAGES;
-        }
     }
 }

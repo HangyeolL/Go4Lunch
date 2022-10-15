@@ -17,9 +17,6 @@ public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<W
 
     private List<WorkmatesFragmentRecyclerViewItemViewState> workmatesFragmentRecyclerViewItemViewStateList;
 
-    public WorkmatesFragmentRecyclerViewAdapter() {
-    }
-
     public void submitList(List<WorkmatesFragmentRecyclerViewItemViewState> workmatesFragmentRecyclerViewItemViewStateList) {
         this.workmatesFragmentRecyclerViewItemViewStateList = workmatesFragmentRecyclerViewItemViewStateList;
         notifyDataSetChanged();

@@ -17,7 +17,6 @@ public class WorkmatesFragmentViewModel extends ViewModel {
 
     private MediatorLiveData<WorkmatesFragmentViewState> workMatesFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
 
-
     public WorkmatesFragmentViewModel(FirebaseRepository firebaseRepository) {
         mFirebaseRepository = firebaseRepository;
 
@@ -40,7 +39,6 @@ public class WorkmatesFragmentViewModel extends ViewModel {
         }
 
         List<WorkmatesFragmentRecyclerViewItemViewState> recyclerViewItemViewStateList = new ArrayList<>();
-
 
         for (User user: userList) {
             for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {

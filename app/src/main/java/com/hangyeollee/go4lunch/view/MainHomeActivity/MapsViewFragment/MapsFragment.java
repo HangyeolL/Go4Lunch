@@ -7,12 +7,15 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -31,58 +34,40 @@ import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 import java.util.List;
 
-public class MapsFragment extends SupportMapFragment {
+public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback {
 
     private MapsFragmentViewModel mViewModel;
-
     private GoogleMap mGoogleMap;
+
+    public static MapsFragment newInstance() {
+        return new MapsFragment();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MapsFragmentViewModel.class);
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            getMapAsync(this);
+        }
+    }
 
     @SuppressLint("MissingPermission")
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mGoogleMap = googleMap;
+        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        mGoogleMap.clear();
+        mGoogleMap.setMyLocationEnabled(true);
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MapsFragmentViewModel.class);
-
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Log.d("Permission", "Is already granted");
-            onMapReady();
-        } else {
-            Log.d("Permission", "is not granted launch permission dialog");
-        }
-
-    }
-
-
-    private void onMapReady() {
-        getMapAsync(new OnMapReadyCallback() {
-                @SuppressLint("MissingPermission")
-                @Override
-                public void onMapReady(@NonNull GoogleMap googleMap) {
-                    mGoogleMap = googleMap;
-                    mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-                    mGoogleMap.clear();
-                    mGoogleMap.setMyLocationEnabled(true);
-
-                    mViewModel.getMapsFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<MapsFragmentViewState>() {
-                        @Override
-                        public void onChanged(MapsFragmentViewState mapsFragmentViewState) {
-
-//                            if(mapsFragmentViewState.isProgressBarVisible()) {
-//                                getActivity().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-//                            } else {
-//                                getActivity().findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-//                            }
-
-                            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapsFragmentViewState.getUserLatLng(), 15));
-
-                            addMarkersOnMap(mapsFragmentViewState.getMyNearBySearchDataResultList());
-                            setListenerOnMarker(mapsFragmentViewState.getMyNearBySearchDataResultList());
-                        }
-                    });
-
-                }
-            });
+        mViewModel.getMapsFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<MapsFragmentViewState>() {
+            @Override
+            public void onChanged(MapsFragmentViewState mapsFragmentViewState) {
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapsFragmentViewState.getUserLatLng(), 15));
+                addMarkersOnMap(mapsFragmentViewState.getMapMarkerViewStateList());
+                setListenerOnMarker(mapsFragmentViewState.getMapMarkerViewStateList());
+            }
+        });
     }
 
     private BitmapDescriptor setUpMapIcon() {
@@ -92,59 +77,26 @@ public class MapsFragment extends SupportMapFragment {
         return mViewModel.makeDrawableIntoBitmap(wrappedDrawable);
     }
 
-    private void addMarkersOnMap(List<Result> nearBySearchResultList) {
+    private void addMarkersOnMap(List<MapMarkerViewState> mapMarkerViewStateList) {
         BitmapDescriptor markerIcon = setUpMapIcon();
 
-        for (Result mResult : nearBySearchResultList) {
-            LatLng restauLatLng = new LatLng(mResult.getGeometry().getLocation().getLat(), mResult.getGeometry().getLocation().getLng());
-            mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(mResult.getName()));
+        for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
+            mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(mapMarkerViewState.getPositionLatLng()).title(mapMarkerViewState.getTitle()));
         }
     }
 
-
-
-    private void setListenerOnMarker(List<Result> nearBySearchResultList) {
+    private void setListenerOnMarker(List<MapMarkerViewState> mapMarkerViewStateList) {
         mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(@NonNull Marker marker) {
                 Log.i("markerName", marker.getTitle());
-
                 Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
-                for (Result result : nearBySearchResultList) {
-                    if (marker.getTitle().equalsIgnoreCase(result.getName())) {
-                        Log.e("sendingPlaceId", result.getPlaceId());
-                        intent.putExtra("place id", result.getPlaceId());
-                    }
+                for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
+                    Log.e("sendingPlaceId", mapMarkerViewState.getPlaceId());
+                    intent.putExtra("place id", mapMarkerViewState.getPlaceId());
                 }
                 startActivity(intent);
             }
         });
     }
-
-//    private void autoCompleteMarkersOnMap() {
-//        mGoogleMap.clear();
-//        BitmapDescriptor markerIcon = setUpMapIcon();
-//
-//        mViewModel.getAutoCompleteLiveData().observe(getViewLifecycleOwner(), new Observer<MyAutoCompleteData>() {
-//            @Override
-//            public void onChanged(MyAutoCompleteData myAutoCompleteData) {
-//                if (myAutoCompleteData != null) {
-//                    mPredictionList = myAutoCompleteData.getPredictions();
-//
-//                    for (Result result : nearBySearchResultList) {
-//                        for (Prediction prediction : mPredictionList) {
-//                            if (prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
-//                                LatLng restauLatLng = new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng());
-//                                mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(restauLatLng).title(result.getName()));
-//                            }
-//                        }
-//                    }
-//                }
-//
-//            }
-//        });
-//    }
-
-
-
 }
