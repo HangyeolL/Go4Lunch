@@ -40,12 +40,6 @@ public class ListViewFragment extends Fragment {
             viewModel.getListViewFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<ListViewFragmentViewState>() {
                 @Override
                 public void onChanged(ListViewFragmentViewState listViewFragmentViewState) {
-                    if(listViewFragmentViewState.isProgressBarVisible()) {
-                        binding.progressBar.setVisibility(View.VISIBLE);
-                    } else {
-                        binding.progressBar.setVisibility(View.INVISIBLE);
-                    }
-
                     listViewFragmentRecyclerViewAdapter.submitList(listViewFragmentViewState.getListViewFragmentRecyclerViewItemViewStateList());
                 }
             });

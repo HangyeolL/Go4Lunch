@@ -40,13 +40,13 @@ public class WorkmatesFragmentViewModel extends ViewModel {
 
         List<WorkmatesFragmentRecyclerViewItemViewState> recyclerViewItemViewStateList = new ArrayList<>();
 
+        String userPhotoUrl = "";
+        String lunchRestaurantName= "not decided yet";
+        String lunchRestaurantId= "";
+
         for (User user: userList) {
             for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
                 if (lunchRestaurant.getUserId().equals(user.getId())) {
-
-                    String userPhotoUrl = "";
-                    String lunchRestaurantName= "";
-                    String lunchRestaurantId= "";
 
                     if(user.getPhotoUrl() != null) {
                         userPhotoUrl = user.getPhotoUrl();
@@ -55,8 +55,6 @@ public class WorkmatesFragmentViewModel extends ViewModel {
                     if(lunchRestaurant != null) {
                         lunchRestaurantName = lunchRestaurant.getName();
                         lunchRestaurantId = lunchRestaurant.getRestaurantId();
-                    } else {
-                        lunchRestaurantName = "not decided yet";
                     }
 
                     WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
@@ -64,12 +62,23 @@ public class WorkmatesFragmentViewModel extends ViewModel {
                                     userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
 
                     recyclerViewItemViewStateList.add(recyclerViewItemViewState);
-                    break;
                 }
             }
         }
 
-        workMatesFragmentViewStateMediatorLiveData.setValue(new WorkmatesFragmentViewState(recyclerViewItemViewStateList, false));
+        if (recyclerViewItemViewStateList.isEmpty()) {
+            for (User user : userList) {
+                if(user.getPhotoUrl() != null) {
+                    userPhotoUrl = user.getPhotoUrl();
+                }
+                WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
+                        new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
+
+                recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+            }
+        }
+
+        workMatesFragmentViewStateMediatorLiveData.setValue(new WorkmatesFragmentViewState(recyclerViewItemViewStateList));
     }
 
     public LiveData<WorkmatesFragmentViewState> getWorkmatesFragmentViewStateLiveData() {

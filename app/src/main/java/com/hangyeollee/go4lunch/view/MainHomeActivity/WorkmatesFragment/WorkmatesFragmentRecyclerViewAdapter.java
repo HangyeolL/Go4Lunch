@@ -11,11 +11,12 @@ import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.databinding.WorkmatesFragmentListItemBinding;
 import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<WorkmatesFragmentRecyclerViewAdapter.ViewHolder> {
 
-    private List<WorkmatesFragmentRecyclerViewItemViewState> workmatesFragmentRecyclerViewItemViewStateList;
+    private List<WorkmatesFragmentRecyclerViewItemViewState> workmatesFragmentRecyclerViewItemViewStateList = new ArrayList<>();
 
     public void submitList(List<WorkmatesFragmentRecyclerViewItemViewState> workmatesFragmentRecyclerViewItemViewStateList) {
         this.workmatesFragmentRecyclerViewItemViewStateList = workmatesFragmentRecyclerViewItemViewStateList;
@@ -27,7 +28,7 @@ public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<W
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         WorkmatesFragmentListItemBinding mWorkmatesListItemBinding = WorkmatesFragmentListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new WorkmatesFragmentRecyclerViewAdapter.ViewHolder(mWorkmatesListItemBinding);
+        return new ViewHolder(mWorkmatesListItemBinding);
     }
 
     @Override

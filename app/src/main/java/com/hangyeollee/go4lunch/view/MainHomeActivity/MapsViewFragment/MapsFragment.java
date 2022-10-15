@@ -7,15 +7,12 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -24,11 +21,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hangyeollee.go4lunch.R;
-import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
 import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
