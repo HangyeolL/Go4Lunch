@@ -52,7 +52,6 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mGoogleMap = googleMap;
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-        mGoogleMap.clear();
         mGoogleMap.setMyLocationEnabled(true);
 
         mViewModel.getMapsFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<MapsFragmentViewState>() {
@@ -73,6 +72,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     }
 
     private void addMarkersOnMap(List<MapMarkerViewState> mapMarkerViewStateList) {
+        mGoogleMap.clear();
         BitmapDescriptor markerIcon = setUpMapIcon();
 
         for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {

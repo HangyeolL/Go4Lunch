@@ -41,15 +41,6 @@ public class AutoCompleteDataRepository {
                 )
         );
 
-//        mAutoCompleteDataLiveData = Transformations.switchMap(
-//                userInputMutableLiveData, input -> Transformations.switchMap(
-//                        locationLiveData, location -> {
-//                            String locationToString = location.getLatitude() + "," + location.getLongitude();
-//                            return fetchAndGetAutoCompleteData(input, locationToString);
-//                        }
-//                )
-//        );
-
     }
 
     public LiveData<MyAutoCompleteData> getAutoCompleteDataLiveData() {

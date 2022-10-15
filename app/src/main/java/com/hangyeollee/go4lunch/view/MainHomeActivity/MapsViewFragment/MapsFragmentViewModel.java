@@ -68,7 +68,7 @@ public class MapsFragmentViewModel extends ViewModel {
     }
 
     private void combine(@Nullable Location location, @Nullable MyNearBySearchData myNearBySearchData, @Nullable MyAutoCompleteData myAutoCompleteData) {
-        if (location == null || myNearBySearchData == null || myAutoCompleteData == null) {
+        if (location == null || myNearBySearchData == null) {
             return;
         }
 
@@ -80,17 +80,42 @@ public class MapsFragmentViewModel extends ViewModel {
 
         List<MapMarkerViewState> mapMarkerViewStateList = new ArrayList<>();
 
-        for (Result result : myNearBySearchData.getResults()) {
-            for (Prediction prediction : myAutoCompleteData.getPredictions()) {
-                if (prediction.getPlaceId().equals(result.getPlaceId()) &&
-                    prediction.getStructuredFormatting().getMainText().contains(result.getName()) || prediction == null) {
-
-                    MapMarkerViewState mapMarkerViewState = new MapMarkerViewState(
-                            result.getPlaceId(), new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()),
+        if (myAutoCompleteData == null) {
+            for (Result result : myNearBySearchData.getResults()) {
+                MapMarkerViewState mapMarkerViewState = new MapMarkerViewState(
+                        result.getPlaceId(),
+                        new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()),
                         result.getName()
-                    );
+                );
 
-                    mapMarkerViewStateList.add(mapMarkerViewState);
+                mapMarkerViewStateList.add(mapMarkerViewState);
+            }
+        }
+        else if (myAutoCompleteData.getPredictions().isEmpty()) {
+            for (Result result : myNearBySearchData.getResults()) {
+                MapMarkerViewState mapMarkerViewState = new MapMarkerViewState(
+                        result.getPlaceId(),
+                        new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()),
+                        result.getName()
+                );
+
+                mapMarkerViewStateList.add(mapMarkerViewState);
+            }
+        }
+        else {
+            for (Result result : myNearBySearchData.getResults()) {
+                for (Prediction prediction : myAutoCompleteData.getPredictions()) {
+                    if (prediction.getPlaceId().equals(result.getPlaceId()) &&
+                            prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
+
+                        MapMarkerViewState mapMarkerViewState = new MapMarkerViewState(
+                                result.getPlaceId(),
+                                new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()),
+                                result.getName()
+                        );
+
+                        mapMarkerViewStateList.add(mapMarkerViewState);
+                    }
                 }
             }
         }
