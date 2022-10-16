@@ -57,7 +57,9 @@ public class WorkmatesFragmentViewModel extends ViewModel {
 
                     recyclerViewItemViewStateList.add(recyclerViewItemViewState);
                 }
-            } else {
+            }
+            // LunchResTauList is not Empty but userInput is null
+            else {
                 for (User user : userList) {
                     for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
                         if (lunchRestaurant.getUserId().equals(user.getId())) {
@@ -78,9 +80,13 @@ public class WorkmatesFragmentViewModel extends ViewModel {
                     recyclerViewItemViewStateList.add(recyclerViewItemViewState);
                 }
             }
-        } else {
+        }
+        // UserInput is not null and not empty
+        else if (!userInput.isEmpty()){
             if (lunchRestaurantList.isEmpty()) {
                 for (User user : userList) {
+                    // lunchRestauList is empty
+                    // should sort out according to userInput
                     if (user.getName().contains(userInput)) {
                         if (user.getPhotoUrl() != null) {
                             userPhotoUrl = user.getPhotoUrl();
@@ -90,7 +96,10 @@ public class WorkmatesFragmentViewModel extends ViewModel {
 
                         recyclerViewItemViewStateList.add(recyclerViewItemViewState);
                         break;
-                    } else {
+                    }
+                    // UserInput is not null, lunchRestaurantList is empty, userInput doesn't match to userName
+                    // Should take all the users
+                    else {
                         if (user.getPhotoUrl() != null) {
                             userPhotoUrl = user.getPhotoUrl();
                         }
@@ -100,52 +109,58 @@ public class WorkmatesFragmentViewModel extends ViewModel {
                         recyclerViewItemViewStateList.add(recyclerViewItemViewState);
                     }
                 }
-            } else {
+            }
+            // UserInput is not null, lunchRestaurantList is not empty
+            else {
                 for (User user : userList) {
                     for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
                         if (lunchRestaurant.getUserId().equals(user.getId())) {
-
                             if (lunchRestaurant != null) {
                                 lunchRestaurantName = lunchRestaurant.getName();
                                 lunchRestaurantId = lunchRestaurant.getRestaurantId();
                             }
-
-                            if (user.getPhotoUrl() != null) {
-                                userPhotoUrl = user.getPhotoUrl();
-                            }
-
-                            WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
-                                    new WorkmatesFragmentRecyclerViewItemViewState(
-                                            userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
-
-                            recyclerViewItemViewStateList.add(recyclerViewItemViewState);
-
-                        } else if (lunchRestaurant.getUserId().equals(user.getId()) && user.getName().contains(userInput)) {
-                            if (user.getPhotoUrl() != null) {
-                                userPhotoUrl = user.getPhotoUrl();
-                            }
-
-                            if (lunchRestaurant != null) {
-                                lunchRestaurantName = lunchRestaurant.getName();
-                                lunchRestaurantId = lunchRestaurant.getRestaurantId();
-                            }
-
-                            WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
-                                    new WorkmatesFragmentRecyclerViewItemViewState(
-                                            userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
-
-                            recyclerViewItemViewStateList.add(recyclerViewItemViewState);
                         }
+                    }
+                    if (user.getName().contains(userInput)) {
+                        if (user.getPhotoUrl() != null) {
+                            userPhotoUrl = user.getPhotoUrl();
+                        }
+                        WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
+                                new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
+
+                        recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+                        break;
+                    }
+                    else {
+                        if (user.getPhotoUrl() != null) {
+                            userPhotoUrl = user.getPhotoUrl();
+                        }
+                        WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
+                                new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
+
+                        recyclerViewItemViewStateList.add(recyclerViewItemViewState);
                     }
                 }
             }
         }
+        // UserInput is not null but emtpy
+        else if (userInput.isEmpty()){
+            for(User user : userList) {
+                if (user.getPhotoUrl() != null) {
+                    userPhotoUrl = user.getPhotoUrl();
+                }
+                WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
+                        new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
+
+                recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+            }
+        }
 
         workMatesFragmentViewStateMediatorLiveData.setValue(new WorkmatesFragmentViewState(recyclerViewItemViewStateList));
-
     }
 
     public LiveData<WorkmatesFragmentViewState> getWorkmatesFragmentViewStateLiveData() {
         return workMatesFragmentViewStateMediatorLiveData;
     }
+
 }
