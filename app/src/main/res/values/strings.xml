@@ -16,6 +16,7 @@
     <string name="shared_preferences_user_lunch_restaurant_boolean">shared preferences user lunch restaurant boolean</string>
     <string name="shared_preferences_user_lunch_restaurant_name_string">shared preferences user lunch restaurant name string</string>
     <string name="shared_preferences_user_lunch_restaurant_id_int">shared  preferences user lunch restaurant id int</string>
+    <string name="not_going_to_restaurant_yet">Not going to restaurant (yet ?)</string>
 
 
 </resources>

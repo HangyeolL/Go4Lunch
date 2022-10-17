@@ -27,11 +27,12 @@ import com.hangyeollee.go4lunch.view.SettingsActivity.SettingsActivityViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
-    private NearbySearchDataRepository mNearbySearchDataRepository;
-    private PlaceDetailDataRepository mPlaceDetailDataRepository;
-    private AutoCompleteDataRepository mAutoCompleteDataRepository;
-    private LocationRepository mLocationRepository;
-    private FirebaseRepository mFirebaseRepository;
+    private final Application mApplication;
+    private final NearbySearchDataRepository mNearbySearchDataRepository;
+    private final PlaceDetailDataRepository mPlaceDetailDataRepository;
+    private final AutoCompleteDataRepository mAutoCompleteDataRepository;
+    private final LocationRepository mLocationRepository;
+    private final FirebaseRepository mFirebaseRepository;
 
     private static ViewModelFactory mViewModelFactory;
 
@@ -49,18 +50,19 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     }
 
     private ViewModelFactory() {
-        Application mApplication = MainApplication.getInstance();
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         GoogleMapsApi googleMapsApi = MyRetrofitBuilder.getGoogleMapsApi();
 
-        mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(mApplication));
+        mApplication = MainApplication.getInstance();
+        mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(MainApplication.getInstance()));
         mFirebaseRepository = new FirebaseRepository(firebaseAuth, firebaseFirestore);
         mNearbySearchDataRepository = new NearbySearchDataRepository(googleMapsApi);
         mPlaceDetailDataRepository = new PlaceDetailDataRepository(googleMapsApi);
         mAutoCompleteDataRepository = new AutoCompleteDataRepository(googleMapsApi, mLocationRepository);
     }
 
+    @SuppressWarnings("unchecked")
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
@@ -78,7 +80,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new ListViewFragmentViewModel(mLocationRepository, mNearbySearchDataRepository, mAutoCompleteDataRepository);
         }
         else if (modelClass.isAssignableFrom(WorkmatesFragmentViewModel.class)) {
-            return (T) new WorkmatesFragmentViewModel(mFirebaseRepository, mAutoCompleteDataRepository);
+            return (T) new WorkmatesFragmentViewModel(mApplication, mFirebaseRepository, mAutoCompleteDataRepository);
         }
         else if (modelClass.isAssignableFrom(PlaceDetailActivityViewModel.class)) {
             return (T) new PlaceDetailActivityViewModel(mPlaceDetailDataRepository, mFirebaseRepository);

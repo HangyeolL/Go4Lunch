@@ -1,11 +1,14 @@
 package com.hangyeollee.go4lunch.model;
 
+// TODO Hangye @Nullable !
 public class LunchRestaurant {
     private String restaurantId;
     private String userId;
     private String name;
     private String date;
 
+    // TODO Hangye test without this empty constructor ?
+    @SuppressWarnings("unused") // For Firestore deserialization
     public LunchRestaurant() { }
 
     public LunchRestaurant(String restaurantId, String userId, String name, String date) {

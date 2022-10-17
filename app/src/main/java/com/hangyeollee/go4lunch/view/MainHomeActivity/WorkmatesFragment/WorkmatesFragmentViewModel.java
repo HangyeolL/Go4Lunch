@@ -1,9 +1,13 @@
 package com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment;
 
+import android.app.Application;
+
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
@@ -14,145 +18,80 @@ import java.util.List;
 
 public class WorkmatesFragmentViewModel extends ViewModel {
 
-    private MediatorLiveData<WorkmatesFragmentViewState> workMatesFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
+    private final Application context;
 
-    public WorkmatesFragmentViewModel(FirebaseRepository firebaseRepository, AutoCompleteDataRepository autoCompleteDataRepository) {
+    private final MediatorLiveData<WorkmatesFragmentViewState> workMatesFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
 
+    public WorkmatesFragmentViewModel(
+        Application context,
+        FirebaseRepository firebaseRepository,
+        AutoCompleteDataRepository autoCompleteDataRepository
+    ) {
+        this.context = context;
         LiveData<List<User>> userListLiveData = firebaseRepository.getUsersList();
         LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
         LiveData<String> userInputLiveData = autoCompleteDataRepository.getUserInputMutableLiveData();
 
-        workMatesFragmentViewStateMediatorLiveData.addSource(userListLiveData, userList -> {
-            combine(userList, lunchRestaurantListLiveData.getValue(), userInputLiveData.getValue());
-        });
+        workMatesFragmentViewStateMediatorLiveData.addSource(userListLiveData, userList ->
+            combine(userList, lunchRestaurantListLiveData.getValue(), userInputLiveData.getValue())
+        );
 
-        workMatesFragmentViewStateMediatorLiveData.addSource(lunchRestaurantListLiveData, lunchRestaurantList -> {
-            combine(userListLiveData.getValue(), lunchRestaurantList, userInputLiveData.getValue());
-        });
+        workMatesFragmentViewStateMediatorLiveData.addSource(lunchRestaurantListLiveData, lunchRestaurantList ->
+            combine(userListLiveData.getValue(), lunchRestaurantList, userInputLiveData.getValue())
+        );
 
         workMatesFragmentViewStateMediatorLiveData.addSource(userInputLiveData, userInput ->
-                combine(userListLiveData.getValue(), lunchRestaurantListLiveData.getValue(), userInput));
-
+            combine(userListLiveData.getValue(), lunchRestaurantListLiveData.getValue(), userInput)
+        );
     }
 
-    private void combine(List<User> userList, List<LunchRestaurant> lunchRestaurantList, String userInput) {
+    private void combine(@Nullable List<User> userList, @Nullable List<LunchRestaurant> lunchRestaurantList, @Nullable String userInput) {
         if (userList == null || lunchRestaurantList == null) {
             return;
         }
 
         List<WorkmatesFragmentRecyclerViewItemViewState> recyclerViewItemViewStateList = new ArrayList<>();
 
-        String userPhotoUrl = "";
-        String lunchRestaurantName = "not decided yet";
-        String lunchRestaurantId = "";
+        List<String> userIdsEatingToday = new ArrayList<>();
 
-        if (userInput == null) {
-            if (lunchRestaurantList.isEmpty()) {
-                for (User user : userList) {
-                    if (user.getPhotoUrl() != null) {
-                        userPhotoUrl = user.getPhotoUrl();
-                    }
-                    WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
-                            new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
+        for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+            User matchingUser = null;
 
-                    recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+            for (User user : userList) {
+                if (user.getId().equalsIgnoreCase(lunchRestaurant.getUserId())) {
+                    matchingUser = user;
+                    break;
                 }
             }
-            // LunchResTauList is not Empty but userInput is null
-            else {
-                for (User user : userList) {
-                    for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-                        if (lunchRestaurant.getUserId().equals(user.getId())) {
-                            if (lunchRestaurant != null) {
-                                lunchRestaurantName = lunchRestaurant.getName();
-                                lunchRestaurantId = lunchRestaurant.getRestaurantId();
-                            }
-                        }
-                    }
-                    if (user.getPhotoUrl() != null) {
-                        userPhotoUrl = user.getPhotoUrl();
-                    }
 
-                    WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
-                            new WorkmatesFragmentRecyclerViewItemViewState(
-                                    userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
+            if (matchingUser != null) {
+                userIdsEatingToday.add(matchingUser.getId());
 
-                    recyclerViewItemViewStateList.add(recyclerViewItemViewState);
+                if (userInput == null || matchingUser.getName().contains(userInput) || lunchRestaurant.getName().contains(userInput)) {
+                    recyclerViewItemViewStateList.add(
+                        new WorkmatesFragmentRecyclerViewItemViewState(
+                            matchingUser.getPhotoUrl(),
+                            matchingUser.getName(),
+                            lunchRestaurant.getName(),
+                            lunchRestaurant.getRestaurantId()
+                        )
+                    );
                 }
             }
         }
-        // UserInput is not null and not empty
-        else if (!userInput.isEmpty()){
-            if (lunchRestaurantList.isEmpty()) {
-                for (User user : userList) {
-                    // lunchRestauList is empty
-                    // should sort out according to userInput
-                    if (user.getName().contains(userInput)) {
-                        if (user.getPhotoUrl() != null) {
-                            userPhotoUrl = user.getPhotoUrl();
-                        }
-                        WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
-                                new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
 
-                        recyclerViewItemViewStateList.add(recyclerViewItemViewState);
-                        break;
-                    }
-                    // UserInput is not null, lunchRestaurantList is empty, userInput doesn't match to userName
-                    // Should take all the users
-                    else {
-                        if (user.getPhotoUrl() != null) {
-                            userPhotoUrl = user.getPhotoUrl();
-                        }
-                        WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
-                                new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
-
-                        recyclerViewItemViewStateList.add(recyclerViewItemViewState);
-                    }
+        for (User user : userList) {
+            if (!userIdsEatingToday.contains(user.getId())) {
+                if (userInput == null || user.getName().contains(userInput)) {
+                    recyclerViewItemViewStateList.add(
+                        new WorkmatesFragmentRecyclerViewItemViewState(
+                            user.getPhotoUrl(),
+                            user.getName(),
+                            context.getString(R.string.not_going_to_restaurant_yet),
+                            null
+                        )
+                    );
                 }
-            }
-            // UserInput is not null, lunchRestaurantList is not empty
-            else {
-                for (User user : userList) {
-                    for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-                        if (lunchRestaurant.getUserId().equals(user.getId())) {
-                            if (lunchRestaurant != null) {
-                                lunchRestaurantName = lunchRestaurant.getName();
-                                lunchRestaurantId = lunchRestaurant.getRestaurantId();
-                            }
-                        }
-                    }
-                    if (user.getName().contains(userInput)) {
-                        if (user.getPhotoUrl() != null) {
-                            userPhotoUrl = user.getPhotoUrl();
-                        }
-                        WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
-                                new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
-
-                        recyclerViewItemViewStateList.add(recyclerViewItemViewState);
-                        break;
-                    }
-                    else {
-                        if (user.getPhotoUrl() != null) {
-                            userPhotoUrl = user.getPhotoUrl();
-                        }
-                        WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
-                                new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
-
-                        recyclerViewItemViewStateList.add(recyclerViewItemViewState);
-                    }
-                }
-            }
-        }
-        // UserInput is not null but emtpy
-        else if (userInput.isEmpty()){
-            for(User user : userList) {
-                if (user.getPhotoUrl() != null) {
-                    userPhotoUrl = user.getPhotoUrl();
-                }
-                WorkmatesFragmentRecyclerViewItemViewState recyclerViewItemViewState =
-                        new WorkmatesFragmentRecyclerViewItemViewState(userPhotoUrl, user.getName(), lunchRestaurantName, lunchRestaurantId);
-
-                recyclerViewItemViewStateList.add(recyclerViewItemViewState);
             }
         }
 
