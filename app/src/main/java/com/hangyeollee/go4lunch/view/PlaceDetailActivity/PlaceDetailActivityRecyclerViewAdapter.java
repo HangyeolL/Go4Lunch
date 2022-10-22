@@ -12,7 +12,7 @@ import com.hangyeollee.go4lunch.model.User;
 
 import java.util.List;
 
-public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<PlaceDetailActivityWorkmatesRecyclerViewAdapter.ViewHolder> {
+public class PlaceDetailActivityRecyclerViewAdapter extends RecyclerView.Adapter<PlaceDetailActivityRecyclerViewAdapter.ViewHolder> {
 
     private List<User> mUserList;
 
@@ -25,7 +25,7 @@ public class PlaceDetailActivityWorkmatesRecyclerViewAdapter extends RecyclerVie
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         PlaceDetailActivityWorkmatesJoiningListItemBinding binding = PlaceDetailActivityWorkmatesJoiningListItemBinding
                 .inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new PlaceDetailActivityWorkmatesRecyclerViewAdapter.ViewHolder(binding);
+        return new PlaceDetailActivityRecyclerViewAdapter.ViewHolder(binding);
     }
 
     @Override

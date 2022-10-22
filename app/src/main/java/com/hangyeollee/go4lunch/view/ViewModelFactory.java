@@ -55,7 +55,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         GoogleMapsApi googleMapsApi = MyRetrofitBuilder.getGoogleMapsApi();
 
         mApplication = MainApplication.getInstance();
-        mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(MainApplication.getInstance()));
+        mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(mApplication));
         mFirebaseRepository = new FirebaseRepository(firebaseAuth, firebaseFirestore);
         mNearbySearchDataRepository = new NearbySearchDataRepository(googleMapsApi);
         mPlaceDetailDataRepository = new PlaceDetailDataRepository(googleMapsApi);
@@ -83,7 +83,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new WorkmatesFragmentViewModel(mApplication, mFirebaseRepository, mAutoCompleteDataRepository);
         }
         else if (modelClass.isAssignableFrom(PlaceDetailActivityViewModel.class)) {
-            return (T) new PlaceDetailActivityViewModel(mPlaceDetailDataRepository, mFirebaseRepository);
+            return (T) new PlaceDetailActivityViewModel(mApplication, mPlaceDetailDataRepository, mFirebaseRepository);
         }
         else if (modelClass.isAssignableFrom(SettingsActivityViewModel.class)) {
             return (T) new SettingsActivityViewModel(mFirebaseRepository);

@@ -33,7 +33,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
     private PlaceDetailActivityViewModel mViewModel;
 
-    private PlaceDetailActivityWorkmatesRecyclerViewAdapter mAdapter;
+    private PlaceDetailActivityRecyclerViewAdapter mAdapter;
 
     private String placeId;
     private LunchRestaurant mLunchRestaurant;
@@ -48,7 +48,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(PlaceDetailActivityViewModel.class);
 
-        mAdapter = new PlaceDetailActivityWorkmatesRecyclerViewAdapter();
+        mAdapter = new PlaceDetailActivityRecyclerViewAdapter();
 
         toolBarSetup();
         fetchPlaceDetailData();
@@ -60,7 +60,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 basicViewSetup(placeDetailActivityViewState);
                 listenerSetup(placeDetailActivityViewState);
 
-                mAdapter.submitList(placeDetailActivityViewState.getUserList());
+                mAdapter.submitList(placeDetailActivityViewState.getRecyclerViewItemViewStateList());
                 binding.recyclerViewWorkmates.setAdapter(mAdapter);
 
             }
@@ -166,7 +166,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
             if (placeDetailActivityViewState.getSelectedAsLunchRestaurant()) {
                 Toast.makeText(this, "You already decided to go " + result.getName(), Toast.LENGTH_SHORT).show();
             } else {
-                mLunchRestaurant = new LunchRestaurant(placeId, mViewModel.getCurrentUser().getUid(), result.getName(), MyCalendar.getCurrentDate());
+                mLunchRestaurant = new LunchRestaurant(placeId, mViewModel.getCurrentUser().getUid(), result.getName(), , MyCalendar.getCurrentDate());
 
                 mViewModel.setLunchRestaurant(mLunchRestaurant);
 
