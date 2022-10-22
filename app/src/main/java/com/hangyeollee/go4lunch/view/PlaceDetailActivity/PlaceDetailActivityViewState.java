@@ -1,8 +1,5 @@
 package com.hangyeollee.go4lunch.view.PlaceDetailActivity;
 
-import com.hangyeollee.go4lunch.model.User;
-import com.hangyeollee.go4lunch.model.placedetailpojo.Result;
-
 import java.util.List;
 
 public class PlaceDetailActivityViewState {

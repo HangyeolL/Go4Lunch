@@ -27,4 +27,6 @@
     <string name="email_unavailable">Email unavailable</string>
     <string name="you_will_go_to">you will go to</string>
     <string name="for_lunch">for lunch</string>
+    <string name="open">OPEN</string>
+    <string name="closed">CLOSED</string>
 </resources>

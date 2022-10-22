@@ -18,6 +18,7 @@ public class PlaceDetailActivityRecyclerViewAdapter extends RecyclerView.Adapter
 
     public void submitList(List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList) {
         this.recyclerViewItemViewStateList = recyclerViewItemViewStateList;
+        notifyDataSetChanged();
     }
 
     @NonNull

@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hangyeollee.go4lunch.databinding.FragmentListViewBinding;
@@ -37,13 +36,10 @@ public class ListViewFragment extends Fragment {
 
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            viewModel.getListViewFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<ListViewFragmentViewState>() {
-                @Override
-                public void onChanged(ListViewFragmentViewState listViewFragmentViewState) {
-                    listViewFragmentRecyclerViewAdapter.submitList(listViewFragmentViewState.getListViewFragmentRecyclerViewItemViewStateList());
-                }
-            });
-
+            viewModel.getListViewFragmentViewStateLiveData().observe(getViewLifecycleOwner(),
+                    listViewFragmentViewState ->
+                            listViewFragmentRecyclerViewAdapter.submitList(listViewFragmentViewState.getListViewFragmentRecyclerViewItemViewStateList())
+            );
         }
 
         return binding.getRoot();

@@ -8,33 +8,28 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.firebase.auth.UserInfo;
 import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 
-import java.util.List;
-
 public class MainHomeActivityViewModel extends ViewModel {
 
-    private FirebaseRepository mFirebaseRepository;
-    private LocationRepository mLocationRepository;
-    private AutoCompleteDataRepository mAutoCompleteDataRepository;
+    private final FirebaseRepository firebaseRepository;
+    private final LocationRepository locationRepository;
+    private final AutoCompleteDataRepository autoCompleteDataRepository;
 
-    private MediatorLiveData<MainHomeActivityViewState> mainHomeActivityViewStateMediatorLiveData = new MediatorLiveData<>();
+    private final MediatorLiveData<MainHomeActivityViewState> mainHomeActivityViewStateMediatorLiveData = new MediatorLiveData<>();
 
     private String providerId;
 
     public MainHomeActivityViewModel(FirebaseRepository firebaseRepository, LocationRepository locationRepository, AutoCompleteDataRepository autoCompleteDataRepository) {
-        mFirebaseRepository = firebaseRepository;
-        mLocationRepository = locationRepository;
-        mAutoCompleteDataRepository = autoCompleteDataRepository;
+        this.firebaseRepository = firebaseRepository;
+        this.locationRepository = locationRepository;
+        this.autoCompleteDataRepository = autoCompleteDataRepository;
 
-        LiveData<Location> locationLiveData = mLocationRepository.getLocationLiveData();
+        LiveData<Location> locationLiveData = this.locationRepository.getLocationLiveData();
 
-        mainHomeActivityViewStateMediatorLiveData.addSource(locationLiveData, location -> {
-            combine(location);
-        });
+        mainHomeActivityViewStateMediatorLiveData.addSource(locationLiveData, this::combine);
 
     }
 
@@ -49,13 +44,12 @@ public class MainHomeActivityViewModel extends ViewModel {
         Uri userPhotoUrl = null;
         boolean isUserLoggedIn = false;
 
-        if (mFirebaseRepository.getCurrentUser() != null) {
+        if (firebaseRepository.getCurrentUser() != null) {
             isUserLoggedIn = true;
-            userName = mFirebaseRepository.getCurrentUser().getProviderData().get(1).getDisplayName();
-            userEmail = mFirebaseRepository.getCurrentUser().getProviderData().get(1).getEmail();
-            userPhotoUrl = mFirebaseRepository.getCurrentUser().getProviderData().get(1).getPhotoUrl();
-            providerId = mFirebaseRepository.getCurrentUser().getProviderData().get(1).getProviderId();
-        } else {
+            userName = firebaseRepository.getCurrentUser().getProviderData().get(1).getDisplayName();
+            userEmail = firebaseRepository.getCurrentUser().getProviderData().get(1).getEmail();
+            userPhotoUrl = firebaseRepository.getCurrentUser().getProviderData().get(1).getPhotoUrl();
+            providerId = firebaseRepository.getCurrentUser().getProviderData().get(1).getProviderId();
         }
 
         MainHomeActivityViewState mainHomeActivityViewState = new MainHomeActivityViewState(providerId, userName, userEmail, userPhotoUrl, isUserLoggedIn);
@@ -69,7 +63,7 @@ public class MainHomeActivityViewModel extends ViewModel {
 
     public void onUserLogInEvent(String providerId) {
         this.providerId = providerId;
-        mFirebaseRepository.saveUserInFirestore();
+        firebaseRepository.saveUserInFirestore();
     }
 
     public String getProviderId() {
@@ -77,11 +71,11 @@ public class MainHomeActivityViewModel extends ViewModel {
     }
 
     public void onUserLogOutEvent() {
-        mFirebaseRepository.signOutFromFirebaseAuth();
+        firebaseRepository.signOutFromFirebaseAuth();
     }
 
     public void onSearchViewTextChanged(String searchViewText) {
-        mAutoCompleteDataRepository.setUserSearchTextQuery(searchViewText);
+        autoCompleteDataRepository.setUserSearchTextQuery(searchViewText);
     }
 
     /**
@@ -90,11 +84,11 @@ public class MainHomeActivityViewModel extends ViewModel {
 
     @SuppressLint("MissingPermission")
     public void startLocationRequest() {
-        mLocationRepository.startLocationRequest();
+        locationRepository.startLocationRequest();
     }
 
     public void stopLocationRequest() {
-        mLocationRepository.stopLocationRequest();
+        locationRepository.stopLocationRequest();
     }
 
 

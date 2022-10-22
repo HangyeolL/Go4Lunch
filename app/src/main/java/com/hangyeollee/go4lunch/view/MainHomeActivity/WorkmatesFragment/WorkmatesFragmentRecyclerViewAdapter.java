@@ -41,7 +41,7 @@ public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<W
         return workmatesFragmentRecyclerViewItemViewStateList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         WorkmatesFragmentListItemBinding binding;
 
         public ViewHolder(@NonNull WorkmatesFragmentListItemBinding workmatesListItemBinding) {

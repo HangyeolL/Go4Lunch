@@ -8,6 +8,7 @@ public class User {
     private String photoUrl;
     private List<LikedRestaurant> likedRestaurantList;
 
+    @SuppressWarnings("unused")
     public User() {
         // Empty constructor needed for Firestore
     }

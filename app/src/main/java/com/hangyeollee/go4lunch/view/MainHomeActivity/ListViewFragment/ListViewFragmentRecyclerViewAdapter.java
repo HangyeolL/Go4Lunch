@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.BuildConfig;
+import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ListViewFragmentListItemBinding;
 import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
 
@@ -42,7 +43,7 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
         return listViewFragmentRecyclerViewItemViewStateList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ListViewFragmentListItemBinding binding;
 
         public ViewHolder(@NonNull ListViewFragmentListItemBinding mListViewItemBinding) {
@@ -55,10 +56,10 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
             binding.textViewAddress.setText(itemViewState.getVicinity());
 
             if (itemViewState.isOpen()) {
-                binding.textViewIsOpenNow.setText("OPEN");
+                binding.textViewIsOpenNow.setText(R.string.open);
                 binding.textViewIsOpenNow.setTextColor(Color.BLUE);
             } else {
-                binding.textViewIsOpenNow.setText("CLOSED");
+                binding.textViewIsOpenNow.setText(R.string.closed);
                 binding.textViewIsOpenNow.setTextColor(Color.RED);
             }
 

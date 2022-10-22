@@ -4,8 +4,8 @@ public class LikedRestaurant {
     private String id;
     private String name;
 
-    public LikedRestaurant() {
-    }
+    @SuppressWarnings("unused")
+    public LikedRestaurant() {}
 
     public LikedRestaurant(String id, String name) {
         this.id = id;

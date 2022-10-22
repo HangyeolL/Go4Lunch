@@ -13,30 +13,29 @@ import retrofit2.Response;
 
 public class NearbySearchDataRepository {
 
-    private GoogleMapsApi mGoogleMapsApi;
-
-    private MutableLiveData<MyNearBySearchData> mNearBySearchMutableLiveData = new MutableLiveData<>();
-
+    private final GoogleMapsApi googleMapsApi;
 
     public NearbySearchDataRepository(GoogleMapsApi googleMapsApi) {
-        mGoogleMapsApi = googleMapsApi;
+        this.googleMapsApi = googleMapsApi;
     }
 
 
     public LiveData<MyNearBySearchData> fetchAndGetMyNearBySearchLiveData (String location) {
-        Call<MyNearBySearchData> call = mGoogleMapsApi.getNearbySearchData(location, 1000, "restaurant", BuildConfig.PLACES_API_KEY);
+        MutableLiveData<MyNearBySearchData> nearBySearchMutableLiveData = new MutableLiveData<>();
+
+        Call<MyNearBySearchData> call = googleMapsApi.getNearbySearchData(location, 1000, "restaurant", BuildConfig.PLACES_API_KEY);
         call.enqueue(new Callback<MyNearBySearchData>() {
             @Override
             public void onResponse(Call<MyNearBySearchData> call, Response<MyNearBySearchData> response) {
-                mNearBySearchMutableLiveData.setValue(response.body());
+                nearBySearchMutableLiveData.setValue(response.body());
             }
 
             @Override
             public void onFailure(Call<MyNearBySearchData> call, Throwable t) {
-                mNearBySearchMutableLiveData.postValue(null);
+                nearBySearchMutableLiveData.postValue(null);
             }
         });
 
-        return mNearBySearchMutableLiveData;
+        return nearBySearchMutableLiveData;
     }
 }

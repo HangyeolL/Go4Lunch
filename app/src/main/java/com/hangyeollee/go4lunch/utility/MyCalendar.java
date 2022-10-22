@@ -6,7 +6,6 @@ import java.util.Date;
 public class MyCalendar {
 
     public static String getCurrentDate() {
-        String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-        return currentDate;
+        return new SimpleDateFormat("dd-MM-yyyy").format(new Date());
     }
 }

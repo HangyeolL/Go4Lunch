@@ -2,10 +2,6 @@ package com.hangyeollee.go4lunch.view.MainHomeActivity;
 
 import android.net.Uri;
 
-import com.google.firebase.auth.UserInfo;
-
-import java.util.List;
-
 public class MainHomeActivityViewState {
 
     private final String providerId;

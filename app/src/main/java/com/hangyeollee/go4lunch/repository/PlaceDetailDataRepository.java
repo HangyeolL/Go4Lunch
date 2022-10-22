@@ -13,30 +13,30 @@ import retrofit2.Response;
 
 public class PlaceDetailDataRepository {
 
-    private GoogleMapsApi mGoogleMapsApi;
-    private MutableLiveData<MyPlaceDetailData> mPlaceDetailMutableLiveData = new MutableLiveData<>();
+    private final GoogleMapsApi googleMapsApi;
+    private final MutableLiveData<MyPlaceDetailData> placeDetailMutableLiveData = new MutableLiveData<>();
 
     private static final String FIELDS = "name,photo,vicinity,rating,geometry/location,international_phone_number,opening_hours/open_now,website";
 
     public PlaceDetailDataRepository(GoogleMapsApi googleMapsApi) {
-        mGoogleMapsApi = googleMapsApi;
+        this.googleMapsApi = googleMapsApi;
     }
 
     public LiveData<MyPlaceDetailData> getPlaceDetailLiveData() {
-        return mPlaceDetailMutableLiveData;
+        return placeDetailMutableLiveData;
     }
 
     public void fetchData(String placeId) {
-        Call<MyPlaceDetailData> call = mGoogleMapsApi.getPlaceDetails(FIELDS, placeId, BuildConfig.PLACES_API_KEY);
+        Call<MyPlaceDetailData> call = googleMapsApi.getPlaceDetails(FIELDS, placeId, BuildConfig.PLACES_API_KEY);
         call.enqueue(new Callback<MyPlaceDetailData>() {
             @Override
             public void onResponse(Call<MyPlaceDetailData> call, Response<MyPlaceDetailData> response) {
-                mPlaceDetailMutableLiveData.setValue(response.body());
+                placeDetailMutableLiveData.setValue(response.body());
             }
 
             @Override
             public void onFailure(Call<MyPlaceDetailData> call, Throwable t) {
-                mPlaceDetailMutableLiveData.postValue(null);
+                placeDetailMutableLiveData.postValue(null);
             }
         });
     }
