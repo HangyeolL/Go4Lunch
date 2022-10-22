@@ -19,4 +19,12 @@
     <string name="shared_preferences_user_lunch_restaurant_name_string">shared preferences user lunch restaurant name string</string>
     <string name="shared_preferences_user_lunch_restaurant_id_int">shared  preferences user lunch restaurant id int</string>
     <string name="international_phone_number_unavailable">international phone number not available</string>
+
+    <string name="user_is_joining">is joining!</string>
+    <string name="add_to_liked_restaurant_list">added to liked restaurant list</string>
+    <string name="is_already_liked">is already liked</string>
+    <string name="you_already_decided_to_go">You already decided to go</string>
+    <string name="email_unavailable">Email unavailable</string>
+    <string name="you_will_go_to">you will go to</string>
+    <string name="for_lunch">for lunch</string>
 </resources>

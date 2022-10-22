@@ -100,7 +100,7 @@ public class MainHomeActivity extends AppCompatActivity {
                     if (mainHomeActivityViewState.getUserEmail() != null) {
                         navigationViewHeaderBinding.textViewUserEmail.setText(mainHomeActivityViewState.getUserEmail());
                     } else {
-                        navigationViewHeaderBinding.textViewUserEmail.setText("Email unavailable");
+                        navigationViewHeaderBinding.textViewUserEmail.setText(R.string.email_unavailable);
                     }
 
                     if (mainHomeActivityViewState.getUserPhotoUrl() != null) {

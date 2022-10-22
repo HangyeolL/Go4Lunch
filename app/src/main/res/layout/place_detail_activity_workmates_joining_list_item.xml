@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="16dp"
-                android:text="is joining!"
+                android:text="@string/user_is_joining"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintBaseline_toBaselineOf="@+id/textView_userName"
                 app:layout_constraintEnd_toEndOf="parent"

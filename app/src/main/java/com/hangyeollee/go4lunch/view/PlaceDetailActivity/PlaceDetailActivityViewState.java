@@ -15,10 +15,10 @@ public class PlaceDetailActivityViewState {
     private final String website;
 
     private final List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList;
-    private final Boolean isSelectedAsLikedRestaurant;
-    private final Boolean isSelectedAsLunchRestaurant;
+    private final boolean isSelectedAsLikedRestaurant;
+    private final boolean isSelectedAsLunchRestaurant;
 
-    public PlaceDetailActivityViewState(String photoUrl, String name, String address, float rating, String internationalPhoneNumber, String website, List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList, Boolean isSelectedAsLikedRestaurant, Boolean isSelectedAsLunchRestaurant) {
+    public PlaceDetailActivityViewState(String photoUrl, String name, String address, float rating, String internationalPhoneNumber, String website, List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList, boolean isSelectedAsLikedRestaurant, boolean isSelectedAsLunchRestaurant) {
         this.photoUrl = photoUrl;
         this.name = name;
         this.address = address;
@@ -58,11 +58,11 @@ public class PlaceDetailActivityViewState {
         return recyclerViewItemViewStateList;
     }
 
-    public Boolean getSelectedAsLikedRestaurant() {
+    public boolean getSelectedAsLikedRestaurant() {
         return isSelectedAsLikedRestaurant;
     }
 
-    public Boolean getSelectedAsLunchRestaurant() {
+    public boolean getSelectedAsLunchRestaurant() {
         return isSelectedAsLunchRestaurant;
     }
 }

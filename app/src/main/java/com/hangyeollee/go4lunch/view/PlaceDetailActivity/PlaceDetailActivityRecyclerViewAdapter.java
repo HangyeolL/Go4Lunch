@@ -8,16 +8,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.databinding.PlaceDetailActivityWorkmatesJoiningListItemBinding;
-import com.hangyeollee.go4lunch.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlaceDetailActivityRecyclerViewAdapter extends RecyclerView.Adapter<PlaceDetailActivityRecyclerViewAdapter.ViewHolder> {
 
-    private List<User> mUserList;
+    private List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList = new ArrayList<>();
 
-    public void submitList(List<User> userList) {
-        mUserList = userList;
+    public void submitList(List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList) {
+        this.recyclerViewItemViewStateList = recyclerViewItemViewStateList;
     }
 
     @NonNull
@@ -25,20 +25,20 @@ public class PlaceDetailActivityRecyclerViewAdapter extends RecyclerView.Adapter
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         PlaceDetailActivityWorkmatesJoiningListItemBinding binding = PlaceDetailActivityWorkmatesJoiningListItemBinding
                 .inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new PlaceDetailActivityRecyclerViewAdapter.ViewHolder(binding);
+        return new ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bindViews(mUserList.get(position));
+        holder.bindView(recyclerViewItemViewStateList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mUserList.size();
+        return recyclerViewItemViewStateList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         PlaceDetailActivityWorkmatesJoiningListItemBinding binding;
 
         public ViewHolder(@NonNull PlaceDetailActivityWorkmatesJoiningListItemBinding placeDetailActivityWorkmatesJoiningListItemBinding) {
@@ -46,10 +46,9 @@ public class PlaceDetailActivityRecyclerViewAdapter extends RecyclerView.Adapter
             binding = placeDetailActivityWorkmatesJoiningListItemBinding;
         }
 
-        public void bindViews(User user) {
-            Glide.with(itemView).load(user.getPhotoUrl()).into(binding.viewUserPhoto);
-            binding.textViewUserName.setText(user.getName());
-
+        public void bindView(PlaceDetailActivityRecyclerViewItemViewState recyclerViewItemViewState) {
+            Glide.with(itemView).load(recyclerViewItemViewState.getUserPhotoUrl()).into(binding.viewUserPhoto);
+            binding.textViewUserName.setText(recyclerViewItemViewState.getUserName());
         }
     }
 
