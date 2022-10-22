@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hangyeollee.go4lunch.databinding.FragmentWorkmatesBinding;
@@ -17,10 +16,6 @@ import com.hangyeollee.go4lunch.view.ViewModelFactory;
 public class WorkmatesFragment extends Fragment {
 
     private FragmentWorkmatesBinding binding;
-
-    private WorkmatesFragmentViewModel mViewModel;
-
-    private WorkmatesFragmentRecyclerViewAdapter mAdapter;
 
     public static WorkmatesFragment newInstance() {
         return new WorkmatesFragment();
@@ -31,17 +26,15 @@ public class WorkmatesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentWorkmatesBinding.inflate(inflater, container, false);
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(WorkmatesFragmentViewModel.class);
+        WorkmatesFragmentViewModel mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(WorkmatesFragmentViewModel.class);
 
-        mAdapter = new WorkmatesFragmentRecyclerViewAdapter();
+        WorkmatesFragmentRecyclerViewAdapter mAdapter = new WorkmatesFragmentRecyclerViewAdapter();
         binding.recyclerViewWorkmates.setAdapter(mAdapter);
 
-        mViewModel.getWorkmatesFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<WorkmatesFragmentViewState>() {
-            @Override
-            public void onChanged(WorkmatesFragmentViewState workmatesFragmentViewState) {
-                mAdapter.submitList(workmatesFragmentViewState.getRecyclerViewItemViewStateList());
-            }
-        });
+        mViewModel.getWorkmatesFragmentViewStateLiveData().observe(getViewLifecycleOwner(),
+                workmatesFragmentViewState ->
+                        mAdapter.submitList(workmatesFragmentViewState.getRecyclerViewItemViewStateList())
+        );
 
         return binding.getRoot();
     }

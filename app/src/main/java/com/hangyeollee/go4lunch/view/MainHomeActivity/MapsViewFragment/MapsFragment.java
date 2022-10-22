@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,7 +20,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
@@ -54,14 +52,13 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
         mGoogleMap.setMyLocationEnabled(true);
 
-        mViewModel.getMapsFragmentViewStateLiveData().observe(getViewLifecycleOwner(), new Observer<MapsFragmentViewState>() {
-            @Override
-            public void onChanged(MapsFragmentViewState mapsFragmentViewState) {
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapsFragmentViewState.getUserLatLng(), 15));
-                addMarkersOnMap(mapsFragmentViewState.getMapMarkerViewStateList());
-                setListenerOnMarker(mapsFragmentViewState.getMapMarkerViewStateList());
-            }
-        });
+        mViewModel.getMapsFragmentViewStateLiveData().observe(getViewLifecycleOwner(),
+                mapsFragmentViewState -> {
+                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapsFragmentViewState.getUserLatLng(), 15));
+                    addMarkersOnMap(mapsFragmentViewState.getMapMarkerViewStateList());
+                    setListenerOnMarker(mapsFragmentViewState.getMapMarkerViewStateList());
+                }
+        );
     }
 
     private BitmapDescriptor setUpMapIcon() {
@@ -81,17 +78,16 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     }
 
     private void setListenerOnMarker(List<MapMarkerViewState> mapMarkerViewStateList) {
-        mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(@NonNull Marker marker) {
-                Log.i("markerName", marker.getTitle());
-                Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
-                for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
-                    Log.e("sendingPlaceId", mapMarkerViewState.getPlaceId());
-                    intent.putExtra("place id", mapMarkerViewState.getPlaceId());
+        mGoogleMap.setOnInfoWindowClickListener(
+                marker -> {
+                    Log.i("markerName", marker.getTitle());
+                    Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
+                    for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
+                        Log.e("sendingPlaceId", mapMarkerViewState.getPlaceId());
+                        intent.putExtra("place id", mapMarkerViewState.getPlaceId());
+                    }
+                    startActivity(intent);
                 }
-                startActivity(intent);
-            }
-        });
+        );
     }
 }

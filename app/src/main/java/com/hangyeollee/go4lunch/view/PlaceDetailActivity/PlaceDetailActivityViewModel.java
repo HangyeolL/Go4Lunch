@@ -126,7 +126,7 @@ public class PlaceDetailActivityViewModel extends ViewModel {
 
     }
 
-    public LiveData<PlaceDetailActivityViewState> getMediatorLiveData() {
+    public LiveData<PlaceDetailActivityViewState> getPlaceDetailActivityViewStateLiveData() {
         return mediatorLiveData;
     }
 

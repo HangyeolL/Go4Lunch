@@ -1,26 +1,21 @@
 package com.hangyeollee.go4lunch.view.MainHomeActivity;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -28,8 +23,6 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.material.navigation.NavigationBarView;
-import com.google.android.material.navigation.NavigationView;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainHomeBinding;
 import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBinding;
@@ -62,18 +55,15 @@ public class MainHomeActivity extends AppCompatActivity {
 
         mSharedPref = new MySharedPreferenceUtil(this).getInstanceOfSharedPref();
 
-        ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
-            @SuppressLint("MissingPermission")
-            @Override
-            public void onActivityResult(Boolean isGranted) {
-                if (isGranted) {
-                    mViewModel.startLocationRequest();
-                } else {
-                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainHomeActivity.this);
-                    alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings").create().show();
-                }
-            }
-        });
+        ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        mViewModel.startLocationRequest();
+                    } else {
+                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainHomeActivity.this);
+                        alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings").create().show();
+                    }
+                });
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d("Permission", "is already granted");
@@ -89,25 +79,22 @@ public class MainHomeActivity extends AppCompatActivity {
         bottomNavigationBarSetup();
         searchViewSetup();
 
-        mViewModel.getMainHomeActivityViewStateLiveData().observe(this, new Observer<MainHomeActivityViewState>() {
-            @Override
-            public void onChanged(MainHomeActivityViewState mainHomeActivityViewState) {
-                if (mainHomeActivityViewState.isUserLoggedIn()) {
-                    mViewModel.onUserLogInEvent(mainHomeActivityViewState.getProviderId());
+        mViewModel.getMainHomeActivityViewStateLiveData().observe(this, mainHomeActivityViewState -> {
+            if (mainHomeActivityViewState.isUserLoggedIn()) {
+                mViewModel.onUserLogInEvent(mainHomeActivityViewState.getProviderId());
 
-                    navigationViewHeaderBinding.textViewUserName.setText(mainHomeActivityViewState.getUserName());
+                navigationViewHeaderBinding.textViewUserName.setText(mainHomeActivityViewState.getUserName());
 
-                    if (mainHomeActivityViewState.getUserEmail() != null) {
-                        navigationViewHeaderBinding.textViewUserEmail.setText(mainHomeActivityViewState.getUserEmail());
-                    } else {
-                        navigationViewHeaderBinding.textViewUserEmail.setText(R.string.email_unavailable);
-                    }
+                if (mainHomeActivityViewState.getUserEmail() != null) {
+                    navigationViewHeaderBinding.textViewUserEmail.setText(mainHomeActivityViewState.getUserEmail());
+                } else {
+                    navigationViewHeaderBinding.textViewUserEmail.setText(R.string.email_unavailable);
+                }
 
-                    if (mainHomeActivityViewState.getUserPhotoUrl() != null) {
-                        Glide.with(MainHomeActivity.this).load(mainHomeActivityViewState.getUserPhotoUrl()).into(navigationViewHeaderBinding.imageViewUserPhoto);
-                    } else {
-                        Glide.with(MainHomeActivity.this).load(R.drawable.ic_baseline_person_outline_24).into(navigationViewHeaderBinding.imageViewUserPhoto);
-                    }
+                if (mainHomeActivityViewState.getUserPhotoUrl() != null) {
+                    Glide.with(MainHomeActivity.this).load(mainHomeActivityViewState.getUserPhotoUrl()).into(navigationViewHeaderBinding.imageViewUserPhoto);
+                } else {
+                    Glide.with(MainHomeActivity.this).load(R.drawable.ic_baseline_person_outline_24).into(navigationViewHeaderBinding.imageViewUserPhoto);
                 }
             }
         });
@@ -142,26 +129,23 @@ public class MainHomeActivity extends AppCompatActivity {
 //    }
 
     private void navigationViewItemSelectedListener() {
-        binding.NavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.navigationView_yourLunch:
-                        Toast.makeText(MainHomeActivity.this, mSharedPref.getString("LunchRestaurant", ""), Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.navigationView_settings:
-                        startActivity(new Intent(MainHomeActivity.this, SettingsActivity.class));
-                        break;
-                    case R.id.navigationView_logout:
-                        signOutAccordingToProviders(mViewModel.getProviderId());
-                        mViewModel.onUserLogOutEvent();
-                        startActivity(new Intent(MainHomeActivity.this, LogInActivity.class));
-                        finish();
-                        break;
-                }
-                binding.drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
+        binding.NavigationView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigationView_yourLunch:
+                    Toast.makeText(MainHomeActivity.this, mSharedPref.getString("LunchRestaurant", ""), Toast.LENGTH_SHORT).show();
+                    break;
+                case R.id.navigationView_settings:
+                    startActivity(new Intent(MainHomeActivity.this, SettingsActivity.class));
+                    break;
+                case R.id.navigationView_logout:
+                    signOutAccordingToProviders(mViewModel.getProviderId());
+                    mViewModel.onUserLogOutEvent();
+                    startActivity(new Intent(MainHomeActivity.this, LogInActivity.class));
+                    finish();
+                    break;
             }
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
         });
     }
 
@@ -174,34 +158,31 @@ public class MainHomeActivity extends AppCompatActivity {
     }
 
     private void bottomNavigationBarSetup() {
-        binding.bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.bottomNavigationView_menu_mapView:
-                        binding.toolBar.setTitle("I am Hungry!");
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragmentContainerView, MapsFragment.newInstance())
-                                .commitNow();
-                        break;
-                    case R.id.bottomNavigationView_menu_listView:
-                        binding.toolBar.setTitle("I am Hungry!");
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragmentContainerView, ListViewFragment.newInstance())
-                                .commitNow();
-                        break;
-                    case R.id.bottomNavigationView_menu_workMates:
-                        binding.toolBar.setTitle("Available Workmates");
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragmentContainerView, WorkmatesFragment.newInstance())
-                                .commitNow();
-                        break;
-                }
-                return true;
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.bottomNavigationView_menu_mapView:
+                    binding.toolBar.setTitle("I am Hungry!");
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragmentContainerView, MapsFragment.newInstance())
+                            .commitNow();
+                    break;
+                case R.id.bottomNavigationView_menu_listView:
+                    binding.toolBar.setTitle("I am Hungry!");
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragmentContainerView, ListViewFragment.newInstance())
+                            .commitNow();
+                    break;
+                case R.id.bottomNavigationView_menu_workMates:
+                    binding.toolBar.setTitle("Available Workmates");
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.fragmentContainerView, WorkmatesFragment.newInstance())
+                            .commitNow();
+                    break;
             }
+            return true;
         });
     }
 
@@ -233,6 +214,7 @@ public class MainHomeActivity extends AppCompatActivity {
         });
     }
 
+    //TODO should work on this
     @Override
     public void onBackPressed() {
         int FragmentId = 0;

@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 
-import androidx.arch.core.util.Function;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Transformations;
@@ -29,36 +28,28 @@ import javax.annotation.Nullable;
 
 public class MapsFragmentViewModel extends ViewModel {
 
-    private LocationRepository mLocationRepository;
-    private NearbySearchDataRepository mNearbySearchDataRepository;
-    private AutoCompleteDataRepository mAutoCompleteDataRepository;
+    private final MediatorLiveData<MapsFragmentViewState> mapsFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
 
-    private MediatorLiveData<MapsFragmentViewState> mapsFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
+    public MapsFragmentViewModel(LocationRepository locationRepository, NearbySearchDataRepository nearbySearchDataRepository, AutoCompleteDataRepository autoCompleteDataRepository) {
 
-    public MapsFragmentViewModel(LocationRepository mLocationRepository, NearbySearchDataRepository mNearbySearchDataRepository, AutoCompleteDataRepository mAutoCompleteDataRepository) {
-        this.mLocationRepository = mLocationRepository;
-        this.mNearbySearchDataRepository = mNearbySearchDataRepository;
-        this.mAutoCompleteDataRepository = mAutoCompleteDataRepository;
+        LiveData<Location> locationLiveData = locationRepository.getLocationLiveData();
 
-        LiveData<Location> locationLiveData = mLocationRepository.getLocationLiveData();
+        LiveData<MyNearBySearchData> myNearBySearchDataLiveData = Transformations.switchMap(locationLiveData,
+                location -> {
+                    String locationToString = location.getLatitude() + "," + location.getLongitude();
+                    return nearbySearchDataRepository.fetchAndGetMyNearBySearchLiveData(locationToString);
+                }
+        );
 
-        LiveData<MyNearBySearchData> myNearBySearchDataLiveData = Transformations.switchMap(locationLiveData, new Function<Location, LiveData<MyNearBySearchData>>() {
-            @Override
-            public LiveData<MyNearBySearchData> apply(Location location) {
-                String locationToString = location.getLatitude() + "," + location.getLongitude();
-                return mNearbySearchDataRepository.fetchAndGetMyNearBySearchLiveData(locationToString);
-            }
-        });
+        LiveData<MyAutoCompleteData> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
 
-        LiveData<MyAutoCompleteData> myAutoCompleteDataLiveData = mAutoCompleteDataRepository.getAutoCompleteDataLiveData();
+        mapsFragmentViewStateMediatorLiveData.addSource(locationLiveData, location ->
+                combine(location, myNearBySearchDataLiveData.getValue(), myAutoCompleteDataLiveData.getValue())
+        );
 
-        mapsFragmentViewStateMediatorLiveData.addSource(locationLiveData, location -> {
-            combine(location, myNearBySearchDataLiveData.getValue(), myAutoCompleteDataLiveData.getValue());
-        });
-
-        mapsFragmentViewStateMediatorLiveData.addSource(myNearBySearchDataLiveData, myNearBySearchData -> {
-            combine(locationLiveData.getValue(), myNearBySearchData, myAutoCompleteDataLiveData.getValue());
-        });
+        mapsFragmentViewStateMediatorLiveData.addSource(myNearBySearchDataLiveData, myNearBySearchData ->
+                combine(locationLiveData.getValue(), myNearBySearchData, myAutoCompleteDataLiveData.getValue())
+        );
 
         mapsFragmentViewStateMediatorLiveData.addSource(myAutoCompleteDataLiveData, myAutoCompleteData ->
                 combine(locationLiveData.getValue(), myNearBySearchDataLiveData.getValue(), myAutoCompleteData)
@@ -72,47 +63,35 @@ public class MapsFragmentViewModel extends ViewModel {
             return;
         }
 
-        LatLng userLatLng = null;
-
-        if (location != null) {
-            userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-        }
+        LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
         List<MapMarkerViewState> mapMarkerViewStateList = new ArrayList<>();
 
-        if (myAutoCompleteData == null) {
+        // if myAutoCompleteData is null i want to display all the result of nearbySearch
+        // if autoComplete is not null I want to do filtering
+        if (myAutoCompleteData == null || myAutoCompleteData.getPredictions().isEmpty()) {
             for (Result result : myNearBySearchData.getResults()) {
-                MapMarkerViewState mapMarkerViewState = new MapMarkerViewState(
-                        result.getPlaceId(),
-                        new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()),
-                        result.getName()
-                );
-
-                mapMarkerViewStateList.add(mapMarkerViewState);
-            }
-        }
-        else if (myAutoCompleteData.getPredictions().isEmpty()) {
-            for (Result result : myNearBySearchData.getResults()) {
-                MapMarkerViewState mapMarkerViewState = new MapMarkerViewState(
-                        result.getPlaceId(),
-                        new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()),
-                        result.getName()
-                );
-
-                mapMarkerViewStateList.add(mapMarkerViewState);
-            }
-        }
-        else {
-            for (Result result : myNearBySearchData.getResults()) {
-                for (Prediction prediction : myAutoCompleteData.getPredictions()) {
-                    if (prediction.getPlaceId().equals(result.getPlaceId()) &&
-                            prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
-
-                        MapMarkerViewState mapMarkerViewState = new MapMarkerViewState(
+                MapMarkerViewState mapMarkerViewState =
+                        new MapMarkerViewState(
                                 result.getPlaceId(),
                                 new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()),
                                 result.getName()
                         );
+
+                mapMarkerViewStateList.add(mapMarkerViewState);
+            }
+        } else {
+            for (Prediction prediction : myAutoCompleteData.getPredictions()) {
+                for(Result result : myNearBySearchData.getResults()) {
+                    if (prediction.getPlaceId().equals(result.getPlaceId()) &&
+                            prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
+
+                        MapMarkerViewState mapMarkerViewState =
+                                new MapMarkerViewState(
+                                        result.getPlaceId(),
+                                        new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()),
+                                        result.getName()
+                                );
 
                         mapMarkerViewStateList.add(mapMarkerViewState);
                     }

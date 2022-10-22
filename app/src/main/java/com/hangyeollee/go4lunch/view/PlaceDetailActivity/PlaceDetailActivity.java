@@ -47,7 +47,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
         toolBarSetup();
         fetchPlaceDetailData();
 
-        viewModel.getMediatorLiveData().observe(this, placeDetailActivityViewState -> {
+        viewModel.getPlaceDetailActivityViewStateLiveData().observe(this, placeDetailActivityViewState -> {
             basicViewSetup(placeDetailActivityViewState);
             listenerSetup(placeDetailActivityViewState);
             recyclerViewAdapter.submitList(placeDetailActivityViewState.getRecyclerViewItemViewStateList());
