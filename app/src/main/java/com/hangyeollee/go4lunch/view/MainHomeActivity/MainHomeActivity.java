@@ -26,7 +26,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainHomeBinding;
 import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBinding;
-import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
+import com.hangyeollee.go4lunch.utils.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivity;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment.ListViewFragment;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.MapsFragment;

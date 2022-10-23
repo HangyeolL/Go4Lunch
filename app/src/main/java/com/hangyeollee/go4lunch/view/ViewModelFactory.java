@@ -16,7 +16,7 @@ import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
-import com.hangyeollee.go4lunch.utility.MyRetrofitBuilder;
+import com.hangyeollee.go4lunch.utils.MyRetrofitBuilder;
 import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivityViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment.ListViewFragmentViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MainHomeActivityViewModel;

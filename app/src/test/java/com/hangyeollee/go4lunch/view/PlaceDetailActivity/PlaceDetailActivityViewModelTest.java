@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.viewmodel;
+package com.hangyeollee.go4lunch.view.PlaceDetailActivity;
 
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;

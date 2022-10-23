@@ -79,6 +79,6 @@
         <activity android:name=".view.SettingsActivity.SettingsActivity"
             android:parentActivityName=".view.MainHomeActivity.MainHomeActivity"/>
 
-        <receiver android:name=".utility.AlarmReceiver"/>
+        <receiver android:name=".utils.AlarmReceiver"/>
     </application>
 </manifest>

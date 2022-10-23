@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.utility;
+package com.hangyeollee.go4lunch.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

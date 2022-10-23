@@ -1,22 +1,22 @@
 package com.hangyeollee.go4lunch.repository;
 
-import com.hangyeollee.go4lunch.utility.MyRetrofitBuilder;
+import com.hangyeollee.go4lunch.utils.MyRetrofitBuilder;
 
 import org.junit.Before;
 import org.mockito.Mockito;
 
 public class NearBySearchDataRepositoryTest {
 
-    MyRetrofitBuilder mMyRetrofitBuilder = Mockito.mock(MyRetrofitBuilder.class);
-
-    private NearbySearchDataRepository mNearbySearchDataRepository;
+    private MyRetrofitBuilder myRetrofitBuilder;
+    private NearbySearchDataRepository nearbySearchDataRepository;
 
     @Before
-    public void setUp(){
-        mNearbySearchDataRepository = new NearbySearchDataRepository(mMyRetrofitBuilder.getGoogleMapsApi());
+    public void setUp() {
+        myRetrofitBuilder = Mockito.mock(MyRetrofitBuilder.class);
+        nearbySearchDataRepository = new NearbySearchDataRepository(myRetrofitBuilder.getGoogleMapsApi());
     }
 
-    public void fetchDataTest() {
+    public void fetchDataNearbySearchDataTest() {
 
     }
 

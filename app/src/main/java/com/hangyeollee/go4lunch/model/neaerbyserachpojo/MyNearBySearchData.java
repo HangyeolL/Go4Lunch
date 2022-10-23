@@ -3,6 +3,8 @@ package com.hangyeollee.go4lunch.model.neaerbyserachpojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import org.jetbrains.annotations.TestOnly;
+
 import java.util.List;
 
 public class MyNearBySearchData {
@@ -18,6 +20,14 @@ public class MyNearBySearchData {
     @SerializedName("status")
     @Expose
     private String status;
+
+    @TestOnly
+    public MyNearBySearchData(List<Object> htmlAttributions, String nextPageToken, List<Result> results, String status) {
+        this.htmlAttributions = htmlAttributions;
+        this.nextPageToken = nextPageToken;
+        this.results = results;
+        this.status = status;
+    }
 
     public List<Object> getHtmlAttributions() {
         return htmlAttributions;

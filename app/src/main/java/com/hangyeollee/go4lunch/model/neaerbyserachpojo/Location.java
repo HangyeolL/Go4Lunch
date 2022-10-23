@@ -3,6 +3,8 @@ package com.hangyeollee.go4lunch.model.neaerbyserachpojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import org.jetbrains.annotations.TestOnly;
+
 public class Location {
     @SerializedName("lat")
     @Expose
@@ -10,6 +12,12 @@ public class Location {
     @SerializedName("lng")
     @Expose
     private Double lng;
+
+    @TestOnly
+    public Location(Double lat, Double lng) {
+        this.lat = lat;
+        this.lng = lng;
+    }
 
     public Double getLat() {
         return lat;

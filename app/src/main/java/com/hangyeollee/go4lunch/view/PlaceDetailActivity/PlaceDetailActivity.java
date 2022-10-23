@@ -21,8 +21,8 @@ import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityPlaceDetailBinding;
 import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.utility.MyCalendar;
-import com.hangyeollee.go4lunch.utility.MySharedPreferenceUtil;
+import com.hangyeollee.go4lunch.utils.MyCalendar;
+import com.hangyeollee.go4lunch.utils.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 public class PlaceDetailActivity extends AppCompatActivity {

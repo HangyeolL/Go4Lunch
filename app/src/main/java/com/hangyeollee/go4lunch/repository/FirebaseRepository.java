@@ -16,7 +16,7 @@ import com.google.firebase.firestore.SetOptions;
 import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
-import com.hangyeollee.go4lunch.utility.MyCalendar;
+import com.hangyeollee.go4lunch.utils.MyCalendar;
 
 import java.util.ArrayList;
 import java.util.List;

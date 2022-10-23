@@ -3,6 +3,8 @@ package com.hangyeollee.go4lunch.model.autocompletepojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import org.jetbrains.annotations.TestOnly;
+
 import java.util.List;
 
 public class MyAutoCompleteData {
@@ -13,6 +15,12 @@ public class MyAutoCompleteData {
     @SerializedName("status")
     @Expose
     private String status;
+
+    @TestOnly
+    public MyAutoCompleteData(List<Prediction> predictions, String status) {
+        this.predictions = predictions;
+        this.status = status;
+    }
 
     public List<Prediction> getPredictions() {
         return predictions;

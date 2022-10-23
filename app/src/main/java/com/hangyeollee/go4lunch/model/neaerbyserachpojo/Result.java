@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import org.jetbrains.annotations.TestOnly;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class Result implements Parcelable {
     private OpeningHours openingHours;
     @SerializedName("photos")
     @Expose
-    private List<Photo> photos = null;
+    private List<Photo> photos;
     @SerializedName("place_id")
     @Expose
     private String placeId;
@@ -54,7 +56,7 @@ public class Result implements Parcelable {
     private String scope;
     @SerializedName("types")
     @Expose
-    private List<String> types = null;
+    private List<String> types;
     @SerializedName("user_ratings_total")
     @Expose
     private Integer userRatingsTotal;
@@ -64,6 +66,17 @@ public class Result implements Parcelable {
     @SerializedName("permanently_closed")
     @Expose
     private Boolean permanentlyClosed;
+
+    @TestOnly
+    public Result(Geometry geometry, String name, OpeningHours openingHours, List<Photo> photos, String placeId, Double rating, String vicinity) {
+        this.geometry = geometry;
+        this.name = name;
+        this.openingHours = openingHours;
+        this.photos = photos;
+        this.placeId = placeId;
+        this.rating = rating;
+        this.vicinity = vicinity;
+    }
 
     protected Result(Parcel in) {
         businessStatus = in.readString();

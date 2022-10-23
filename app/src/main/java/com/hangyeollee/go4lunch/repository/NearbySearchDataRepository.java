@@ -19,7 +19,6 @@ public class NearbySearchDataRepository {
         this.googleMapsApi = googleMapsApi;
     }
 
-
     public LiveData<MyNearBySearchData> fetchAndGetMyNearBySearchLiveData (String location) {
         MutableLiveData<MyNearBySearchData> nearBySearchMutableLiveData = new MutableLiveData<>();
 
