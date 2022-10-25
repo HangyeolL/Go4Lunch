@@ -31,36 +31,45 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         this.placeDetailDataRepository = placeDetailDataRepository;
         this.firebaseRepository = firebaseRepository;
 
-        mediatorLiveData.addSource(placeDetailDataRepository.getPlaceDetailLiveData(), placeDetailData ->
-                combine(
-                        placeDetailData,
-                        this.firebaseRepository.getUsersList().getValue(),
-                        this.firebaseRepository.getLunchRestaurantListOfAllUsers().getValue(),
-                        this.firebaseRepository.getLikedRestaurantList().getValue())
+        LiveData<MyPlaceDetailData> placeDetailLiveData = placeDetailDataRepository.getPlaceDetailLiveData();
+        LiveData<List<User>> userListLiveData = firebaseRepository.getUsersList();
+        LiveData<List<LunchRestaurant>> lunchRestaurantListOfAllUsersLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
+        LiveData<List<LikedRestaurant>> likedRestaurantListLiveData = firebaseRepository.getLikedRestaurantList();
+
+        mediatorLiveData.addSource(placeDetailLiveData, placeDetailData ->
+            combine(
+                placeDetailData,
+                userListLiveData.getValue(),
+                lunchRestaurantListOfAllUsersLiveData.getValue(),
+                likedRestaurantListLiveData.getValue()
+            )
         );
 
-        mediatorLiveData.addSource(this.firebaseRepository.getUsersList(), userList ->
-                combine(
-                        this.placeDetailDataRepository.getPlaceDetailLiveData().getValue(),
-                        userList,
-                        this.firebaseRepository.getLunchRestaurantListOfAllUsers().getValue(),
-                        this.firebaseRepository.getLikedRestaurantList().getValue()
-                ));
-
-        mediatorLiveData.addSource(this.firebaseRepository.getLunchRestaurantListOfAllUsers(), lunchRestaurantList ->
-                combine(
-                        this.placeDetailDataRepository.getPlaceDetailLiveData().getValue(),
-                        this.firebaseRepository.getUsersList().getValue(),
-                        lunchRestaurantList,
-                        this.firebaseRepository.getLikedRestaurantList().getValue())
+        mediatorLiveData.addSource(userListLiveData, userList ->
+            combine(
+                placeDetailLiveData.getValue(),
+                userList,
+                lunchRestaurantListOfAllUsersLiveData.getValue(),
+                likedRestaurantListLiveData.getValue()
+            )
         );
 
-        mediatorLiveData.addSource(this.firebaseRepository.getLikedRestaurantList(), likedRestaurantList ->
-                combine(
-                        this.placeDetailDataRepository.getPlaceDetailLiveData().getValue(),
-                        this.firebaseRepository.getUsersList().getValue(),
-                        this.firebaseRepository.getLunchRestaurantListOfAllUsers().getValue(),
-                        likedRestaurantList)
+        mediatorLiveData.addSource(lunchRestaurantListOfAllUsersLiveData, lunchRestaurantList ->
+            combine(
+                placeDetailLiveData.getValue(),
+                userListLiveData.getValue(),
+                lunchRestaurantList,
+                likedRestaurantListLiveData.getValue()
+            )
+        );
+
+        mediatorLiveData.addSource(likedRestaurantListLiveData, likedRestaurantList ->
+            combine(
+                placeDetailLiveData.getValue(),
+                userListLiveData.getValue(),
+                lunchRestaurantListOfAllUsersLiveData.getValue(),
+                likedRestaurantList
+            )
         );
 
     }
@@ -91,9 +100,9 @@ public class PlaceDetailActivityViewModel extends ViewModel {
             for (User user : userList) {
                 if (user.getId().equalsIgnoreCase(lunchRestaurant.getUserId())) {
                     recyclerViewItemViewStateList.add(
-                            new PlaceDetailActivityRecyclerViewItemViewState(
-                                    user.getName(),
-                                    user.getPhotoUrl())
+                        new PlaceDetailActivityRecyclerViewItemViewState(
+                            user.getName(),
+                            user.getPhotoUrl())
                     );
                 }
             }
@@ -111,15 +120,15 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         }
 
         PlaceDetailActivityViewState activityViewState = new PlaceDetailActivityViewState(
-                myPlaceDetailData.getResult().getPhotos().get(0).getPhotoReference(),
-                myPlaceDetailData.getResult().getName(),
-                myPlaceDetailData.getResult().getVicinity(),
-                myPlaceDetailData.getResult().getRating().floatValue(),
-                internationalPhoneNumber,
-                website,
-                recyclerViewItemViewStateList,
-                isSelectedAsLikedRestaurant,
-                isSelectedAsLunchRestaurant
+            myPlaceDetailData.getResult().getPhotos().get(0).getPhotoReference(),
+            myPlaceDetailData.getResult().getName(),
+            myPlaceDetailData.getResult().getVicinity(),
+            myPlaceDetailData.getResult().getRating().floatValue(),
+            internationalPhoneNumber,
+            website,
+            recyclerViewItemViewStateList,
+            isSelectedAsLikedRestaurant,
+            isSelectedAsLunchRestaurant
         );
 
         mediatorLiveData.setValue(activityViewState);
@@ -145,7 +154,6 @@ public class PlaceDetailActivityViewModel extends ViewModel {
     public void onSetLikedRestaurantButtonClicked(LikedRestaurant likedRestaurant) {
         firebaseRepository.setLikeRestaurant(likedRestaurant);
     }
-
 
 
 }

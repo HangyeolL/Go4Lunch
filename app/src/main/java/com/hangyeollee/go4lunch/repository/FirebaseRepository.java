@@ -3,6 +3,7 @@ package com.hangyeollee.go4lunch.repository;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -97,7 +98,7 @@ public class FirebaseRepository {
         getDateCollection().document(getCurrentUser().getUid()).set(lunchRestaurant, SetOptions.merge());
     }
 
-    public MutableLiveData<List<User>> getUsersList() {
+    public LiveData<List<User>> getUsersList() {
         getUsersCollection().addSnapshotListener(
                 (querySnapshot, error) -> {
                     if (error != null) {
@@ -117,7 +118,7 @@ public class FirebaseRepository {
         return userListMutableLiveData;
     }
 
-    public MutableLiveData<List<LunchRestaurant>> getLunchRestaurantListOfAllUsers() {
+    public LiveData<List<LunchRestaurant>> getLunchRestaurantListOfAllUsers() {
         getDateCollection().addSnapshotListener(
                 (querySnapshot, error) -> {
                     if (error != null) {
@@ -141,7 +142,7 @@ public class FirebaseRepository {
         getUsersCollection().document(getCurrentUser().getUid()).update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
     }
 
-    public MutableLiveData<List<LikedRestaurant>> getLikedRestaurantList() {
+    public LiveData<List<LikedRestaurant>> getLikedRestaurantList() {
         getUsersCollection().document(getCurrentUser().getUid()).addSnapshotListener(
                 (documentSnapshot, error) -> {
                     if (error != null) {
