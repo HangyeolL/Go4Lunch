@@ -3,6 +3,7 @@ package com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,16 +53,15 @@ public class WorkmatesFragmentRecyclerViewAdapter extends RecyclerView.Adapter<W
         public void bindViews(WorkmatesFragmentRecyclerViewItemViewState itemViewState) {
             Glide.with(itemView).load(itemViewState.getUserPhotoUrl()).into(binding.viewUserPhoto);
             binding.textViewUserName.setText(itemViewState.getUserName());
-            binding.textViewRestaruantName.setText(itemViewState.getUserLunchRestaurantName());
+            binding.textViewRestaurantName.setText(itemViewState.getUserLunchRestaurantName());
 
-            itemView.setOnClickListener(listener -> {
-                Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
-                intent.putExtra("place id", itemViewState.getGetUserLunchRestaurantId());
-                itemView.getContext().startActivity(intent);
-            });
-
-//            How to change textColor if lunchRestau is null ?
-//            binding.textViewUserName.setTextColor(Color.GRAY);
+            if (itemViewState.getUserLunchRestaurantId() != null) {
+                itemView.setOnClickListener(listener -> {
+                    Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
+                    intent.putExtra("place id", itemViewState.getUserLunchRestaurantId());
+                    itemView.getContext().startActivity(intent);
+                });
+            }
         }
     }
 }

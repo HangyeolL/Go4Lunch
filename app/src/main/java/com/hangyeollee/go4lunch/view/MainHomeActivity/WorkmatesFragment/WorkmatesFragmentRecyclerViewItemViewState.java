@@ -15,18 +15,18 @@ public class WorkmatesFragmentRecyclerViewItemViewState {
     private final String userLunchRestaurantName;
 
     @Nullable
-    private final String getUserLunchRestaurantId;
+    private final String userLunchRestaurantId;
 
     public WorkmatesFragmentRecyclerViewItemViewState(
         @Nullable String userPhotoUrl,
         @NonNull String userName,
         @NonNull String userLunchRestaurantName,
-        @Nullable String getUserLunchRestaurantId
+        @Nullable String userLunchRestaurantId
     ) {
         this.userPhotoUrl = userPhotoUrl;
         this.userName = userName;
         this.userLunchRestaurantName = userLunchRestaurantName;
-        this.getUserLunchRestaurantId = getUserLunchRestaurantId;
+        this.userLunchRestaurantId = userLunchRestaurantId;
     }
 
     @Nullable
@@ -45,7 +45,7 @@ public class WorkmatesFragmentRecyclerViewItemViewState {
     }
 
     @Nullable
-    public String getGetUserLunchRestaurantId() {
-        return getUserLunchRestaurantId;
+    public String getUserLunchRestaurantId() {
+        return userLunchRestaurantId;
     }
 }

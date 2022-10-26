@@ -72,15 +72,23 @@ public class PlaceDetailActivity extends AppCompatActivity {
     }
 
     private void basicViewSetup(PlaceDetailActivityViewState placeDetailActivityViewState) {
-        Glide.with(PlaceDetailActivity.this)
-                .load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" +
-                        placeDetailActivityViewState.getPhotoUrl() + "&key=" + BuildConfig.PLACES_API_KEY)
-                .into(binding.imageViewRestaurant);
+
+        if (placeDetailActivityViewState.getPhotoUrl() != null) {
+            Glide.with(PlaceDetailActivity.this)
+                    .load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" +
+                            placeDetailActivityViewState.getPhotoUrl() + "&key=" + BuildConfig.PLACES_API_KEY)
+                    .into(binding.imageViewRestaurant);
+        } else {
+            Glide.with(this)
+                    .load(R.drawable.ic_baseline_local_dining_24)
+                    .into(binding.imageViewRestaurant);
+        }
 
         binding.textViewName.setText(placeDetailActivityViewState.getName());
         binding.textViewAddress.setText(placeDetailActivityViewState.getAddress());
         binding.ratingBar.setRating(placeDetailActivityViewState.getRating());
 
+        //TODO Icon color doesn't get changed !
         Drawable btnLikeDrawable = DrawableCompat.wrap(getResources().getDrawable(R.drawable.ic_baseline_star_24));
 
         if (placeDetailActivityViewState.getSelectedAsLikedRestaurant()) {
@@ -101,26 +109,28 @@ public class PlaceDetailActivity extends AppCompatActivity {
     }
 
     private void listenerSetup(PlaceDetailActivityViewState placeDetailActivityViewState) {
-        if (!placeDetailActivityViewState.getInternationalPhoneNumber().equalsIgnoreCase(getString(R.string.international_phone_number_unavailable))) {
+
+        if (placeDetailActivityViewState.getInternationalPhoneNumber().equalsIgnoreCase(getString(R.string.international_phone_number_unavailable))) {
+            binding.buttonCall.setOnClickListener(i -> Toast.makeText(PlaceDetailActivity.this, R.string.international_phone_number_unavailable, Toast.LENGTH_SHORT).show());
+        } else {
             binding.buttonCall.setOnClickListener(i -> {
                 Intent callIntent = new Intent(Intent.ACTION_DIAL);
                 callIntent.setData(Uri.parse("tel:" + placeDetailActivityViewState.getInternationalPhoneNumber()));
                 startActivity(callIntent);
             });
-        } else {
-            binding.buttonCall.setOnClickListener(i -> Toast.makeText(PlaceDetailActivity.this, R.string.international_phone_number_unavailable, Toast.LENGTH_SHORT).show());
         }
 
-        if (!placeDetailActivityViewState.getWebsite().equalsIgnoreCase(getString(R.string.website_unavailable))) {
+        if (placeDetailActivityViewState.getWebsite().equalsIgnoreCase(getString(R.string.website_unavailable))) {
+            binding.buttonLike.setOnClickListener(i -> Toast.makeText(this, R.string.website_unavailable, Toast.LENGTH_SHORT).show());
+        } else {
             binding.buttonLike.setOnClickListener(i -> {
                 Intent websiteIntent = new Intent(Intent.ACTION_VIEW);
                 websiteIntent.setData(Uri.parse(placeDetailActivityViewState.getWebsite()));
                 startActivity(websiteIntent);
             });
-        } else {
-            binding.buttonLike.setOnClickListener(i -> Toast.makeText(this, R.string.website_unavailable, Toast.LENGTH_SHORT).show());
         }
 
+        //TODO How to delete from the likedList if the restaurant is already added into ?
         binding.buttonLike.setOnClickListener(listener -> {
             if (placeDetailActivityViewState.getSelectedAsLikedRestaurant()) {
                 Toast.makeText(this, placeDetailActivityViewState.getName() + getString(R.string.is_already_liked), Toast.LENGTH_SHORT).show();
@@ -132,6 +142,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
             }
         });
 
+        //TODO How to delete from the LunchRestau if the restaurant is already selected ?
         binding.floatingActionBtn.setOnClickListener(listener -> {
             if (placeDetailActivityViewState.getSelectedAsLunchRestaurant()) {
                 Toast.makeText(this, getString(R.string.you_already_decided_to_go) + placeDetailActivityViewState.getName(), Toast.LENGTH_SHORT).show();
