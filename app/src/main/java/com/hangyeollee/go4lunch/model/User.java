@@ -13,10 +13,11 @@ public class User {
         // Empty constructor needed for Firestore
     }
 
-    public User(String id, String name, String photoUrl ) {
+    public User(String id, String name, String photoUrl, List<LikedRestaurant> likedRestaurantList ) {
         this.id = id;
         this.name = name;
         this.photoUrl = photoUrl;
+        this.likedRestaurantList = likedRestaurantList;
     }
 
     public String getId() {

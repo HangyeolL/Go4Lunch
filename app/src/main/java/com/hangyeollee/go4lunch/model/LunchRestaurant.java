@@ -4,17 +4,16 @@ package com.hangyeollee.go4lunch.model;
 public class LunchRestaurant {
     private String restaurantId;
     private String userId;
-    private String restaurantMame;
+    private String restaurantName;
     private String date;
 
-    // TODO Hangye test without this empty constructor ?
     @SuppressWarnings("unused") // For Firestore deserialization
     public LunchRestaurant() { }
 
-    public LunchRestaurant(String restaurantId, String userId, String restaurantMame, String date) {
+    public LunchRestaurant(String restaurantId, String userId, String restaurantName, String date) {
         this.restaurantId = restaurantId;
         this.userId = userId;
-        this.restaurantMame = restaurantMame;
+        this.restaurantName = restaurantName;
         this.date = date;
     }
 
@@ -26,8 +25,8 @@ public class LunchRestaurant {
         return userId;
     }
 
-    public String getRestaurantMame() {
-        return restaurantMame;
+    public String getRestaurantName() {
+        return restaurantName;
     }
 
     public String getDate() {

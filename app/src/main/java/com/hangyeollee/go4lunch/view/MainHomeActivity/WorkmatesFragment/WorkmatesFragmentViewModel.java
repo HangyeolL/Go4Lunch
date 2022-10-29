@@ -67,12 +67,12 @@ public class WorkmatesFragmentViewModel extends ViewModel {
             if (matchingUser != null) {
                 userIdsEatingToday.add(matchingUser.getId());
 
-                if (userInput == null || matchingUser.getName().contains(userInput) || lunchRestaurant.getRestaurantMame().contains(userInput)) {
+                if (userInput == null || matchingUser.getName().contains(userInput) || lunchRestaurant.getRestaurantName().contains(userInput)) {
                     recyclerViewItemViewStateList.add(
                         new WorkmatesFragmentRecyclerViewItemViewState(
                             matchingUser.getPhotoUrl(),
                             matchingUser.getName(),
-                            lunchRestaurant.getRestaurantMame(),
+                            lunchRestaurant.getRestaurantName(),
                             lunchRestaurant.getRestaurantId()
                         )
                     );

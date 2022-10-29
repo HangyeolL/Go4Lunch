@@ -22,7 +22,7 @@ public class NearbySearchDataRepository {
     public LiveData<MyNearBySearchData> fetchAndGetMyNearBySearchLiveData (String location) {
         MutableLiveData<MyNearBySearchData> nearBySearchMutableLiveData = new MutableLiveData<>();
 
-        Call<MyNearBySearchData> call = googleMapsApi.getNearbySearchData(location, 1000, "restaurant", BuildConfig.PLACES_API_KEY);
+        Call<MyNearBySearchData> call = googleMapsApi.getNearbySearchData(location, 3000, "restaurant", BuildConfig.PLACES_API_KEY);
         call.enqueue(new Callback<MyNearBySearchData>() {
             @Override
             public void onResponse(Call<MyNearBySearchData> call, Response<MyNearBySearchData> response) {

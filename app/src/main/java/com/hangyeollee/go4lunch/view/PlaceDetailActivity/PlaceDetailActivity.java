@@ -132,32 +132,35 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         //TODO How to delete from the likedList if the restaurant is already added into ?
         binding.buttonLike.setOnClickListener(listener -> {
-            if (placeDetailActivityViewState.getSelectedAsLikedRestaurant()) {
-                Toast.makeText(this, placeDetailActivityViewState.getName() + getString(R.string.is_already_liked), Toast.LENGTH_SHORT).show();
-            } else {
-                LikedRestaurant likedRestaurant = new LikedRestaurant(placeId, placeDetailActivityViewState.getName());
-                viewModel.onSetLikedRestaurantButtonClicked(likedRestaurant);
+                    LikedRestaurant likedRestaurant = new LikedRestaurant(placeId, placeDetailActivityViewState.getName());
+                    viewModel.onLikedRestaurantButtonClicked(likedRestaurant);
 
-                Toast.makeText(this, placeDetailActivityViewState.getName() + getString(R.string.add_to_liked_restaurant_list), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    if (placeDetailActivityViewState.getSelectedAsLikedRestaurant()) {
+                        Toast.makeText(this, placeDetailActivityViewState.getName() + "removed from the liked restaurant List", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, placeDetailActivityViewState.getName() + getString(R.string.add_to_liked_restaurant_list), Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
 
         //TODO How to delete from the LunchRestau if the restaurant is already selected ?
         binding.floatingActionBtn.setOnClickListener(listener -> {
-            if (placeDetailActivityViewState.getSelectedAsLunchRestaurant()) {
-                Toast.makeText(this, getString(R.string.you_already_decided_to_go) + placeDetailActivityViewState.getName(), Toast.LENGTH_SHORT).show();
-            } else {
-                LunchRestaurant lunchRestaurant = new LunchRestaurant(placeId, viewModel.getCurrentUser().getUid(), placeDetailActivityViewState.getName(), MyCalendar.getCurrentDate());
-                viewModel.onSetLunchRestaurantButtonClicked(lunchRestaurant);
+                    if (placeDetailActivityViewState.getSelectedAsLunchRestaurant()) {
+                        Toast.makeText(this, getString(R.string.you_already_decided_to_go) + placeDetailActivityViewState.getName(), Toast.LENGTH_SHORT).show();
 
-                Toast.makeText(this, getString(R.string.you_will_go_to) + placeDetailActivityViewState.getName() + getString(R.string.for_lunch), Toast.LENGTH_SHORT).show();
+                    } else {
+                        LunchRestaurant lunchRestaurant = new LunchRestaurant(placeId, viewModel.getCurrentUser().getUid(), placeDetailActivityViewState.getName(), MyCalendar.getCurrentDate());
+                        viewModel.onSetLunchRestaurantButtonClicked(lunchRestaurant);
 
-                SharedPreferences.Editor mSharedPrefEditor = new MySharedPreferenceUtil(this).getInstanceOfEditor();
+                        Toast.makeText(this, getString(R.string.you_will_go_to) + placeDetailActivityViewState.getName() + getString(R.string.for_lunch), Toast.LENGTH_SHORT).show();
 
-                mSharedPrefEditor.putString("LunchRestaurant", lunchRestaurant.getRestaurantMame());
-                mSharedPrefEditor.commit();
-            }
-        });
+                        SharedPreferences.Editor mSharedPrefEditor = new MySharedPreferenceUtil(this).getInstanceOfEditor();
+
+                        mSharedPrefEditor.putString("LunchRestaurant", lunchRestaurant.getRestaurantName());
+                        mSharedPrefEditor.commit();
+                    }
+                }
+        );
     }
 
 }

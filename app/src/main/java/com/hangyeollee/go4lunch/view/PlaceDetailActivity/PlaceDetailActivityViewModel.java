@@ -127,7 +127,7 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         boolean isSelectedAsLikedRestaurant = false;
 
         for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-            isSelectedAsLunchRestaurant = myPlaceDetailData.getResult().getName().equalsIgnoreCase(lunchRestaurant.getRestaurantMame());
+            isSelectedAsLunchRestaurant = myPlaceDetailData.getResult().getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName());
         }
 
         for (LikedRestaurant likedRestaurant : likedRestaurantList) {
@@ -163,12 +163,13 @@ public class PlaceDetailActivityViewModel extends ViewModel {
     }
 
     public void onSetLunchRestaurantButtonClicked(LunchRestaurant lunchRestaurant) {
-        firebaseRepository.saveLunchRestaurant(lunchRestaurant);
+        firebaseRepository.saveOrRemoveLunchRestaurant(lunchRestaurant);
     }
 
-    public void onSetLikedRestaurantButtonClicked(LikedRestaurant likedRestaurant) {
-        firebaseRepository.setLikeRestaurant(likedRestaurant);
+    public void onLikedRestaurantButtonClicked(LikedRestaurant likedRestaurant) {
+        firebaseRepository.addOrRemoveLikedRestaurant(likedRestaurant);
     }
+
 
 
 }

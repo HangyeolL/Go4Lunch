@@ -10,10 +10,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Transaction;
 import com.hangyeollee.go4lunch.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.model.User;
@@ -26,15 +29,15 @@ import java.util.Objects;
 public class FirebaseRepository {
 
     private final FirebaseAuth firebaseAuth;
-    private final FirebaseFirestore firestore;
+    private final FirebaseFirestore firestoreDatabase;
 
     private final MutableLiveData<List<User>> userListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LikedRestaurant>> likedRestaurantMutableLiveData = new MutableLiveData<>();
 
-    public FirebaseRepository(FirebaseAuth firebaseAuth, FirebaseFirestore firestore) {
+    public FirebaseRepository(FirebaseAuth firebaseAuth, FirebaseFirestore firestoreDatabase) {
         this.firebaseAuth = firebaseAuth;
-        this.firestore = firestore;
+        this.firestoreDatabase = firestoreDatabase;
     }
 
     // -----------FirebaseAuth method starts----------- //
@@ -68,15 +71,15 @@ public class FirebaseRepository {
     // -----------Firestore method starts----------- //
 
     public CollectionReference getUsersCollection() {
-        return firestore.collection("users");
+        return firestoreDatabase.collection("users");
     }
 
     public CollectionReference getDateCollection() {
-        return firestore.collection(MyCalendar.getCurrentDate());
+        return firestoreDatabase.collection(MyCalendar.getCurrentDate());
     }
 
     public CollectionReference getLikedRestaurantCollection() {
-        return firestore.collection("likedRestaurant");
+        return firestoreDatabase.collection("likedRestaurant");
     }
 
     public void saveUserInFirestore() {
@@ -84,18 +87,15 @@ public class FirebaseRepository {
         String photoUrl = Objects.requireNonNull(getCurrentUser().getPhotoUrl()).toString();
         String username = getCurrentUser().getDisplayName();
 
-        User userToCreate = new User(id, username, photoUrl);
+        User userToCreate = new User(id, username, photoUrl, new ArrayList<>());
 
-        getUsersCollection().document(getCurrentUser().getUid()).set(userToCreate, SetOptions.mergeFields("id", "name", "photoUrl"))
+        //TODO not merge likedRestaurantList!!
+        getUsersCollection().document(getCurrentUser().getUid()).set(userToCreate, SetOptions.mergeFields(id, username))
                 .addOnSuccessListener(v ->
                         Log.e("Firestore", "user successfully stored !")).
                 addOnFailureListener(v ->
                         Log.e("Firestore", "user saving failed")
                 );
-    }
-
-    public void saveLunchRestaurant(LunchRestaurant lunchRestaurant) {
-        getDateCollection().document(getCurrentUser().getUid()).set(lunchRestaurant, SetOptions.merge());
     }
 
     public LiveData<List<User>> getUsersList() {
@@ -138,10 +138,6 @@ public class FirebaseRepository {
         return lunchRestaurantMutableLiveData;
     }
 
-    public void setLikeRestaurant(LikedRestaurant likedRestaurant) {
-        getUsersCollection().document(getCurrentUser().getUid()).update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
-    }
-
     public LiveData<List<LikedRestaurant>> getLikedRestaurantList() {
         getUsersCollection().document(getCurrentUser().getUid()).addSnapshotListener(
                 (documentSnapshot, error) -> {
@@ -161,5 +157,55 @@ public class FirebaseRepository {
         );
         return likedRestaurantMutableLiveData;
     }
+
+    public void saveOrRemoveLunchRestaurant(LunchRestaurant lunchRestaurant) {
+//        firestoreDatabase.runTransaction()
+        getDateCollection().document(getCurrentUser().getUid()).set(lunchRestaurant, SetOptions.merge());
+    }
+
+    public void addOrRemoveLikedRestaurant(LikedRestaurant likedRestaurant) {
+        DocumentReference docRef = getUsersCollection().document(getCurrentUser().getUid());
+
+        firestoreDatabase.runTransaction((Transaction.Function<Void>) transaction -> {
+                    DocumentSnapshot documentSnapshot = transaction.get(docRef);
+                    User user = documentSnapshot.toObject(User.class);
+                    assert user != null;
+
+                    List<LikedRestaurant> likedRestaurantList = user.getLikedRestaurantList();
+
+                    if (likedRestaurantList.isEmpty() &&
+                    !likedRestaurantList.contains(likedRestaurant)) {
+//                        likedRestaurantList.add(likedRestaurant);
+//                        transaction.update(
+//                                docRef,
+//                                "likedRestaurantList",
+//                                likedRestaurantList
+//                        );
+                        docRef.update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
+
+                    } else {
+                        for (LikedRestaurant restaurant : likedRestaurantList) {
+                            if (restaurant.getId().equalsIgnoreCase(likedRestaurant.getId())) {
+//                                likedRestaurantList.remove(likedRestaurant);
+                                docRef.update("likedRestaurantList", FieldValue.arrayRemove(likedRestaurant));
+
+                            } else {
+//                                likedRestaurantList.add(likedRestaurant);
+                                docRef.update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
+                            }
+//                            transaction.update(
+//                                    docRef,
+//                                    "likedRestaurantList",
+//                                    likedRestaurantList
+//                            );
+                        }
+                    }
+
+                    return null;
+                }
+        ).addOnFailureListener(failure -> Log.w("likedRestaurant", failure.getMessage())
+        ).addOnSuccessListener(success -> Log.d("likedRestaurant", "Transaction success!"));
+    }
+
 
 }
