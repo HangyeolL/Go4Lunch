@@ -17,6 +17,7 @@ import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
 import com.hangyeollee.go4lunch.utils.MyRetrofitBuilder;
+import com.hangyeollee.go4lunch.view.DispatcherActivity.DispatcherActivityViewModel;
 import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivityViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment.ListViewFragmentViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MainHomeActivityViewModel;
@@ -28,6 +29,8 @@ import com.hangyeollee.go4lunch.view.SettingsActivity.SettingsActivityViewModel;
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private final Application mApplication;
+    private final FirebaseAuth firebaseAuth;
+
     private final NearbySearchDataRepository mNearbySearchDataRepository;
     private final PlaceDetailDataRepository mPlaceDetailDataRepository;
     private final AutoCompleteDataRepository mAutoCompleteDataRepository;
@@ -50,7 +53,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     }
 
     private ViewModelFactory() {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         GoogleMapsApi googleMapsApi = MyRetrofitBuilder.getGoogleMapsApi();
 
@@ -66,8 +69,10 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-
-        if (modelClass.isAssignableFrom(LogInActivityViewModel.class)) {
+        if (modelClass.isAssignableFrom(DispatcherActivityViewModel.class)) {
+            return (T) new DispatcherActivityViewModel(firebaseAuth);
+        }
+        else if (modelClass.isAssignableFrom(LogInActivityViewModel.class)) {
             return (T) new LogInActivityViewModel(mFirebaseRepository);
         }
         else if (modelClass.isAssignableFrom(MainHomeActivityViewModel.class)) {

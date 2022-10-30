@@ -61,13 +61,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.LogInActivity.LogInActivity"
+            android:name=".view.DispatcherActivity.DispatcherActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".view.LogInActivity.LogInActivity"
+            android:exported="true"/>
         <activity
             android:name=".view.MainHomeActivity.MainHomeActivity"
             android:exported="true"
@@ -80,5 +83,6 @@
             android:parentActivityName=".view.MainHomeActivity.MainHomeActivity"/>
 
         <receiver android:name=".utils.AlarmReceiver"/>
+
     </application>
 </manifest>

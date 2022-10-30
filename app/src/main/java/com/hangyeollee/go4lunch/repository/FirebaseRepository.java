@@ -89,8 +89,7 @@ public class FirebaseRepository {
 
         User userToCreate = new User(id, username, photoUrl, new ArrayList<>());
 
-        //TODO not merge likedRestaurantList!!
-        getUsersCollection().document(getCurrentUser().getUid()).set(userToCreate, SetOptions.mergeFields(id, username))
+        getUsersCollection().document(getCurrentUser().getUid()).set(userToCreate, SetOptions.mergeFields("id", "name", "photoUrl"))
                 .addOnSuccessListener(v ->
                         Log.e("Firestore", "user successfully stored !")).
                 addOnFailureListener(v ->
@@ -159,10 +158,11 @@ public class FirebaseRepository {
     }
 
     public void saveOrRemoveLunchRestaurant(LunchRestaurant lunchRestaurant) {
-//        firestoreDatabase.runTransaction()
-        getDateCollection().document(getCurrentUser().getUid()).set(lunchRestaurant, SetOptions.merge());
+
     }
 
+    //TODO
+    // only adding function works, removing never get called
     public void addOrRemoveLikedRestaurant(LikedRestaurant likedRestaurant) {
         DocumentReference docRef = getUsersCollection().document(getCurrentUser().getUid());
 
@@ -173,8 +173,7 @@ public class FirebaseRepository {
 
                     List<LikedRestaurant> likedRestaurantList = user.getLikedRestaurantList();
 
-                    if (likedRestaurantList.isEmpty() &&
-                    !likedRestaurantList.contains(likedRestaurant)) {
+                    if (likedRestaurantList.isEmpty()) {
 //                        likedRestaurantList.add(likedRestaurant);
 //                        transaction.update(
 //                                docRef,
@@ -182,17 +181,18 @@ public class FirebaseRepository {
 //                                likedRestaurantList
 //                        );
                         docRef.update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
-
+                        return null;
                     } else {
                         for (LikedRestaurant restaurant : likedRestaurantList) {
-                            if (restaurant.getId().equalsIgnoreCase(likedRestaurant.getId())) {
+                            if (restaurant.getId().equalsIgnoreCase(likedRestaurant.getId())
+                                    && likedRestaurantList.contains(likedRestaurant)) {
 //                                likedRestaurantList.remove(likedRestaurant);
                                 docRef.update("likedRestaurantList", FieldValue.arrayRemove(likedRestaurant));
-
                             } else {
 //                                likedRestaurantList.add(likedRestaurant);
                                 docRef.update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
                             }
+                            return null;
 //                            transaction.update(
 //                                    docRef,
 //                                    "likedRestaurantList",
