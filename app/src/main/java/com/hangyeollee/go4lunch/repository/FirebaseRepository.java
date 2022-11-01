@@ -102,16 +102,12 @@ public class FirebaseRepository {
                 (querySnapshot, error) -> {
                     if (error != null) {
                         Log.w("userCollection", "Listen failed.", error);
-                        userListMutableLiveData.postValue(null);
+                        userListMutableLiveData.setValue(null);
                         return;
                     }
-                    List<User> userList = new ArrayList<>();
-                    assert querySnapshot != null;
-                    for (QueryDocumentSnapshot document : querySnapshot) {
-                        User user = document.toObject(User.class);
-                        userList.add(user);
+                    if (querySnapshot != null) {
+                        userListMutableLiveData.setValue(querySnapshot.toObjects(User.class));
                     }
-                    userListMutableLiveData.setValue(userList);
                 }
         );
         return userListMutableLiveData;

@@ -1,5 +1,8 @@
 package com.hangyeollee.go4lunch.view.PlaceDetailActivity;
 
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 public class PlaceDetailActivityViewState {
@@ -12,10 +15,22 @@ public class PlaceDetailActivityViewState {
     private final String website;
 
     private final List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList;
-    private final boolean isSelectedAsLikedRestaurant;
+    @ColorRes
+    private final int isSelectedAsLikedRestaurant;
     private final boolean isSelectedAsLunchRestaurant;
 
-    public PlaceDetailActivityViewState(String photoUrl, String name, String address, float rating, String internationalPhoneNumber, String website, List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList, boolean isSelectedAsLikedRestaurant, boolean isSelectedAsLunchRestaurant) {
+    public PlaceDetailActivityViewState(
+        String photoUrl,
+        String name,
+        String address,
+        float rating,
+        String internationalPhoneNumber,
+        String website,
+        List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList,
+        @ColorRes
+        int isSelectedAsLikedRestaurant,
+        boolean isSelectedAsLunchRestaurant
+    ) {
         this.photoUrl = photoUrl;
         this.name = name;
         this.address = address;
@@ -27,6 +42,7 @@ public class PlaceDetailActivityViewState {
         this.isSelectedAsLunchRestaurant = isSelectedAsLunchRestaurant;
     }
 
+    @NonNull
     public String getPhotoUrl() {
         return photoUrl;
     }
@@ -55,7 +71,8 @@ public class PlaceDetailActivityViewState {
         return recyclerViewItemViewStateList;
     }
 
-    public boolean getSelectedAsLikedRestaurant() {
+    @ColorRes
+    public int getLikedButtonColorTint() {
         return isSelectedAsLikedRestaurant;
     }
 

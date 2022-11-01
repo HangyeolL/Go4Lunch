@@ -1,5 +1,6 @@
 package com.hangyeollee.go4lunch.repository;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -14,7 +15,6 @@ import retrofit2.Response;
 public class PlaceDetailDataRepository {
 
     private final GoogleMapsApi googleMapsApi;
-    private final MutableLiveData<MyPlaceDetailData> placeDetailMutableLiveData = new MutableLiveData<>();
 
     private static final String FIELDS = "name,photo,vicinity,rating,geometry/location,international_phone_number,opening_hours/open_now,website";
 
@@ -22,22 +22,23 @@ public class PlaceDetailDataRepository {
         this.googleMapsApi = googleMapsApi;
     }
 
-    public LiveData<MyPlaceDetailData> getPlaceDetailLiveData() {
-        return placeDetailMutableLiveData;
-    }
+    public LiveData<MyPlaceDetailData> getPlaceDetailLiveData(String placeId) {
+        MutableLiveData<MyPlaceDetailData> placeDetailMutableLiveData = new MutableLiveData<>();
 
-    public void fetchData(String placeId) {
         Call<MyPlaceDetailData> call = googleMapsApi.getPlaceDetails(FIELDS, placeId, BuildConfig.PLACES_API_KEY);
         call.enqueue(new Callback<MyPlaceDetailData>() {
             @Override
-            public void onResponse(Call<MyPlaceDetailData> call, Response<MyPlaceDetailData> response) {
+            public void onResponse(@NonNull Call<MyPlaceDetailData> call, @NonNull Response<MyPlaceDetailData> response) {
                 placeDetailMutableLiveData.setValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<MyPlaceDetailData> call, Throwable t) {
-                placeDetailMutableLiveData.postValue(null);
+            public void onFailure(@NonNull Call<MyPlaceDetailData> call, @NonNull Throwable t) {
+                t.printStackTrace();
+                placeDetailMutableLiveData.setValue(null);
             }
         });
+
+        return placeDetailMutableLiveData;
     }
 }

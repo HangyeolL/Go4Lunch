@@ -7,7 +7,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -16,7 +16,6 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityPlaceDetailBinding;
 import com.hangyeollee.go4lunch.model.LikedRestaurant;
@@ -30,8 +29,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
     private ActivityPlaceDetailBinding binding;
     private PlaceDetailActivityViewModel viewModel;
 
-    private String placeId;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,45 +41,22 @@ public class PlaceDetailActivity extends AppCompatActivity {
         PlaceDetailActivityRecyclerViewAdapter recyclerViewAdapter = new PlaceDetailActivityRecyclerViewAdapter();
         binding.recyclerViewWorkmates.setAdapter(recyclerViewAdapter);
 
-        toolBarSetup();
-        fetchPlaceDetailData();
-
-        viewModel.getPlaceDetailActivityViewStateLiveData().observe(this, placeDetailActivityViewState -> {
-            basicViewSetup(placeDetailActivityViewState);
-            listenerSetup(placeDetailActivityViewState);
-            recyclerViewAdapter.submitList(placeDetailActivityViewState.getRecyclerViewItemViewStateList());
-        });
-
-
-    }
-
-    private void toolBarSetup() {
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        String placeId = getIntent().getStringExtra("place id");
+        viewModel.onPlaceIdFetched(placeId);
+
+        viewModel.getPlaceDetailActivityViewStateLiveData().observe(this, placeDetailActivityViewState -> {
+            bind(placeDetailActivityViewState, recyclerViewAdapter);
+        });
     }
 
-    private void fetchPlaceDetailData() {
-        Intent intent = getIntent();
-        placeId = intent.getStringExtra("place id");
-
-        Log.e("receivingPlaceId", placeId);
-
-        viewModel.requestPlaceDetailData(placeId);
-    }
-
-    private void basicViewSetup(PlaceDetailActivityViewState placeDetailActivityViewState) {
-
-        if (placeDetailActivityViewState.getPhotoUrl() != null) {
-            Glide.with(PlaceDetailActivity.this)
-                    .load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" +
-                            placeDetailActivityViewState.getPhotoUrl() + "&key=" + BuildConfig.PLACES_API_KEY)
-                    .into(binding.imageViewRestaurant);
-        } else {
-            Glide.with(this)
-                    .load(R.drawable.ic_baseline_local_dining_24)
-                    .into(binding.imageViewRestaurant);
-        }
+    private void bind(PlaceDetailActivityViewState placeDetailActivityViewState, PlaceDetailActivityRecyclerViewAdapter recyclerViewAdapter) {
+        Glide.with(PlaceDetailActivity.this)
+            .load(placeDetailActivityViewState.getPhotoUrl())
+            .into(binding.imageViewRestaurant);
 
         binding.textViewName.setText(placeDetailActivityViewState.getName());
         binding.textViewAddress.setText(placeDetailActivityViewState.getAddress());
@@ -91,11 +65,8 @@ public class PlaceDetailActivity extends AppCompatActivity {
         //TODO Icon color doesn't get changed !
         Drawable btnLikeDrawable = DrawableCompat.wrap(getResources().getDrawable(R.drawable.ic_baseline_star_24));
 
-        if (placeDetailActivityViewState.getSelectedAsLikedRestaurant()) {
-            DrawableCompat.setTint(btnLikeDrawable, getResources().getColor(R.color.orange));
-        } else {
-            DrawableCompat.setTint(btnLikeDrawable, getResources().getColor(R.color.white));
-        }
+        DrawableCompat.setTint(btnLikeDrawable, getResources().getColor(placeDetailActivityViewState.getLikedButtonColorTint()));
+
         binding.buttonLike.setCompoundDrawables(null, btnLikeDrawable, null, null);
 
         Drawable fabDrawable = getResources().getDrawable(R.drawable.ic_baseline_check_24).getConstantState().newDrawable();
@@ -106,19 +77,25 @@ public class PlaceDetailActivity extends AppCompatActivity {
             fabDrawable.mutate().setColorFilter(Color.BLACK, PorterDuff.Mode.MULTIPLY);
         }
         binding.floatingActionBtn.setImageDrawable(fabDrawable);
-    }
 
-    private void listenerSetup(PlaceDetailActivityViewState placeDetailActivityViewState) {
+        binding.buttonCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO : Use a ViewAction !
+                viewModel.onButtonCallClicked(placeDetailActivityViewState);
+            }
+        });
 
-        if (placeDetailActivityViewState.getInternationalPhoneNumber().equalsIgnoreCase(getString(R.string.international_phone_number_unavailable))) {
-            binding.buttonCall.setOnClickListener(i -> Toast.makeText(PlaceDetailActivity.this, R.string.international_phone_number_unavailable, Toast.LENGTH_SHORT).show());
-        } else {
-            binding.buttonCall.setOnClickListener(i -> {
-                Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                callIntent.setData(Uri.parse("tel:" + placeDetailActivityViewState.getInternationalPhoneNumber()));
-                startActivity(callIntent);
-            });
-        }
+
+//        if (placeDetailActivityViewState.getInternationalPhoneNumber().equalsIgnoreCase(getString(R.string.international_phone_number_unavailable))) {
+//            binding.buttonCall.setOnClickListener(i -> Toast.makeText(PlaceDetailActivity.this, R.string.international_phone_number_unavailable, Toast.LENGTH_SHORT).show());
+//        } else {
+//            binding.buttonCall.setOnClickListener(i -> {
+//                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+//                callIntent.setData(Uri.parse("tel:" + placeDetailActivityViewState.getInternationalPhoneNumber()));
+//                startActivity(callIntent);
+//            });
+//        }
 
         if (placeDetailActivityViewState.getWebsite().equalsIgnoreCase(getString(R.string.website_unavailable))) {
             binding.buttonLike.setOnClickListener(i -> Toast.makeText(this, R.string.website_unavailable, Toast.LENGTH_SHORT).show());
@@ -132,35 +109,36 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         //TODO How to delete from the likedList if the restaurant is already added into ?
         binding.buttonLike.setOnClickListener(listener -> {
-                    LikedRestaurant likedRestaurant = new LikedRestaurant(placeId, placeDetailActivityViewState.getName());
-                    viewModel.onLikedRestaurantButtonClicked(likedRestaurant);
+                LikedRestaurant likedRestaurant = new LikedRestaurant(placeId, placeDetailActivityViewState.getName());
+                viewModel.onLikedRestaurantButtonClicked(likedRestaurant);
 
-                    if (placeDetailActivityViewState.getSelectedAsLikedRestaurant()) {
-                        Toast.makeText(this, placeDetailActivityViewState.getName() + "removed from the liked restaurant List", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, placeDetailActivityViewState.getName() + getString(R.string.add_to_liked_restaurant_list), Toast.LENGTH_SHORT).show();
-                    }
+                if (placeDetailActivityViewState.getLikedButtonColorTint()) {
+                    Toast.makeText(this, placeDetailActivityViewState.getName() + "removed from the liked restaurant List", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, placeDetailActivityViewState.getName() + getString(R.string.add_to_liked_restaurant_list), Toast.LENGTH_SHORT).show();
                 }
+            }
         );
 
         //TODO How to delete from the LunchRestau if the restaurant is already selected ?
         binding.floatingActionBtn.setOnClickListener(listener -> {
-                    if (placeDetailActivityViewState.getSelectedAsLunchRestaurant()) {
-                        Toast.makeText(this, getString(R.string.you_already_decided_to_go) + placeDetailActivityViewState.getName(), Toast.LENGTH_SHORT).show();
+                if (placeDetailActivityViewState.getSelectedAsLunchRestaurant()) {
+                    Toast.makeText(this, getString(R.string.you_already_decided_to_go) + placeDetailActivityViewState.getName(), Toast.LENGTH_SHORT).show();
 
-                    } else {
-                        LunchRestaurant lunchRestaurant = new LunchRestaurant(placeId, viewModel.getCurrentUser().getUid(), placeDetailActivityViewState.getName(), MyCalendar.getCurrentDate());
-                        viewModel.onSetLunchRestaurantButtonClicked(lunchRestaurant);
+                } else {
+                    LunchRestaurant lunchRestaurant = new LunchRestaurant(placeId, viewModel.getCurrentUser().getUid(), placeDetailActivityViewState.getName(), MyCalendar.getCurrentDate());
+                    viewModel.onSetLunchRestaurantButtonClicked(lunchRestaurant);
 
-                        Toast.makeText(this, getString(R.string.you_will_go_to) + placeDetailActivityViewState.getName() + getString(R.string.for_lunch), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.you_will_go_to) + placeDetailActivityViewState.getName() + getString(R.string.for_lunch), Toast.LENGTH_SHORT).show();
 
-                        SharedPreferences.Editor mSharedPrefEditor = new MySharedPreferenceUtil(this).getInstanceOfEditor();
+                    SharedPreferences.Editor mSharedPrefEditor = new MySharedPreferenceUtil(this).getInstanceOfEditor();
 
-                        mSharedPrefEditor.putString("LunchRestaurant", lunchRestaurant.getRestaurantName());
-                        mSharedPrefEditor.commit();
-                    }
+                    mSharedPrefEditor.putString("LunchRestaurant", lunchRestaurant.getRestaurantName());
+                    mSharedPrefEditor.commit();
                 }
+            }
         );
-    }
 
+        recyclerViewAdapter.submitList(placeDetailActivityViewState.getRecyclerViewItemViewStateList());
+    }
 }
