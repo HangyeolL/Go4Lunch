@@ -1,5 +1,6 @@
 package com.hangyeollee.go4lunch.view.PlaceDetailActivity;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 
@@ -13,10 +14,12 @@ public class PlaceDetailActivityViewState {
     private final float rating;
     private final String internationalPhoneNumber;
     private final String website;
-
     private final List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList;
     @ColorRes
-    private final int isSelectedAsLikedRestaurant;
+    private final int likeButtonColor;
+    @ColorInt
+    private final int floatActButtonColor;
+    private final boolean isSelectedAsLikedRestaurant;
     private final boolean isSelectedAsLunchRestaurant;
 
     public PlaceDetailActivityViewState(
@@ -28,7 +31,10 @@ public class PlaceDetailActivityViewState {
         String website,
         List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList,
         @ColorRes
-        int isSelectedAsLikedRestaurant,
+        int likeButtonColor,
+        @ColorInt
+        int floatActButtonColor,
+        boolean isSelectedAsLikedRestaurant,
         boolean isSelectedAsLunchRestaurant
     ) {
         this.photoUrl = photoUrl;
@@ -38,8 +44,11 @@ public class PlaceDetailActivityViewState {
         this.internationalPhoneNumber = internationalPhoneNumber;
         this.website = website;
         this.recyclerViewItemViewStateList = recyclerViewItemViewStateList;
+        this.likeButtonColor = likeButtonColor;
+        this.floatActButtonColor = floatActButtonColor;
         this.isSelectedAsLikedRestaurant = isSelectedAsLikedRestaurant;
-        this.isSelectedAsLunchRestaurant = isSelectedAsLunchRestaurant;
+        this.isSelectedAsLunchRestaurant= isSelectedAsLunchRestaurant;
+
     }
 
     @NonNull
@@ -72,11 +81,20 @@ public class PlaceDetailActivityViewState {
     }
 
     @ColorRes
-    public int getLikedButtonColorTint() {
+    public int getLikeButtonColor() {
+        return likeButtonColor;
+    }
+
+    @ColorInt
+    public int getFloatActButtonColor() {
+        return floatActButtonColor;
+    }
+
+    public boolean isSelectedAsLikedRestaurant() {
         return isSelectedAsLikedRestaurant;
     }
 
-    public boolean getSelectedAsLunchRestaurant() {
+    public boolean isSelectedAsLunchRestaurant() {
         return isSelectedAsLunchRestaurant;
     }
 }

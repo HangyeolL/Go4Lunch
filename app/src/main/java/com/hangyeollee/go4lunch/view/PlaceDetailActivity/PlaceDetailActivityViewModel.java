@@ -1,13 +1,17 @@
 package com.hangyeollee.go4lunch.view.PlaceDetailActivity;
 
+import static com.hangyeollee.go4lunch.utils.resourceToUri.resourceToUri;
+
 import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -23,6 +27,9 @@ import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
 import com.hangyeollee.go4lunch.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
+import com.hangyeollee.go4lunch.utils.MyCalendar;
+import com.hangyeollee.go4lunch.utils.MySharedPreferenceUtil;
+import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +44,14 @@ public class PlaceDetailActivityViewModel extends ViewModel {
 
     private final MediatorLiveData<PlaceDetailActivityViewState> mediatorLiveData = new MediatorLiveData<>();
 
+    private final SingleLiveEvent<String> callButtonToastMessageSingleLiveEvent = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Intent> callButtonIntentSingleLiveEvent = new SingleLiveEvent<>();
+    private final SingleLiveEvent<String> websiteButtonToastMessageSingleLiveEvent = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Intent> websiteButtonIntentSingleLiveEvent = new SingleLiveEvent<>();
+    private final SingleLiveEvent<String> likeButtonToastMessageSingleLiveEvent = new SingleLiveEvent<>();
+    private final SingleLiveEvent<String> floatingActionButtonToastMessageSingleLiveEvent = new SingleLiveEvent<>();
+
+
     public PlaceDetailActivityViewModel(Application context, PlaceDetailDataRepository placeDetailDataRepository, FirebaseRepository firebaseRepository) {
         this.context = context;
         this.placeDetailDataRepository = placeDetailDataRepository;
@@ -44,63 +59,61 @@ public class PlaceDetailActivityViewModel extends ViewModel {
 
         @SuppressWarnings("Convert2MethodRef")
         LiveData<MyPlaceDetailData> placeDetailLiveData = Transformations.switchMap(
-            placeIdMutableLiveData,
-            placeId -> placeDetailDataRepository.getPlaceDetailLiveData(placeId)
+                placeIdMutableLiveData,
+                placeId -> placeDetailDataRepository.getPlaceDetailLiveData(placeId)
         );
         LiveData<List<User>> userListLiveData = firebaseRepository.getUsersList();
         LiveData<List<LunchRestaurant>> lunchRestaurantListOfAllUsersLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
         LiveData<List<LikedRestaurant>> likedRestaurantListLiveData = firebaseRepository.getLikedRestaurantList();
 
         mediatorLiveData.addSource(placeDetailLiveData, placeDetailData ->
-            combine(
-                placeDetailData,
-                userListLiveData.getValue(),
-                lunchRestaurantListOfAllUsersLiveData.getValue(),
-                likedRestaurantListLiveData.getValue()
-            )
+                combine(
+                        placeDetailData,
+                        userListLiveData.getValue(),
+                        lunchRestaurantListOfAllUsersLiveData.getValue(),
+                        likedRestaurantListLiveData.getValue()
+                )
         );
 
         mediatorLiveData.addSource(userListLiveData, userList ->
-            combine(
-                placeDetailLiveData.getValue(),
-                userList,
-                lunchRestaurantListOfAllUsersLiveData.getValue(),
-                likedRestaurantListLiveData.getValue()
-            )
+                combine(
+                        placeDetailLiveData.getValue(),
+                        userList,
+                        lunchRestaurantListOfAllUsersLiveData.getValue(),
+                        likedRestaurantListLiveData.getValue()
+                )
         );
 
         mediatorLiveData.addSource(lunchRestaurantListOfAllUsersLiveData, lunchRestaurantList ->
-            combine(
-                placeDetailLiveData.getValue(),
-                userListLiveData.getValue(),
-                lunchRestaurantList,
-                likedRestaurantListLiveData.getValue()
-            )
+                combine(
+                        placeDetailLiveData.getValue(),
+                        userListLiveData.getValue(),
+                        lunchRestaurantList,
+                        likedRestaurantListLiveData.getValue()
+                )
         );
 
         mediatorLiveData.addSource(likedRestaurantListLiveData, likedRestaurantList ->
-            combine(
-                placeDetailLiveData.getValue(),
-                userListLiveData.getValue(),
-                lunchRestaurantListOfAllUsersLiveData.getValue(),
-                likedRestaurantList
-            )
+                combine(
+                        placeDetailLiveData.getValue(),
+                        userListLiveData.getValue(),
+                        lunchRestaurantListOfAllUsersLiveData.getValue(),
+                        likedRestaurantList
+                )
         );
 
     }
 
     private void combine(
-        @Nullable MyPlaceDetailData myPlaceDetailData,
-        @Nullable List<User> userList,
-        @Nullable List<LunchRestaurant> lunchRestaurantList,
-        @Nullable List<LikedRestaurant> likedRestaurantList
+            @Nullable MyPlaceDetailData myPlaceDetailData,
+            @Nullable List<User> userList,
+            @Nullable List<LunchRestaurant> lunchRestaurantList,
+            @Nullable List<LikedRestaurant> likedRestaurantList
     ) {
         if (myPlaceDetailData == null || lunchRestaurantList == null || likedRestaurantList == null) {
             return;
         }
 
-        String website = null;
-        String internationalPhoneNumber = null;
         String photoUrl;
         float rating;
 
@@ -108,9 +121,9 @@ public class PlaceDetailActivityViewModel extends ViewModel {
             String photoReference = myPlaceDetailData.getResult().getPhotos().get(0).getPhotoReference();
 
             photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
-                + photoReference
-                + "&key="
-                + BuildConfig.PLACES_API_KEY;
+                    + photoReference
+                    + "&key="
+                    + BuildConfig.PLACES_API_KEY;
         } else {
             photoUrl = resourceToUri(context, R.drawable.ic_baseline_local_dining_24);
         }
@@ -121,19 +134,6 @@ public class PlaceDetailActivityViewModel extends ViewModel {
             rating = 0;
         }
 
-        if (myPlaceDetailData.getResult().getWebsite() == null) {
-            website = context.getString(R.string.website_unavailable);
-        } else {
-            website = myPlaceDetailData.getResult().getWebsite();
-        }
-
-        if (myPlaceDetailData.getResult().getInternationalPhoneNumber() == null) {
-            context.getString(R.string.international_phone_number_unavailable);
-        } else {
-            internationalPhoneNumber = myPlaceDetailData.getResult().getInternationalPhoneNumber();
-        }
-
-
         List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList = new ArrayList<>();
 
         for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
@@ -141,9 +141,9 @@ public class PlaceDetailActivityViewModel extends ViewModel {
                 for (User user : userList) {
                     if (user.getId().equalsIgnoreCase(lunchRestaurant.getUserId())) {
                         recyclerViewItemViewStateList.add(
-                            new PlaceDetailActivityRecyclerViewItemViewState(
-                                user.getName(),
-                                user.getPhotoUrl())
+                                new PlaceDetailActivityRecyclerViewItemViewState(
+                                        user.getName(),
+                                        user.getPhotoUrl())
                         );
                     }
                 }
@@ -162,23 +162,37 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         }
 
         PlaceDetailActivityViewState activityViewState = new PlaceDetailActivityViewState(
-            photoUrl,
-            myPlaceDetailData.getResult().getName(),
-            myPlaceDetailData.getResult().getVicinity(),
-            rating,
-            internationalPhoneNumber,
-            website,
-            recyclerViewItemViewStateList,
-            isSelectedAsLikedRestaurant ? R.color.orange : R.color.white,
-            isSelectedAsLunchRestaurant
+                photoUrl,
+                myPlaceDetailData.getResult().getName(),
+                myPlaceDetailData.getResult().getVicinity(),
+                rating,
+                myPlaceDetailData.getResult().getInternationalPhoneNumber(),
+                myPlaceDetailData.getResult().getWebsite(),
+                recyclerViewItemViewStateList,
+                isSelectedAsLikedRestaurant ? R.color.orange : R.color.blue,
+                isSelectedAsLunchRestaurant ? ResourcesCompat.getColor(context.getResources(), R.color.orange, null) : ResourcesCompat.getColor(context.getResources(), R.color.blue, null),
+                isSelectedAsLikedRestaurant,
+                isSelectedAsLunchRestaurant
         );
 
         mediatorLiveData.setValue(activityViewState);
 
     }
 
+    public FirebaseUser getCurrentUser() {
+        return firebaseRepository.getCurrentUser();
+    }
+
     public LiveData<PlaceDetailActivityViewState> getPlaceDetailActivityViewStateLiveData() {
         return mediatorLiveData;
+    }
+
+    public SingleLiveEvent<String> getCallButtonToastMessageSingleLiveEvent() {
+        return callButtonToastMessageSingleLiveEvent;
+    }
+
+    public SingleLiveEvent<Intent> getCallButtonIntentSingleLiveEvent() {
+        return callButtonIntentSingleLiveEvent;
     }
 
     public void onPlaceIdFetched(String placeId) {
@@ -186,34 +200,61 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         placeIdMutableLiveData.setValue(placeId);
     }
 
-    public FirebaseUser getCurrentUser() {
-        return firebaseRepository.getCurrentUser();
-    }
-
-    public void onSetLunchRestaurantButtonClicked(LunchRestaurant lunchRestaurant) {
-        firebaseRepository.saveOrRemoveLunchRestaurant(lunchRestaurant);
-    }
-
-    public void onLikedRestaurantButtonClicked(LikedRestaurant likedRestaurant) {
-        firebaseRepository.addOrRemoveLikedRestaurant(likedRestaurant);
-    }
-
-
-    private static String resourceToUri(Context context, int resID) {
-        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
-                context.getResources().getResourcePackageName(resID) + '/' +
-                context.getResources().getResourceTypeName(resID) + '/' +
-                context.getResources().getResourceEntryName(resID))
-            .toString();
-    }
-
     public void onButtonCallClicked(PlaceDetailActivityViewState placeDetailActivityViewState) {
         if (placeDetailActivityViewState.getInternationalPhoneNumber() == null) {
-            viewActionToast.setValue("blabla no phone");
+            callButtonToastMessageSingleLiveEvent.setValue(context.getString(R.string.international_phone_number_unavailable));
         } else {
             Intent callIntent = new Intent(Intent.ACTION_DIAL);
             callIntent.setData(Uri.parse("tel:" + placeDetailActivityViewState.getInternationalPhoneNumber()));
-            viewActionIntent.setValue(callIntent);
+            callButtonIntentSingleLiveEvent.setValue(callIntent);
+        }
+    }
+
+    public void onButtonWebsiteClicked(PlaceDetailActivityViewState placeDetailActivityViewState) {
+        if (placeDetailActivityViewState.getWebsite() == null) {
+            websiteButtonToastMessageSingleLiveEvent.setValue(context.getString(R.string.website_unavailable));
+        } else {
+            Intent websiteIntent = new Intent(Intent.ACTION_VIEW);
+            websiteIntent.setData(Uri.parse(placeDetailActivityViewState.getWebsite()));
+            websiteButtonIntentSingleLiveEvent.setValue(websiteIntent);
+        }
+    }
+
+    public void onButtonLikeClicked(PlaceDetailActivityViewState placeDetailActivityViewState) {
+        LikedRestaurant likedRestaurant = new LikedRestaurant(placeIdMutableLiveData.getValue(), placeDetailActivityViewState.getName());
+        firebaseRepository.addOrRemoveLikedRestaurant(likedRestaurant);
+
+        if (placeDetailActivityViewState.isSelectedAsLikedRestaurant()) {
+            likeButtonToastMessageSingleLiveEvent.setValue(context.getString(R.string.add_to_liked_restaurant_list));
+        } else {
+            likeButtonToastMessageSingleLiveEvent.setValue(context.getString(R.string.removed_from_the_liked_restaurant_list));
+        }
+    }
+
+    public void onFloatingActionButtonClicked(PlaceDetailActivityViewState placeDetailActivityViewState) {
+        if (placeDetailActivityViewState.isSelectedAsLunchRestaurant()) {
+            floatingActionButtonToastMessageSingleLiveEvent.setValue(
+                    context.getString(R.string.you_already_decided_to_go)
+                            + placeDetailActivityViewState.getName()
+            );
+        } else {
+            floatingActionButtonToastMessageSingleLiveEvent.setValue(
+                    context.getString(R.string.you_will_go_to)
+                            + placeDetailActivityViewState.getName()
+                            + context.getString(R.string.for_lunch)
+            );
+
+            LunchRestaurant lunchRestaurant = new LunchRestaurant(
+                    placeIdMutableLiveData.getValue(),
+                    firebaseRepository.getCurrentUser().getUid(),
+                    placeDetailActivityViewState.getName(),
+                    MyCalendar.getCurrentDate()
+            );
+            firebaseRepository.addOrRemoveLunchRestaurant(lunchRestaurant);
+
+            SharedPreferences.Editor mSharedPrefEditor = new MySharedPreferenceUtil(context).getInstanceOfEditor();
+            mSharedPrefEditor.putString("LunchRestaurant", lunchRestaurant.getRestaurantName());
+            mSharedPrefEditor.commit();
         }
     }
 }

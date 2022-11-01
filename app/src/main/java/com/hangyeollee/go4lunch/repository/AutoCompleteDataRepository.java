@@ -58,7 +58,7 @@ public class AutoCompleteDataRepository {
     public LiveData<MyAutoCompleteData> fetchAndGetAutoCompleteData(String userInput, String location) {
         MutableLiveData<MyAutoCompleteData> mutableLiveData = new MutableLiveData<>();
 
-        Call<MyAutoCompleteData> call = mGoogleMapsApi.getAutoCompleteData(userInput, location, 1000, "restaurant", "en", true, BuildConfig.PLACES_API_KEY);
+        Call<MyAutoCompleteData> call = mGoogleMapsApi.getAutoCompleteData(userInput, location, 3000, "restaurant", "en", true, BuildConfig.PLACES_API_KEY);
         call.enqueue(new Callback<MyAutoCompleteData>() {
             @Override
             public void onResponse(Call<MyAutoCompleteData> call, Response<MyAutoCompleteData> response) {

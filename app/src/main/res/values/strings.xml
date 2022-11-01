@@ -18,8 +18,8 @@
     <string name="shared_preferences_user_lunch_restaurant_boolean">shared preferences user lunch restaurant boolean</string>
     <string name="shared_preferences_user_lunch_restaurant_name_string">shared preferences user lunch restaurant name string</string>
     <string name="shared_preferences_user_lunch_restaurant_id_int">shared  preferences user lunch restaurant id int</string>
-    <string name="international_phone_number_unavailable">international phone number not available</string>
 
+    <string name="international_phone_number_unavailable">international phone number not available</string>
     <string name="user_is_joining"> is joining!</string>
     <string name="add_to_liked_restaurant_list"> added to liked restaurant list</string>
     <string name="is_already_liked"> is already liked</string>
@@ -29,4 +29,5 @@
     <string name="for_lunch"> for lunch</string>
     <string name="open">OPEN</string>
     <string name="closed">CLOSED</string>
+    <string name="removed_from_the_liked_restaurant_list">removed from the liked restaurant List</string>
 </resources>

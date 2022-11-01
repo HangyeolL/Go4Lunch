@@ -1,6 +1,8 @@
 package com.hangyeollee.go4lunch.model;
 
-// TODO Hangye @Nullable !
+import javax.annotation.Nullable;
+
+@Nullable
 public class LunchRestaurant {
     private String restaurantId;
     private String userId;

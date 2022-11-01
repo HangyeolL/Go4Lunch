@@ -78,10 +78,6 @@ public class FirebaseRepository {
         return firestoreDatabase.collection(MyCalendar.getCurrentDate());
     }
 
-    public CollectionReference getLikedRestaurantCollection() {
-        return firestoreDatabase.collection("likedRestaurant");
-    }
-
     public void saveUserInFirestore() {
         String id = getCurrentUser().getUid();
         String photoUrl = Objects.requireNonNull(getCurrentUser().getPhotoUrl()).toString();
@@ -153,8 +149,21 @@ public class FirebaseRepository {
         return likedRestaurantMutableLiveData;
     }
 
-    public void saveOrRemoveLunchRestaurant(LunchRestaurant lunchRestaurant) {
+    public void addOrRemoveLunchRestaurant(LunchRestaurant lunchRestaurant) {
+        DocumentReference docRef = getDateCollection().document(getCurrentUser().getUid());
 
+        firestoreDatabase.runTransaction((Transaction.Function<Object>) transaction -> {
+                    DocumentSnapshot documentSnapshot = transaction.get(docRef);
+
+                    if (documentSnapshot.exists()) {
+                        docRef.delete();
+                    } else {
+                        docRef.set(lunchRestaurant);
+                    }
+                    return null;
+                }
+        ).addOnFailureListener(failure -> Log.w("lunchRestaurant", failure.getMessage())
+        ).addOnSuccessListener(success -> Log.d("lunchRestaurant", "Transaction success!"));
     }
 
     //TODO
@@ -170,30 +179,17 @@ public class FirebaseRepository {
                     List<LikedRestaurant> likedRestaurantList = user.getLikedRestaurantList();
 
                     if (likedRestaurantList.isEmpty()) {
-//                        likedRestaurantList.add(likedRestaurant);
-//                        transaction.update(
-//                                docRef,
-//                                "likedRestaurantList",
-//                                likedRestaurantList
-//                        );
                         docRef.update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
                         return null;
                     } else {
                         for (LikedRestaurant restaurant : likedRestaurantList) {
                             if (restaurant.getId().equalsIgnoreCase(likedRestaurant.getId())
                                     && likedRestaurantList.contains(likedRestaurant)) {
-//                                likedRestaurantList.remove(likedRestaurant);
                                 docRef.update("likedRestaurantList", FieldValue.arrayRemove(likedRestaurant));
                             } else {
-//                                likedRestaurantList.add(likedRestaurant);
                                 docRef.update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
                             }
                             return null;
-//                            transaction.update(
-//                                    docRef,
-//                                    "likedRestaurantList",
-//                                    likedRestaurantList
-//                            );
                         }
                     }
 
