@@ -3,8 +3,6 @@ package com.hangyeollee.go4lunch.view.PlaceDetailActivity;
 import static com.hangyeollee.go4lunch.utils.resourceToUri.resourceToUri;
 
 import android.app.Application;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -179,10 +177,6 @@ public class PlaceDetailActivityViewModel extends ViewModel {
 
     }
 
-    public FirebaseUser getCurrentUser() {
-        return firebaseRepository.getCurrentUser();
-    }
-
     public LiveData<PlaceDetailActivityViewState> getPlaceDetailActivityViewStateLiveData() {
         return mediatorLiveData;
     }
@@ -193,6 +187,22 @@ public class PlaceDetailActivityViewModel extends ViewModel {
 
     public SingleLiveEvent<Intent> getCallButtonIntentSingleLiveEvent() {
         return callButtonIntentSingleLiveEvent;
+    }
+
+    public SingleLiveEvent<String> getLikeButtonToastMessageSingleLiveEvent() {
+        return likeButtonToastMessageSingleLiveEvent;
+    }
+
+    public SingleLiveEvent<String> getWebsiteButtonToastMessageSingleLiveEvent() {
+        return websiteButtonToastMessageSingleLiveEvent;
+    }
+
+    public SingleLiveEvent<Intent> getWebsiteButtonIntentSingleLiveEvent() {
+        return websiteButtonIntentSingleLiveEvent;
+    }
+
+    public SingleLiveEvent<String> getFloatingActionButtonToastMessageSingleLiveEvent() {
+        return floatingActionButtonToastMessageSingleLiveEvent;
     }
 
     public void onPlaceIdFetched(String placeId) {
@@ -250,6 +260,7 @@ public class PlaceDetailActivityViewModel extends ViewModel {
                     placeDetailActivityViewState.getName(),
                     MyCalendar.getCurrentDate()
             );
+
             firebaseRepository.addOrRemoveLunchRestaurant(lunchRestaurant);
 
             SharedPreferences.Editor mSharedPrefEditor = new MySharedPreferenceUtil(context).getInstanceOfEditor();

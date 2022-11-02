@@ -3,11 +3,13 @@ package com.hangyeollee.go4lunch.view.PlaceDetailActivity;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -41,6 +43,30 @@ public class PlaceDetailActivity extends AppCompatActivity {
 
         viewModel.getPlaceDetailActivityViewStateLiveData().observe(this,
                 placeDetailActivityViewState -> bind(placeDetailActivityViewState, recyclerViewAdapter)
+        );
+
+        viewModel.getCallButtonToastMessageSingleLiveEvent().observe(this,
+                message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        );
+
+        viewModel.getCallButtonIntentSingleLiveEvent().observe(this,
+                intent -> startActivity(intent)
+        );
+
+        viewModel.getLikeButtonToastMessageSingleLiveEvent().observe(this,
+                message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        );
+
+        viewModel.getWebsiteButtonToastMessageSingleLiveEvent().observe(this,
+                message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        );
+
+        viewModel.getWebsiteButtonIntentSingleLiveEvent().observe(this,
+                intent -> startActivity(intent)
+        );
+
+        viewModel.getFloatingActionButtonToastMessageSingleLiveEvent().observe(this,
+                message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         );
     }
 
