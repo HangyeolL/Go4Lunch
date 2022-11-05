@@ -77,6 +77,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         }
     }
 
+    //TODO map marker doesnt bring user to the right restaurant!
     private void setListenerOnMarker(List<MapMarkerViewState> mapMarkerViewStateList) {
         mGoogleMap.setOnInfoWindowClickListener(
                 marker -> {

@@ -31,14 +31,13 @@ import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivity;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment.ListViewFragment;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.MapsFragment;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment.WorkmatesFragment;
-import com.hangyeollee.go4lunch.view.SettingsActivity.SettingsActivity;
 import com.hangyeollee.go4lunch.view.ViewModelFactory;
 
 public class MainHomeActivity extends AppCompatActivity {
 
     private ActivityMainHomeBinding binding;
 
-    private MainHomeActivityViewModel mViewModel;
+    private MainHomeActivityViewModel viewModel;
 
     private SharedPreferences mSharedPref;
 
@@ -51,14 +50,14 @@ public class MainHomeActivity extends AppCompatActivity {
 
         MainActivityHeaderNavigationViewBinding navigationViewHeaderBinding = MainActivityHeaderNavigationViewBinding.bind(binding.NavigationView.getHeaderView(0));
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MainHomeActivityViewModel.class);
+        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MainHomeActivityViewModel.class);
 
         mSharedPref = new MySharedPreferenceUtil(this).getInstanceOfSharedPref();
 
         ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
                     if (isGranted) {
-                        mViewModel.startLocationRequest();
+                        viewModel.startLocationRequest();
                     } else {
                         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainHomeActivity.this);
                         alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings").create().show();
@@ -67,41 +66,45 @@ public class MainHomeActivity extends AppCompatActivity {
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Log.d("Permission", "is already granted");
-            mViewModel.startLocationRequest();
+            viewModel.startLocationRequest();
         } else {
             Log.d("Permission", "is not granted launch permission dialog");
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, MapsFragment.newInstance()).commit();
+        }
+
 //        alarmSetup();
-        navigationViewItemSelectedListener();
         linkDrawerLayoutWithToolbar();
         bottomNavigationBarSetup();
         searchViewSetup();
 
-        mViewModel.getMainHomeActivityViewStateLiveData().observe(this, mainHomeActivityViewState -> {
-            if (mainHomeActivityViewState.isUserLoggedIn()) {
-                mViewModel.onUserLogInEvent(mainHomeActivityViewState.getProviderId());
-
-                navigationViewHeaderBinding.textViewUserName.setText(mainHomeActivityViewState.getUserName());
-
-                if (mainHomeActivityViewState.getUserEmail() != null) {
+        viewModel.getMainHomeActivityViewStateLiveData().observe(this, mainHomeActivityViewState -> {
+                    navigationViewHeaderBinding.textViewUserName.setText(mainHomeActivityViewState.getUserName());
                     navigationViewHeaderBinding.textViewUserEmail.setText(mainHomeActivityViewState.getUserEmail());
-                } else {
-                    navigationViewHeaderBinding.textViewUserEmail.setText(R.string.email_unavailable);
-                }
-
-                if (mainHomeActivityViewState.getUserPhotoUrl() != null) {
                     Glide.with(MainHomeActivity.this).load(mainHomeActivityViewState.getUserPhotoUrl()).into(navigationViewHeaderBinding.imageViewUserPhoto);
-                } else {
-                    Glide.with(MainHomeActivity.this).load(R.drawable.ic_baseline_person_outline_24).into(navigationViewHeaderBinding.imageViewUserPhoto);
-                }
-            }
-        });
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, MapsFragment.newInstance()).commit();
-        }
+                    navigationViewItemSelectedListener(mainHomeActivityViewState);
+                }
+        );
+
+        viewModel.getYourLunchToastMessageSingleLiveEvent().observe(this,
+                message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        );
+
+        viewModel.getSettingsIntentSingleLiveEvent().observe(this,
+                intent -> startActivity(intent)
+        );
+
+        viewModel.getLogOutIntentSingleLiveEvent().observe(this,
+                intent -> {
+                    startActivity(intent);
+                    finish();
+                }
+        );
+
 
     }
 
@@ -128,25 +131,25 @@ public class MainHomeActivity extends AppCompatActivity {
 //        }
 //    }
 
-    private void navigationViewItemSelectedListener() {
+    private void navigationViewItemSelectedListener(MainHomeActivityViewState mainHomeActivityViewState) {
         binding.NavigationView.setNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.navigationView_yourLunch:
-                    Toast.makeText(MainHomeActivity.this, mSharedPref.getString("LunchRestaurant", ""), Toast.LENGTH_SHORT).show();
-                    break;
-                case R.id.navigationView_settings:
-                    startActivity(new Intent(MainHomeActivity.this, SettingsActivity.class));
-                    break;
-                case R.id.navigationView_logout:
-                    signOutAccordingToProviders(mViewModel.getProviderId());
-                    mViewModel.onUserLogOutEvent();
-                    startActivity(new Intent(MainHomeActivity.this, LogInActivity.class));
-                    finish();
-                    break;
-            }
-            binding.drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
-        });
+                    switch (item.getItemId()) {
+                        case R.id.navigationView_yourLunch:
+                            viewModel.onYourLunchClicked(mainHomeActivityViewState);
+                            break;
+                        case R.id.navigationView_settings:
+                            viewModel.onSettingsClicked();
+                            break;
+                        case R.id.navigationView_logout:
+                            //TODO how to refactor ?
+                            signOutAccordingToProviders(mainHomeActivityViewState.getProviderId());
+                            viewModel.onLogOutClicked();
+                            break;
+                    }
+                    binding.drawerLayout.closeDrawer(GravityCompat.START);
+                    return true;
+                }
+        );
     }
 
     private void linkDrawerLayoutWithToolbar() {
@@ -161,21 +164,21 @@ public class MainHomeActivity extends AppCompatActivity {
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.bottomNavigationView_menu_mapView:
-                    binding.toolBar.setTitle("I am Hungry!");
+                    binding.toolBar.setTitle(R.string.i_am_hungry);
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.fragmentContainerView, MapsFragment.newInstance())
                             .commitNow();
                     break;
                 case R.id.bottomNavigationView_menu_listView:
-                    binding.toolBar.setTitle("I am Hungry!");
+                    binding.toolBar.setTitle(R.string.i_am_hungry);
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.fragmentContainerView, ListViewFragment.newInstance())
                             .commitNow();
                     break;
                 case R.id.bottomNavigationView_menu_workMates:
-                    binding.toolBar.setTitle("Available Workmates");
+                    binding.toolBar.setTitle(R.string.available_workmates);
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.fragmentContainerView, WorkmatesFragment.newInstance())
@@ -208,7 +211,7 @@ public class MainHomeActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                mViewModel.onSearchViewTextChanged(newText);
+                viewModel.onSearchViewTextChanged(newText);
                 return false;
             }
         });
@@ -241,7 +244,7 @@ public class MainHomeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mViewModel.stopLocationRequest();
+        viewModel.stopLocationRequest();
         binding = null;
     }
 }

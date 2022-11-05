@@ -1,23 +1,19 @@
 package com.hangyeollee.go4lunch.view.MainHomeActivity;
 
-import android.net.Uri;
-
 public class MainHomeActivityViewState {
 
     private final String providerId;
     private final String userName;
     private final String userEmail;
-    private final Uri userPhotoUrl;
-    private final boolean isUserLoggedIn;
+    private final String userPhotoUrl;
+    private final String lunchRestaurantName;
 
-
-    public MainHomeActivityViewState(String providerId, String userName, String userEmail, Uri userPhotoUrl, boolean isUserLoggedIn) {
+    public MainHomeActivityViewState(String providerId, String userName, String userEmail, String userPhotoUrl, String lunchRestaurantName) {
         this.providerId = providerId;
         this.userName = userName;
         this.userEmail = userEmail;
         this.userPhotoUrl = userPhotoUrl;
-        this.isUserLoggedIn = isUserLoggedIn;
-
+        this.lunchRestaurantName = lunchRestaurantName;
     }
 
     public String getProviderId() {
@@ -32,13 +28,11 @@ public class MainHomeActivityViewState {
         return userEmail;
     }
 
-    public Uri getUserPhotoUrl() {
+    public String getUserPhotoUrl() {
         return userPhotoUrl;
     }
 
-    public boolean isUserLoggedIn() {
-        return isUserLoggedIn;
+    public String getLunchRestaurantName() {
+        return lunchRestaurantName;
     }
-
-
 }

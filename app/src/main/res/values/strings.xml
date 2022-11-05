@@ -11,7 +11,6 @@
     <string name="not_going_to_restaurant_yet">Not going to restaurant (yet ?)</string>
     <string name="website_unavailable">website not available</string>
 
-
     <string name="fb_login_protocol_scheme">fb3320128438266102</string>
     <string name="firebase_web_client_id">863376647598-1fs4tds46kqk8521gai41dtbekrd0glm.apps.googleusercontent.com</string>
 
@@ -30,4 +29,7 @@
     <string name="open">OPEN</string>
     <string name="closed">CLOSED</string>
     <string name="removed_from_the_liked_restaurant_list">removed from the liked restaurant List</string>
+    <string name="didnt_decide_where_to_lunch">You didn\'t decide where to lunch yet</string>
+    <string name="i_am_hungry">I am Hungry!</string>
+    <string name="available_workmates">Available Workmates</string>
 </resources>

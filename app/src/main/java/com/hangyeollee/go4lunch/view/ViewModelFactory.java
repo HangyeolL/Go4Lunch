@@ -76,7 +76,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new LogInActivityViewModel(mFirebaseRepository);
         }
         else if (modelClass.isAssignableFrom(MainHomeActivityViewModel.class)) {
-            return (T) new MainHomeActivityViewModel(mFirebaseRepository, mLocationRepository, mAutoCompleteDataRepository);
+            return (T) new MainHomeActivityViewModel(mApplication, mFirebaseRepository, mLocationRepository, mAutoCompleteDataRepository);
         }
         else if (modelClass.isAssignableFrom(MapsFragmentViewModel.class)) {
             return (T) new MapsFragmentViewModel(mLocationRepository, mNearbySearchDataRepository, mAutoCompleteDataRepository);
