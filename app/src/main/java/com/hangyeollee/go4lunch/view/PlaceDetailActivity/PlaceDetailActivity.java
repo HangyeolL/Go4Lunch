@@ -44,11 +44,11 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 placeDetailActivityViewState -> bind(placeDetailActivityViewState, recyclerViewAdapter)
         );
 
-        viewModel.getCallButtonToastMessageSingleLiveEvent().observe(this,
+        viewModel.getToastMessageSingleLiveEvent().observe(this,
                 message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         );
 
-        viewModel.getCallButtonIntentSingleLiveEvent().observe(this,
+        viewModel.getIntentSingleLiveEvent().observe(this,
                 intent -> startActivity(intent)
         );
 

@@ -16,7 +16,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.google.firebase.auth.FirebaseUser;
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.model.LikedRestaurant;
@@ -35,24 +34,17 @@ import java.util.List;
 public class PlaceDetailActivityViewModel extends ViewModel {
 
     private final Application context;
-    private final PlaceDetailDataRepository placeDetailDataRepository;
     private final FirebaseRepository firebaseRepository;
 
     private final MutableLiveData<String> placeIdMutableLiveData = new MutableLiveData<>();
 
     private final MediatorLiveData<PlaceDetailActivityViewState> mediatorLiveData = new MediatorLiveData<>();
 
-    private final SingleLiveEvent<String> callButtonToastMessageSingleLiveEvent = new SingleLiveEvent<>();
-    private final SingleLiveEvent<Intent> callButtonIntentSingleLiveEvent = new SingleLiveEvent<>();
-    private final SingleLiveEvent<String> websiteButtonToastMessageSingleLiveEvent = new SingleLiveEvent<>();
-    private final SingleLiveEvent<Intent> websiteButtonIntentSingleLiveEvent = new SingleLiveEvent<>();
-    private final SingleLiveEvent<String> likeButtonToastMessageSingleLiveEvent = new SingleLiveEvent<>();
-    private final SingleLiveEvent<String> floatingActionButtonToastMessageSingleLiveEvent = new SingleLiveEvent<>();
-
+    private final SingleLiveEvent<String> toastMessageSingleLiveEvent = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Intent> intentSingleLiveEvent = new SingleLiveEvent<>();
 
     public PlaceDetailActivityViewModel(Application context, PlaceDetailDataRepository placeDetailDataRepository, FirebaseRepository firebaseRepository) {
         this.context = context;
-        this.placeDetailDataRepository = placeDetailDataRepository;
         this.firebaseRepository = firebaseRepository;
 
         @SuppressWarnings("Convert2MethodRef")
@@ -181,28 +173,12 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         return mediatorLiveData;
     }
 
-    public SingleLiveEvent<String> getCallButtonToastMessageSingleLiveEvent() {
-        return callButtonToastMessageSingleLiveEvent;
+    public SingleLiveEvent<String> getToastMessageSingleLiveEvent() {
+        return toastMessageSingleLiveEvent;
     }
 
-    public SingleLiveEvent<Intent> getCallButtonIntentSingleLiveEvent() {
-        return callButtonIntentSingleLiveEvent;
-    }
-
-    public SingleLiveEvent<String> getLikeButtonToastMessageSingleLiveEvent() {
-        return likeButtonToastMessageSingleLiveEvent;
-    }
-
-    public SingleLiveEvent<String> getWebsiteButtonToastMessageSingleLiveEvent() {
-        return websiteButtonToastMessageSingleLiveEvent;
-    }
-
-    public SingleLiveEvent<Intent> getWebsiteButtonIntentSingleLiveEvent() {
-        return websiteButtonIntentSingleLiveEvent;
-    }
-
-    public SingleLiveEvent<String> getFloatingActionButtonToastMessageSingleLiveEvent() {
-        return floatingActionButtonToastMessageSingleLiveEvent;
+    public SingleLiveEvent<Intent> getIntentSingleLiveEvent() {
+        return intentSingleLiveEvent;
     }
 
     public void onPlaceIdFetched(String placeId) {
@@ -212,21 +188,21 @@ public class PlaceDetailActivityViewModel extends ViewModel {
 
     public void onButtonCallClicked(PlaceDetailActivityViewState placeDetailActivityViewState) {
         if (placeDetailActivityViewState.getInternationalPhoneNumber() == null) {
-            callButtonToastMessageSingleLiveEvent.setValue(context.getString(R.string.international_phone_number_unavailable));
+            toastMessageSingleLiveEvent.setValue(context.getString(R.string.international_phone_number_unavailable));
         } else {
             Intent callIntent = new Intent(Intent.ACTION_DIAL);
             callIntent.setData(Uri.parse("tel:" + placeDetailActivityViewState.getInternationalPhoneNumber()));
-            callButtonIntentSingleLiveEvent.setValue(callIntent);
+            intentSingleLiveEvent.setValue(callIntent);
         }
     }
 
     public void onButtonWebsiteClicked(PlaceDetailActivityViewState placeDetailActivityViewState) {
         if (placeDetailActivityViewState.getWebsite() == null) {
-            websiteButtonToastMessageSingleLiveEvent.setValue(context.getString(R.string.website_unavailable));
+            toastMessageSingleLiveEvent.setValue(context.getString(R.string.website_unavailable));
         } else {
             Intent websiteIntent = new Intent(Intent.ACTION_VIEW);
             websiteIntent.setData(Uri.parse(placeDetailActivityViewState.getWebsite()));
-            websiteButtonIntentSingleLiveEvent.setValue(websiteIntent);
+            intentSingleLiveEvent.setValue(websiteIntent);
         }
     }
 
@@ -235,20 +211,20 @@ public class PlaceDetailActivityViewModel extends ViewModel {
         firebaseRepository.addOrRemoveLikedRestaurant(likedRestaurant);
 
         if (placeDetailActivityViewState.isSelectedAsLikedRestaurant()) {
-            likeButtonToastMessageSingleLiveEvent.setValue(context.getString(R.string.add_to_liked_restaurant_list));
+            toastMessageSingleLiveEvent.setValue(context.getString(R.string.add_to_liked_restaurant_list));
         } else {
-            likeButtonToastMessageSingleLiveEvent.setValue(context.getString(R.string.removed_from_the_liked_restaurant_list));
+            toastMessageSingleLiveEvent.setValue(context.getString(R.string.removed_from_the_liked_restaurant_list));
         }
     }
 
     public void onFloatingActionButtonClicked(PlaceDetailActivityViewState placeDetailActivityViewState) {
         if (placeDetailActivityViewState.isSelectedAsLunchRestaurant()) {
-            floatingActionButtonToastMessageSingleLiveEvent.setValue(
+            toastMessageSingleLiveEvent.setValue(
                     context.getString(R.string.you_already_decided_to_go)
                             + placeDetailActivityViewState.getName()
             );
         } else {
-            floatingActionButtonToastMessageSingleLiveEvent.setValue(
+            toastMessageSingleLiveEvent.setValue(
                     context.getString(R.string.you_will_go_to)
                             + placeDetailActivityViewState.getName()
                             + context.getString(R.string.for_lunch)
