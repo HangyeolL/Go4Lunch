@@ -11,6 +11,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.UserInfo;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.model.LunchRestaurant;
@@ -70,7 +74,7 @@ public class MainHomeActivityViewModel extends ViewModel {
         providerId = firebaseUserInfo.getProviderId();
         userName = firebaseUserInfo.getDisplayName();
 
-        if (firebaseUserInfo.getEmail() == null || firebaseUserInfo.getEmail() == "") {
+        if (firebaseUserInfo.getEmail() == null || firebaseUserInfo.getEmail().equals("")) {
             userEmail = context.getString(R.string.email_unavailable);
         } else {
             userEmail = firebaseUserInfo.getEmail();
@@ -82,7 +86,7 @@ public class MainHomeActivityViewModel extends ViewModel {
             userPhotoUrl = firebaseUserInfo.getPhotoUrl().toString();
         }
 
-        if(lunchRestaurantList != null) {
+        if (lunchRestaurantList != null) {
             for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
                 if (firebaseRepository.getCurrentUser().getUid().equals(lunchRestaurant.getUserId())) {
                     lunchRestaurantName = lunchRestaurant.getRestaurantName();
@@ -96,7 +100,9 @@ public class MainHomeActivityViewModel extends ViewModel {
         mainHomeActivityViewStateMediatorLiveData.setValue(mainHomeActivityViewState);
     }
 
-    /** GETTERS */
+    /**
+     * GETTERS
+     */
 
     public LiveData<MainHomeActivityViewState> getMainHomeActivityViewStateLiveData() {
         return mainHomeActivityViewStateMediatorLiveData;
@@ -110,6 +116,10 @@ public class MainHomeActivityViewModel extends ViewModel {
         return intentSingleLiveEvent;
     }
 
+    /**
+     * EVENTS
+     */
+
     public void onYourLunchClicked(MainHomeActivityViewState mainHomeActivityViewState) {
         if (mainHomeActivityViewState.getLunchRestaurantName() == null) {
             toastMessageSingleLiveEvent.setValue(context.getString(R.string.didnt_decide_where_to_lunch));
@@ -118,13 +128,25 @@ public class MainHomeActivityViewModel extends ViewModel {
         }
     }
 
-    /** EVENTS */
-
     public void onSettingsClicked() {
         intentSingleLiveEvent.setValue(new Intent(context, SettingsActivity.class));
     }
 
-    public void onLogOutClicked() {
+    public void onLogOutClicked(String providerId) {
+        switch (providerId) {
+            case "google.com":
+                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(context.getString(R.string.default_web_client_id))
+                        .requestEmail()
+                        .build();
+                GoogleSignInClient mSignInClient = GoogleSignIn.getClient(context, gso);
+                mSignInClient.signOut();
+                break;
+            case "facebook.com":
+                LoginManager.getInstance().logOut();
+                break;
+        }
+
         firebaseRepository.signOutFromFirebaseAuth();
         intentSingleLiveEvent.setValue(new Intent(context, LogInActivity.class));
     }
@@ -133,7 +155,9 @@ public class MainHomeActivityViewModel extends ViewModel {
         autoCompleteDataRepository.setUserSearchTextQuery(searchViewText);
     }
 
-    /** Location Repository */
+    /**
+     * Location Repository
+     */
 
     @SuppressLint("MissingPermission")
     public void startLocationRequest() {

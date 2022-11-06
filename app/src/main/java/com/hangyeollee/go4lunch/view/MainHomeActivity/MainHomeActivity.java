@@ -18,10 +18,6 @@ import androidx.core.view.GravityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
-import com.facebook.login.LoginManager;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainHomeBinding;
 import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBinding;
@@ -125,27 +121,6 @@ public class MainHomeActivity extends AppCompatActivity {
 //        }
 //    }
 
-    private void navigationViewItemSelectedListener(MainHomeActivityViewState mainHomeActivityViewState) {
-        binding.NavigationView.setNavigationItemSelectedListener(item -> {
-                    switch (item.getItemId()) {
-                        case R.id.navigationView_yourLunch:
-                            viewModel.onYourLunchClicked(mainHomeActivityViewState);
-                            break;
-                        case R.id.navigationView_settings:
-                            viewModel.onSettingsClicked();
-                            break;
-                        case R.id.navigationView_logout:
-                            //TODO Should move this to VM ?
-                            signOutAccordingToProviders(mainHomeActivityViewState.getProviderId());
-                            viewModel.onLogOutClicked();
-                            break;
-                    }
-                    binding.drawerLayout.closeDrawer(GravityCompat.START);
-                    return true;
-                }
-        );
-    }
-
     private void linkDrawerLayoutWithToolbar() {
         setSupportActionBar(binding.toolBar);
 
@@ -183,19 +158,6 @@ public class MainHomeActivity extends AppCompatActivity {
         });
     }
 
-    private void signOutAccordingToProviders(String providerId) {
-        switch (providerId) {
-            case "google.com":
-                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
-                GoogleSignInClient mSignInClient = GoogleSignIn.getClient(this, gso);
-                mSignInClient.signOut();
-                break;
-            case "facebook.com":
-                LoginManager.getInstance().logOut();
-                break;
-        }
-    }
-
     private void searchViewSetup() {
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -209,6 +171,25 @@ public class MainHomeActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void navigationViewItemSelectedListener(MainHomeActivityViewState mainHomeActivityViewState) {
+        binding.NavigationView.setNavigationItemSelectedListener(item -> {
+                    switch (item.getItemId()) {
+                        case R.id.navigationView_yourLunch:
+                            viewModel.onYourLunchClicked(mainHomeActivityViewState);
+                            break;
+                        case R.id.navigationView_settings:
+                            viewModel.onSettingsClicked();
+                            break;
+                        case R.id.navigationView_logout:
+                            viewModel.onLogOutClicked(mainHomeActivityViewState.getProviderId());
+                            break;
+                    }
+                    binding.drawerLayout.closeDrawer(GravityCompat.START);
+                    return true;
+                }
+        );
     }
 
     //TODO should work on this

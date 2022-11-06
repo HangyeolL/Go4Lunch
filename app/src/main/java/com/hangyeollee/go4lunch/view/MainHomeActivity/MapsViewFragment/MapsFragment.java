@@ -55,9 +55,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         );
 
         viewModel.getIntentSingleLiveEvent().observe(this,
-                intent -> {
-                    startActivity(intent);
-                }
+                this::startActivity
         );
     }
 

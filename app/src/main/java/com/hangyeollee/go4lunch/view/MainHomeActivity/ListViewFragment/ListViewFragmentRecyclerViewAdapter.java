@@ -54,6 +54,8 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
         public void bindViews(ListViewFragmentRecyclerViewItemViewState itemViewState) {
             binding.textViewName.setText(itemViewState.getName());
             binding.textViewAddress.setText(itemViewState.getVicinity());
+            binding.textViewDistance.setText(itemViewState.getDistanceFromUserLocation());
+            binding.ratingBar.setRating(itemViewState.getRating());
 
             if (itemViewState.isOpen()) {
                 binding.textViewIsOpenNow.setText(R.string.open);
@@ -63,16 +65,19 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
                 binding.textViewIsOpenNow.setTextColor(Color.RED);
             }
 
-            binding.ratingBar.setRating(itemViewState.getRating());
-            Glide.with(itemView).load("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=" + itemViewState.getPhotoReference() + "&key=" + BuildConfig.PLACES_API_KEY).into(binding.imageViewRestaurant);
+            Glide.with(itemView).load(
+                    "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
+                            + itemViewState.getPhotoReference()
+                            + "&key="
+                            + BuildConfig.PLACES_API_KEY).into(binding.imageViewRestaurant);
 
+            //TODO Ask nino if this is good
             itemView.setOnClickListener(i -> {
                 Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
                 intent.putExtra("place id", itemViewState.getPlaceId());
                 itemView.getContext().startActivity(intent);
             });
 
-            binding.textViewDistance.setText(itemViewState.getDistanceFromUserLocation());
         }
 
     }

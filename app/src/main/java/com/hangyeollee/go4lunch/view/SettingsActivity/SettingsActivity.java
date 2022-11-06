@@ -42,15 +42,15 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void viewSetup() {
-        Glide.with(this)
-                .load(mViewModel.getCurrentUser().getPhotoUrl())
-                .into(binding.imageViewUserPhoto);
-        binding.textInputEditTextUserName.setText(mViewModel.getCurrentUser().getDisplayName());
-        if (mViewModel.getCurrentUser().getEmail() != null) {
-            binding.textInputEditTextUserEmail.setText(mViewModel.getCurrentUser().getEmail());
-        } else {
-            binding.textInputEditTextUserEmail.setText("not provided");
-        }
+//        Glide.with(this)
+//                .load(mViewModel.getCurrentUser().getPhotoUrl())
+//                .into(binding.imageViewUserPhoto);
+//        binding.textInputEditTextUserName.setText(mViewModel.getCurrentUser().getDisplayName());
+//
+//            binding.textInputEditTextUserEmail.setText(mViewModel.getCurrentUser().getEmail());
+//
+//            binding.textInputEditTextUserEmail.setText("not provided");
+
     }
 
     private void switchSetup(Context context) {
