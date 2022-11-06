@@ -1,18 +1,27 @@
 package com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment;
 
+import android.app.Application;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.util.Log;
 
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.model.autocompletepojo.Prediction;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
@@ -20,6 +29,8 @@ import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
+import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
+import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +39,19 @@ import javax.annotation.Nullable;
 
 public class MapsFragmentViewModel extends ViewModel {
 
+    private final Application context;
+
     private final MediatorLiveData<MapsFragmentViewState> mapsFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
 
-    public MapsFragmentViewModel(LocationRepository locationRepository, NearbySearchDataRepository nearbySearchDataRepository, AutoCompleteDataRepository autoCompleteDataRepository) {
+    private final SingleLiveEvent<Intent> intentSingleLiveEvent = new SingleLiveEvent<>();
+
+    public MapsFragmentViewModel(
+            Application context,
+            LocationRepository locationRepository,
+            NearbySearchDataRepository nearbySearchDataRepository,
+            AutoCompleteDataRepository autoCompleteDataRepository
+    ) {
+        this.context = context;
 
         LiveData<Location> locationLiveData = locationRepository.getLocationLiveData();
 
@@ -104,11 +125,53 @@ public class MapsFragmentViewModel extends ViewModel {
         );
     }
 
+    /** GETTERS */
+
     public LiveData<MapsFragmentViewState> getMapsFragmentViewStateLiveData() {
         return mapsFragmentViewStateMediatorLiveData;
     }
 
-    // Etc.... //
+    public SingleLiveEvent<Intent> getIntentSingleLiveEvent() {
+        return intentSingleLiveEvent;
+    }
+
+    /** EVENTS */
+
+    public void onMapReady(List<MapMarkerViewState> mapMarkerViewStateList, GoogleMap googleMap) {
+        for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
+            googleMap.addMarker(
+                    new MarkerOptions().
+                            icon(getMapIcon()).
+                            position(mapMarkerViewState.getPositionLatLng()).
+                            title(mapMarkerViewState.getTitle())
+            );
+        }
+    }
+
+    public void onMarkerClicked(List<MapMarkerViewState> mapMarkerViewStateList, Marker marker) {
+        Intent intent = new Intent(context, PlaceDetailActivity.class);
+//&& marker.getId().equalsIgnoreCase(mapMarkerViewState.getPlaceId())
+        for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
+            if (marker.getTitle().equalsIgnoreCase(mapMarkerViewState.getTitle())
+                    ) {
+
+                intent.putExtra("place id", mapMarkerViewState.getPlaceId());
+                Log.i("markerName", marker.getTitle());
+                break;
+            }
+        }
+        intentSingleLiveEvent.setValue(intent);
+    }
+
+    /** ETC */
+
+    private BitmapDescriptor getMapIcon() {
+        Drawable markerIconDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_baseline_local_dining_24, null);
+        Drawable wrappedDrawable = DrawableCompat.wrap(markerIconDrawable);
+        DrawableCompat.setTint(wrappedDrawable, context.getResources().getColor(R.color.orange));
+        return makeDrawableIntoBitmap(wrappedDrawable);
+    }
+
     public BitmapDescriptor makeDrawableIntoBitmap(Drawable drawable) {
         Canvas canvas = new Canvas();
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
@@ -117,5 +180,6 @@ public class MapsFragmentViewModel extends ViewModel {
         drawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
+
 
 }

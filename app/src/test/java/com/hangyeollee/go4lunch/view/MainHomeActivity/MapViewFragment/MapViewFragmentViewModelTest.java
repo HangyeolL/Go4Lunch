@@ -4,12 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import android.app.Application;
 import android.location.Location;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.hangyeollee.go4lunch.MainApplication;
 import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.Geometry;
 import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
@@ -36,6 +38,7 @@ public class MapViewFragmentViewModelTest {
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
+    private Application application;
     private LocationRepository locationRepository;
     private NearbySearchDataRepository nearbySearchDataRepository;
     private AutoCompleteDataRepository autoCompleteDataRepository;
@@ -47,6 +50,7 @@ public class MapViewFragmentViewModelTest {
 
     @Before
     public void setUp() {
+        application = Mockito.mock(Application.class);
         locationRepository = Mockito.mock(LocationRepository.class);
         nearbySearchDataRepository = Mockito.mock(NearbySearchDataRepository.class);
         autoCompleteDataRepository = Mockito.mock(AutoCompleteDataRepository.class);
@@ -71,7 +75,7 @@ public class MapViewFragmentViewModelTest {
         doReturn(nearBySearchDataMutableLiveData).when(nearbySearchDataRepository).fetchAndGetMyNearBySearchLiveData(11.12 + "," + 11.11);
         doReturn(autoCompleteDataMutableLiveData).when(autoCompleteDataRepository).getAutoCompleteDataLiveData();
 
-        viewModel = new MapsFragmentViewModel(locationRepository, nearbySearchDataRepository, autoCompleteDataRepository);
+        viewModel = new MapsFragmentViewModel(application, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository);
     }
 
     @Test

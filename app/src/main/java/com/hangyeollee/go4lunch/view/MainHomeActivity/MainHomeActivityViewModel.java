@@ -32,9 +32,8 @@ public class MainHomeActivityViewModel extends ViewModel {
 
     private final MediatorLiveData<MainHomeActivityViewState> mainHomeActivityViewStateMediatorLiveData = new MediatorLiveData<>();
 
-    private final SingleLiveEvent<String> yourLunchToastMessageSingleLiveEvent = new SingleLiveEvent<>();
-    private final SingleLiveEvent<Intent> settingsIntentSingleLiveEvent = new SingleLiveEvent<>();
-    private final SingleLiveEvent<Intent> logOutIntentSingleLiveEvent = new SingleLiveEvent<>();
+    private final SingleLiveEvent<String> toastMessageSingleLiveEvent = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Intent> intentSingleLiveEvent = new SingleLiveEvent<>();
 
     public MainHomeActivityViewModel(
             Application context,
@@ -71,7 +70,7 @@ public class MainHomeActivityViewModel extends ViewModel {
         providerId = firebaseUserInfo.getProviderId();
         userName = firebaseUserInfo.getDisplayName();
 
-        if (firebaseUserInfo.getEmail() == null) {
+        if (firebaseUserInfo.getEmail() == null || firebaseUserInfo.getEmail() == "") {
             userEmail = context.getString(R.string.email_unavailable);
         } else {
             userEmail = firebaseUserInfo.getEmail();
@@ -83,9 +82,11 @@ public class MainHomeActivityViewModel extends ViewModel {
             userPhotoUrl = firebaseUserInfo.getPhotoUrl().toString();
         }
 
-        for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-            if (firebaseRepository.getCurrentUser().getUid().equals(lunchRestaurant.getUserId())) {
-                lunchRestaurantName = lunchRestaurant.getRestaurantName();
+        if(lunchRestaurantList != null) {
+            for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                if (firebaseRepository.getCurrentUser().getUid().equals(lunchRestaurant.getUserId())) {
+                    lunchRestaurantName = lunchRestaurant.getRestaurantName();
+                }
             }
         }
 
@@ -101,35 +102,31 @@ public class MainHomeActivityViewModel extends ViewModel {
         return mainHomeActivityViewStateMediatorLiveData;
     }
 
-    public SingleLiveEvent<String> getYourLunchToastMessageSingleLiveEvent() {
-        return yourLunchToastMessageSingleLiveEvent;
+    public SingleLiveEvent<String> getToastMessageSingleLiveEvent() {
+        return toastMessageSingleLiveEvent;
     }
 
-    public SingleLiveEvent<Intent> getSettingsIntentSingleLiveEvent() {
-        return settingsIntentSingleLiveEvent;
-    }
-
-    public SingleLiveEvent<Intent> getLogOutIntentSingleLiveEvent() {
-        return logOutIntentSingleLiveEvent;
+    public SingleLiveEvent<Intent> getIntentSingleLiveEvent() {
+        return intentSingleLiveEvent;
     }
 
     public void onYourLunchClicked(MainHomeActivityViewState mainHomeActivityViewState) {
         if (mainHomeActivityViewState.getLunchRestaurantName() == null) {
-            yourLunchToastMessageSingleLiveEvent.setValue(context.getString(R.string.didnt_decide_where_to_lunch));
+            toastMessageSingleLiveEvent.setValue(context.getString(R.string.didnt_decide_where_to_lunch));
         } else {
-            yourLunchToastMessageSingleLiveEvent.setValue(mainHomeActivityViewState.getLunchRestaurantName());
+            toastMessageSingleLiveEvent.setValue(mainHomeActivityViewState.getLunchRestaurantName());
         }
     }
 
     /** EVENTS */
 
     public void onSettingsClicked() {
-        settingsIntentSingleLiveEvent.setValue(new Intent(context, SettingsActivity.class));
+        intentSingleLiveEvent.setValue(new Intent(context, SettingsActivity.class));
     }
 
     public void onLogOutClicked() {
         firebaseRepository.signOutFromFirebaseAuth();
-        logOutIntentSingleLiveEvent.setValue(new Intent(context, LogInActivity.class));
+        intentSingleLiveEvent.setValue(new Intent(context, LogInActivity.class));
     }
 
     public void onSearchViewTextChanged(String searchViewText) {

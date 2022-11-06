@@ -2,43 +2,33 @@ package com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.hangyeollee.go4lunch.R;
-import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
 import com.hangyeollee.go4lunch.view.ViewModelFactory;
-
-import java.util.List;
 
 public class MapsFragment extends SupportMapFragment implements OnMapReadyCallback {
 
-    private MapsFragmentViewModel mViewModel;
-    private GoogleMap mGoogleMap;
+    private MapsFragmentViewModel viewModel;
 
+    @NonNull
     public static MapsFragment newInstance() {
         return new MapsFragment();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MapsFragmentViewModel.class);
+        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MapsFragmentViewModel.class);
 
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             getMapAsync(this);
@@ -48,47 +38,27 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        mGoogleMap = googleMap;
-        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-        mGoogleMap.setMyLocationEnabled(true);
+        googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        googleMap.setMyLocationEnabled(true);
 
-        mViewModel.getMapsFragmentViewStateLiveData().observe(getViewLifecycleOwner(),
+        viewModel.getMapsFragmentViewStateLiveData().observe(getViewLifecycleOwner(),
                 mapsFragmentViewState -> {
-                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapsFragmentViewState.getUserLatLng(), 15));
-                    addMarkersOnMap(mapsFragmentViewState.getMapMarkerViewStateList());
-                    setListenerOnMarker(mapsFragmentViewState.getMapMarkerViewStateList());
+                    googleMap.clear();
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapsFragmentViewState.getUserLatLng(), 14));
+
+                    viewModel.onMapReady(mapsFragmentViewState.getMapMarkerViewStateList(), googleMap);
+
+                    googleMap.setOnInfoWindowClickListener(
+                            marker -> viewModel.onMarkerClicked(mapsFragmentViewState.getMapMarkerViewStateList(), marker)
+                    );
                 }
         );
-    }
 
-    private BitmapDescriptor setUpMapIcon() {
-        Drawable markerIconDrawable = getResources().getDrawable(R.drawable.ic_baseline_local_dining_24);
-        Drawable wrappedDrawable = DrawableCompat.wrap(markerIconDrawable);
-        DrawableCompat.setTint(wrappedDrawable, getResources().getColor(R.color.orange));
-        return mViewModel.makeDrawableIntoBitmap(wrappedDrawable);
-    }
-
-    private void addMarkersOnMap(List<MapMarkerViewState> mapMarkerViewStateList) {
-        mGoogleMap.clear();
-        BitmapDescriptor markerIcon = setUpMapIcon();
-
-        for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
-            mGoogleMap.addMarker(new MarkerOptions().icon(markerIcon).position(mapMarkerViewState.getPositionLatLng()).title(mapMarkerViewState.getTitle()));
-        }
-    }
-
-    //TODO map marker doesnt bring user to the right restaurant!
-    private void setListenerOnMarker(List<MapMarkerViewState> mapMarkerViewStateList) {
-        mGoogleMap.setOnInfoWindowClickListener(
-                marker -> {
-                    Log.i("markerName", marker.getTitle());
-                    Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
-                    for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
-                        Log.e("sendingPlaceId", mapMarkerViewState.getPlaceId());
-                        intent.putExtra("place id", mapMarkerViewState.getPlaceId());
-                    }
+        viewModel.getIntentSingleLiveEvent().observe(this,
+                intent -> {
                     startActivity(intent);
                 }
         );
     }
+
 }

@@ -52,21 +52,6 @@ public class PlaceDetailActivity extends AppCompatActivity {
                 intent -> startActivity(intent)
         );
 
-        viewModel.getLikeButtonToastMessageSingleLiveEvent().observe(this,
-                message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        );
-
-        viewModel.getWebsiteButtonToastMessageSingleLiveEvent().observe(this,
-                message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        );
-
-        viewModel.getWebsiteButtonIntentSingleLiveEvent().observe(this,
-                intent -> startActivity(intent)
-        );
-
-        viewModel.getFloatingActionButtonToastMessageSingleLiveEvent().observe(this,
-                message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        );
     }
 
     private void bind(PlaceDetailActivityViewState placeDetailActivityViewState, PlaceDetailActivityRecyclerViewAdapter recyclerViewAdapter) {

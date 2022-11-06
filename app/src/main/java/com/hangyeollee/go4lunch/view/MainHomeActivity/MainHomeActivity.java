@@ -2,7 +2,6 @@ package com.hangyeollee.go4lunch.view.MainHomeActivity;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -27,7 +26,6 @@ import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainHomeBinding;
 import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBinding;
 import com.hangyeollee.go4lunch.utils.MySharedPreferenceUtil;
-import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivity;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment.ListViewFragment;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MapsViewFragment.MapsFragment;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.WorkmatesFragment.WorkmatesFragment;
@@ -84,27 +82,23 @@ public class MainHomeActivity extends AppCompatActivity {
         viewModel.getMainHomeActivityViewStateLiveData().observe(this, mainHomeActivityViewState -> {
                     navigationViewHeaderBinding.textViewUserName.setText(mainHomeActivityViewState.getUserName());
                     navigationViewHeaderBinding.textViewUserEmail.setText(mainHomeActivityViewState.getUserEmail());
+                    //TODO Photo is black why ?
                     Glide.with(MainHomeActivity.this).load(mainHomeActivityViewState.getUserPhotoUrl()).into(navigationViewHeaderBinding.imageViewUserPhoto);
 
                     navigationViewItemSelectedListener(mainHomeActivityViewState);
                 }
         );
 
-        viewModel.getYourLunchToastMessageSingleLiveEvent().observe(this,
+        viewModel.getToastMessageSingleLiveEvent().observe(this,
                 message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         );
 
-        viewModel.getSettingsIntentSingleLiveEvent().observe(this,
-                intent -> startActivity(intent)
-        );
-
-        viewModel.getLogOutIntentSingleLiveEvent().observe(this,
+        viewModel.getIntentSingleLiveEvent().observe(this,
                 intent -> {
                     startActivity(intent);
                     finish();
                 }
         );
-
 
     }
 
@@ -141,7 +135,7 @@ public class MainHomeActivity extends AppCompatActivity {
                             viewModel.onSettingsClicked();
                             break;
                         case R.id.navigationView_logout:
-                            //TODO how to refactor ?
+                            //TODO Should move this to VM ?
                             signOutAccordingToProviders(mainHomeActivityViewState.getProviderId());
                             viewModel.onLogOutClicked();
                             break;
