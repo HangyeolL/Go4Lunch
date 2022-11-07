@@ -61,7 +61,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.DispatcherActivity.DispatcherActivity"
+            android:name=".view.dispatcher_activity.DispatcherActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

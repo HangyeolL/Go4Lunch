@@ -17,20 +17,21 @@ import com.hangyeollee.go4lunch.view.PlaceDetailActivity.PlaceDetailActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO Hangyeol Rename (lowercase snake_case packages + no fragment / activity everywhere)
 public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<ListViewFragmentRecyclerViewAdapter.ViewHolder> {
 
     private List<ListViewFragmentRecyclerViewItemViewState> listViewFragmentRecyclerViewItemViewStateList = new ArrayList<>();
 
     public void submitList(List<ListViewFragmentRecyclerViewItemViewState> itemViewStateList) {
         listViewFragmentRecyclerViewItemViewStateList = itemViewStateList;
-        notifyDataSetChanged();
+        notifyDataSetChanged(); // TODO Hangyeol you can do better here with a androidx.recyclerview.widget.ListAdapter
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ListViewFragmentListItemBinding mListViewItemBinding = ListViewFragmentListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new ViewHolder(mListViewItemBinding);
+        ListViewFragmentListItemBinding binding = ListViewFragmentListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
@@ -44,19 +45,20 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ListViewFragmentListItemBinding binding;
+        private final ListViewFragmentListItemBinding binding;
 
-        public ViewHolder(@NonNull ListViewFragmentListItemBinding mListViewItemBinding) {
-            super(mListViewItemBinding.getRoot());
-            binding = mListViewItemBinding;
+        public ViewHolder(@NonNull ListViewFragmentListItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
-        public void bindViews(ListViewFragmentRecyclerViewItemViewState itemViewState) {
+        private void bindViews(ListViewFragmentRecyclerViewItemViewState itemViewState) {
             binding.textViewName.setText(itemViewState.getName());
             binding.textViewAddress.setText(itemViewState.getVicinity());
             binding.textViewDistance.setText(itemViewState.getDistanceFromUserLocation());
             binding.ratingBar.setRating(itemViewState.getRating());
 
+            // TODO Hangyeol do expose state, do not let the view control
             if (itemViewState.isOpen()) {
                 binding.textViewIsOpenNow.setText(R.string.open);
                 binding.textViewIsOpenNow.setTextColor(Color.BLUE);
@@ -65,17 +67,15 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
                 binding.textViewIsOpenNow.setTextColor(Color.RED);
             }
 
+            // TODO Hangyeol do concat in the ViewModel, not the adapter
             Glide.with(itemView).load(
                     "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
                             + itemViewState.getPhotoReference()
                             + "&key="
                             + BuildConfig.PLACES_API_KEY).into(binding.imageViewRestaurant);
 
-            //TODO Ask nino if this is good
             itemView.setOnClickListener(i -> {
-                Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
-                intent.putExtra("place id", itemViewState.getPlaceId());
-                itemView.getContext().startActivity(intent);
+                itemView.getContext().startActivity(PlaceDetailActivity.navigate(itemView.getContext(), itemViewState.getPlaceId()));
             });
 
         }

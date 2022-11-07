@@ -149,7 +149,7 @@ public class MapsFragmentViewModel extends ViewModel {
     }
 
     public void onMarkerClicked(List<MapMarkerViewState> mapMarkerViewStateList, Marker marker) {
-        Intent intent = new Intent(context, PlaceDetailActivity.class);
+        Intent intent = new Intent(context, PlaceDetailActivity.class); // TODO Hangyeol fix it
 //&& marker.getId().equalsIgnoreCase(mapMarkerViewState.getPlaceId())
         for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
             if (marker.getTitle().equalsIgnoreCase(mapMarkerViewState.getTitle())

@@ -17,7 +17,7 @@ public class PlaceDetailActivityViewState {
     private final List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList;
     @ColorRes
     private final int likeButtonColor;
-    @ColorInt
+    @ColorRes
     private final int floatActButtonColor;
     private final boolean isSelectedAsLikedRestaurant;
     private final boolean isSelectedAsLunchRestaurant;
@@ -32,7 +32,7 @@ public class PlaceDetailActivityViewState {
         List<PlaceDetailActivityRecyclerViewItemViewState> recyclerViewItemViewStateList,
         @ColorRes
         int likeButtonColor,
-        @ColorInt
+        @ColorRes
         int floatActButtonColor,
         boolean isSelectedAsLikedRestaurant,
         boolean isSelectedAsLunchRestaurant
@@ -85,7 +85,7 @@ public class PlaceDetailActivityViewState {
         return likeButtonColor;
     }
 
-    @ColorInt
+    @ColorRes
     public int getFloatActButtonColor() {
         return floatActButtonColor;
     }

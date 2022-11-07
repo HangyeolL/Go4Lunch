@@ -17,7 +17,7 @@ import com.hangyeollee.go4lunch.repository.LocationRepository;
 import com.hangyeollee.go4lunch.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.repository.PlaceDetailDataRepository;
 import com.hangyeollee.go4lunch.utils.MyRetrofitBuilder;
-import com.hangyeollee.go4lunch.view.DispatcherActivity.DispatcherActivityViewModel;
+import com.hangyeollee.go4lunch.view.dispatcher_activity.DispatcherViewModel;
 import com.hangyeollee.go4lunch.view.LogInActivity.LogInActivityViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.ListViewFragment.ListViewFragmentViewModel;
 import com.hangyeollee.go4lunch.view.MainHomeActivity.MainHomeActivityViewModel;
@@ -69,8 +69,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if (modelClass.isAssignableFrom(DispatcherActivityViewModel.class)) {
-            return (T) new DispatcherActivityViewModel(firebaseAuth);
+        if (modelClass.isAssignableFrom(DispatcherViewModel.class)) {
+            return (T) new DispatcherViewModel(firebaseAuth);
         }
         else if (modelClass.isAssignableFrom(LogInActivityViewModel.class)) {
             return (T) new LogInActivityViewModel(mFirebaseRepository);

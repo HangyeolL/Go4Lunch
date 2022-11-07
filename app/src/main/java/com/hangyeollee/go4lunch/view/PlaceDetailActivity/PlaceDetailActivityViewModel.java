@@ -160,7 +160,7 @@ public class PlaceDetailActivityViewModel extends ViewModel {
                 myPlaceDetailData.getResult().getWebsite(),
                 recyclerViewItemViewStateList,
                 isSelectedAsLikedRestaurant ? R.color.orange : R.color.blue,
-                isSelectedAsLunchRestaurant ? ResourcesCompat.getColor(context.getResources(), R.color.orange, null) : ResourcesCompat.getColor(context.getResources(), R.color.blue, null),
+                isSelectedAsLunchRestaurant ? R.color.orange : R.color.blue,
                 isSelectedAsLikedRestaurant,
                 isSelectedAsLunchRestaurant
         );
@@ -207,10 +207,10 @@ public class PlaceDetailActivityViewModel extends ViewModel {
     }
 
     public void onButtonLikeClicked(PlaceDetailActivityViewState placeDetailActivityViewState) {
-        LikedRestaurant likedRestaurant = new LikedRestaurant(placeIdMutableLiveData.getValue(), placeDetailActivityViewState.getName());
-        firebaseRepository.addOrRemoveLikedRestaurant(likedRestaurant);
+        boolean isLiked = !placeDetailActivityViewState.isSelectedAsLikedRestaurant();
+        firebaseRepository.addOrRemoveLikedRestaurant(placeIdMutableLiveData.getValue(), placeDetailActivityViewState.getName(), isLiked);
 
-        if (placeDetailActivityViewState.isSelectedAsLikedRestaurant()) {
+        if (isLiked) {
             toastMessageSingleLiveEvent.setValue(context.getString(R.string.add_to_liked_restaurant_list));
         } else {
             toastMessageSingleLiveEvent.setValue(context.getString(R.string.removed_from_the_liked_restaurant_list));

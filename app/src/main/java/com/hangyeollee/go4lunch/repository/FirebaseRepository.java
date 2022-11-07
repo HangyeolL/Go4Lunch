@@ -3,9 +3,12 @@ package com.hangyeollee.go4lunch.repository;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -23,7 +26,9 @@ import com.hangyeollee.go4lunch.model.User;
 import com.hangyeollee.go4lunch.utils.MyCalendar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class FirebaseRepository {
@@ -130,20 +135,18 @@ public class FirebaseRepository {
     }
 
     public LiveData<List<LikedRestaurant>> getLikedRestaurantList() {
-        getUsersCollection().document(getCurrentUser().getUid()).addSnapshotListener(
-                (documentSnapshot, error) -> {
+        getUsersCollection().document(getCurrentUser().getUid()).collection("liked_restaurants").addSnapshotListener(
+                (querySnapshot, error) -> {
                     if (error != null) {
                         Log.w("likedRestauCollection", "Listen failed.", error);
                         likedRestaurantMutableLiveData.postValue(null);
                         return;
                     }
 
-                    assert documentSnapshot != null;
-
-                    User user = documentSnapshot.toObject(User.class);
-                    assert user != null;
-                    List<LikedRestaurant> likedRestaurantList = user.getLikedRestaurantList();
-                    likedRestaurantMutableLiveData.setValue(likedRestaurantList);
+                    if (querySnapshot != null) {
+                        List<LikedRestaurant> likedRestaurants = querySnapshot.toObjects(LikedRestaurant.class);
+                        likedRestaurantMutableLiveData.setValue(likedRestaurants);
+                    }
                 }
         );
         return likedRestaurantMutableLiveData;
@@ -168,35 +171,76 @@ public class FirebaseRepository {
 
     //TODO
     // only adding function works, removing never get called
-    public void addOrRemoveLikedRestaurant(LikedRestaurant likedRestaurant) {
-        DocumentReference docRef = getUsersCollection().document(getCurrentUser().getUid());
+    public void addOrRemoveLikedRestaurant(String placeId, String name, boolean isLiked) {
+        if (isLiked) {
+            LikedRestaurant likedRestaurant = new LikedRestaurant(placeId, name);
 
-        firestoreDatabase.runTransaction((Transaction.Function<Void>) transaction -> {
-                    DocumentSnapshot documentSnapshot = transaction.get(docRef);
-                    User user = documentSnapshot.toObject(User.class);
-                    assert user != null;
-
-                    List<LikedRestaurant> likedRestaurantList = user.getLikedRestaurantList();
-
-                    if (likedRestaurantList.isEmpty()) {
-                        docRef.update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
-                        return null;
+            getUsersCollection()
+                .document(getCurrentUser().getUid())
+                .collection("liked_restaurants")
+                .document(placeId)
+                .set(likedRestaurant)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with SUCCESS : " +
+                            "placeId = [" + placeId + "], " +
+                            "isLiked = [" + isLiked + "]");
                     } else {
-                        for (LikedRestaurant restaurant : likedRestaurantList) {
-                            if (restaurant.getId().equalsIgnoreCase(likedRestaurant.getId())
-                                    && likedRestaurantList.contains(likedRestaurant)) {
-                                docRef.update("likedRestaurantList", FieldValue.arrayRemove(likedRestaurant));
-                            } else {
-                                docRef.update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
-                            }
-                            return null;
-                        }
+                        Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with FAILURE : " +
+                            "placeId = [" + placeId + "], " +
+                            "isLiked = [" + isLiked + "]");
+                        task.getException().printStackTrace();
                     }
-
-                    return null;
-                }
-        ).addOnFailureListener(failure -> Log.w("likedRestaurant", failure.getMessage())
-        ).addOnSuccessListener(success -> Log.d("likedRestaurant", "Transaction success!"));
+                });
+        } else {
+            getUsersCollection()
+                .document(getCurrentUser().getUid())
+                .collection("liked_restaurants")
+                .document(placeId)
+                .delete()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with SUCCESS : " +
+                            "placeId = [" + placeId + "], " +
+                            "isLiked = [" + isLiked + "]");
+                    } else {
+                        Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with FAILURE : " +
+                            "placeId = [" + placeId + "], " +
+                            "isLiked = [" + isLiked + "]");
+                        task.getException().printStackTrace();
+                    }
+                });
+        }
+//
+//
+//
+//
+//        firestoreDatabase.runTransaction((Transaction.Function<Void>) transaction -> {
+//                    CollectionReference reference = transaction.get(collectionReference);
+//                    User user = documentSnapshot.toObject(User.class);
+//                    assert user != null;
+//
+//                    List<LikedRestaurant> likedRestaurantList = user.getLikedRestaurantList();
+//
+//                    if (likedRestaurantList.isEmpty()) {
+//                        docRef.update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
+//                        return null;
+//                    } else {
+//                        for (LikedRestaurant restaurant : likedRestaurantList) {
+//                            if (restaurant.getId().equalsIgnoreCase(likedRestaurant.getId())
+//                                    && likedRestaurantList.contains(likedRestaurant)) {
+//                                docRef.update("likedRestaurantList", FieldValue.arrayRemove(likedRestaurant));
+//                            } else {
+//                                docRef.update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
+//                            }
+//                            return null;
+//                        }
+//                    }
+//
+//                    return null;
+//                }
+//        ).addOnFailureListener(failure -> Log.w("likedRestaurant", failure.getMessage())
+//        ).addOnSuccessListener(success -> Log.d("likedRestaurant", "Transaction success!"));
     }
 
 

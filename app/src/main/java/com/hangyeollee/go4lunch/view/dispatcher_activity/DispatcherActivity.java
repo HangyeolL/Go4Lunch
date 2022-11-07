@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.view.DispatcherActivity;
+package com.hangyeollee.go4lunch.view.dispatcher_activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,7 +17,7 @@ public class DispatcherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // No "setContentView(int)" to have a fully transparent and performant Activity
-        DispatcherActivityViewModel viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(DispatcherActivityViewModel.class);
+        DispatcherViewModel viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(DispatcherViewModel.class);
 
         viewModel.getViewActionSingleLiveEvent().observe(this, dispatcherViewAction -> {
             switch (dispatcherViewAction) {

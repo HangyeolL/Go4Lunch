@@ -78,8 +78,9 @@ public class MainHomeActivity extends AppCompatActivity {
         viewModel.getMainHomeActivityViewStateLiveData().observe(this, mainHomeActivityViewState -> {
                     navigationViewHeaderBinding.textViewUserName.setText(mainHomeActivityViewState.getUserName());
                     navigationViewHeaderBinding.textViewUserEmail.setText(mainHomeActivityViewState.getUserEmail());
-                    //TODO Photo is black why ?
-                    Glide.with(MainHomeActivity.this).load(mainHomeActivityViewState.getUserPhotoUrl()).into(navigationViewHeaderBinding.imageViewUserPhoto);
+                    Glide.with(navigationViewHeaderBinding.imageViewUserPhoto)
+                        .load(mainHomeActivityViewState.getUserPhotoUrl())
+                        .into(navigationViewHeaderBinding.imageViewUserPhoto);
 
                     navigationViewItemSelectedListener(mainHomeActivityViewState);
                 }

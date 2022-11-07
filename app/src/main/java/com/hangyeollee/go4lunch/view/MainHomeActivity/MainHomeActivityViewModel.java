@@ -80,7 +80,7 @@ public class MainHomeActivityViewModel extends ViewModel {
             userEmail = firebaseUserInfo.getEmail();
         }
 
-        if (firebaseUserInfo.getPhotoUrl() == null) {
+        if (firebaseUserInfo.getPhotoUrl() == null || firebaseUserInfo.getPhotoUrl().toString().isEmpty()) {
             userPhotoUrl = resourceToUri(context, R.drawable.ic_baseline_person_outline_24);
         } else {
             userPhotoUrl = firebaseUserInfo.getPhotoUrl().toString();
