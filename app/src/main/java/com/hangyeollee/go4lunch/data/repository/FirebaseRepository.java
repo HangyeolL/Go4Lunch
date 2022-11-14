@@ -76,7 +76,7 @@ public class FirebaseRepository {
 
     public void saveUserInFirestore() {
         String id = getCurrentUser().getUid();
-        String photoUrl = Objects.requireNonNull(getCurrentUser().getPhotoUrl()).toString();
+        String photoUrl = getCurrentUser().getPhotoUrl().toString(); // TODO Hangyeol never Object.requireNotNull
         String username = getCurrentUser().getDisplayName();
 
         User userToCreate = new User(id, username, photoUrl, new ArrayList<>());

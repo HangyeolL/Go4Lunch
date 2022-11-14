@@ -1,6 +1,6 @@
 package com.hangyeollee.go4lunch.ui.place_detail_activity;
 
-import static com.hangyeollee.go4lunch.utils.resourceToUri.resourceToUri;
+import static com.hangyeollee.go4lunch.utils.ResourceToUri.resourceToUri;
 
 import android.app.Application;
 import android.content.Intent;

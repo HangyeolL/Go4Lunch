@@ -1,6 +1,6 @@
 package com.hangyeollee.go4lunch.ui.main_home_activity;
 
-import static com.hangyeollee.go4lunch.utils.resourceToUri.resourceToUri;
+import static com.hangyeollee.go4lunch.utils.ResourceToUri.resourceToUri;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
@@ -15,6 +15,7 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserInfo;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
@@ -132,21 +133,8 @@ public class MainHomeViewModel extends ViewModel {
         intentSingleLiveEvent.setValue(new Intent(context, SettingsActivity.class));
     }
 
+    // TODO Hangyeol no providerId needed
     public void onLogOutClicked(String providerId) {
-        switch (providerId) {
-            case "google.com":
-                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(context.getString(R.string.default_web_client_id))
-                        .requestEmail()
-                        .build();
-                GoogleSignInClient mSignInClient = GoogleSignIn.getClient(context, gso);
-                mSignInClient.signOut();
-                break;
-            case "facebook.com":
-                LoginManager.getInstance().logOut();
-                break;
-        }
-
         firebaseRepository.signOutFromFirebaseAuth();
         intentSingleLiveEvent.setValue(new Intent(context, LogInActivity.class));
     }

@@ -3,6 +3,7 @@ package com.hangyeollee.go4lunch.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+// TODO Hangyeol don't use it anymore
 public class MySharedPreferenceUtil {
     Context mContext;
     SharedPreferences mSharedPreferences;
@@ -14,7 +15,7 @@ public class MySharedPreferenceUtil {
 
     public SharedPreferences getInstanceOfSharedPref() {
         if (mSharedPreferences == null ) {
-            mSharedPreferences = mContext.getSharedPreferences("settings", Context.MODE_PRIVATE);
+
         }
         return mSharedPreferences;
     }
