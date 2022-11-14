@@ -122,7 +122,7 @@ public class MainHomeActivityViewModel extends ViewModel {
 
     public void onYourLunchClicked(MainHomeActivityViewState mainHomeActivityViewState) {
         if (mainHomeActivityViewState.getLunchRestaurantName() == null) {
-            toastMessageSingleLiveEvent.setValue(context.getString(R.string.didnt_decide_where_to_lunch));
+            toastMessageSingleLiveEvent.setValue(context.getString(R.string.did_not_decide_where_to_lunch));
         } else {
             toastMessageSingleLiveEvent.setValue(mainHomeActivityViewState.getLunchRestaurantName());
         }

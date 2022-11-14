@@ -75,8 +75,14 @@ public class ListViewFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Li
                             + BuildConfig.PLACES_API_KEY).into(binding.imageViewRestaurant);
 
             itemView.setOnClickListener(i -> {
-                itemView.getContext().startActivity(PlaceDetailActivity.navigate(itemView.getContext(), itemViewState.getPlaceId()));
-            });
+                        itemView.getContext().startActivity(
+                                PlaceDetailActivity.navigate(
+                                        itemView.getContext(),
+                                        itemViewState.getPlaceId()
+                                )
+                        );
+                    }
+            );
 
         }
 

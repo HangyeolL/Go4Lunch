@@ -22,14 +22,14 @@
     <string name="user_is_joining"> is joining!</string>
     <string name="add_to_liked_restaurant_list"> added to liked restaurant list</string>
     <string name="is_already_liked"> is already liked</string>
-    <string name="you_already_decided_to_go">You already decided to go</string>
+    <string name="you_will_not_go_to">You won\'t go to </string>
     <string name="email_unavailable">Email unavailable</string>
-    <string name="you_will_go_to">you will go to</string>
+    <string name="you_will_go_to">you will go to </string>
     <string name="for_lunch"> for lunch</string>
     <string name="open">OPEN</string>
     <string name="closed">CLOSED</string>
     <string name="removed_from_the_liked_restaurant_list">removed from the liked restaurant List</string>
-    <string name="didnt_decide_where_to_lunch">You didn\'t decide where to lunch yet</string>
+    <string name="did_not_decide_where_to_lunch">You didn\'t decide where to lunch yet</string>
     <string name="i_am_hungry">I am Hungry!</string>
     <string name="available_workmates">Available Workmates</string>
 </resources>

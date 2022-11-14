@@ -152,95 +152,84 @@ public class FirebaseRepository {
         return likedRestaurantMutableLiveData;
     }
 
-    public void addOrRemoveLunchRestaurant(LunchRestaurant lunchRestaurant) {
-        DocumentReference docRef = getDateCollection().document(getCurrentUser().getUid());
+    public void addOrRemoveLunchRestaurant(String restaurantId, String userId, String restaurantName, String date, boolean isSelected) {
+       if (isSelected) {
+           getDateCollection()
+                   .document(getCurrentUser().getUid())
+                   .delete()
+                   .addOnCompleteListener(task -> {
+                       if (task.isSuccessful()) {
+                           Log.d("Hangyeol", "addOrRemoveLunchRestaurant() called with SUCCESS : " +
+                                   "restaurantId = [" + restaurantId + "], " +
+                                   "isSelected = [" + isSelected + "]");
+                       } else {
+                           Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with FAILURE : " +
+                                   "restaurantId = [" + restaurantId + "], " +
+                                   "isSelected = [" + isSelected + "]");
+                           task.getException().printStackTrace();
+                       }
+                   });
+       } else {
+           LunchRestaurant lunchRestaurant = new LunchRestaurant(restaurantId, userId, restaurantName, date);
 
-        firestoreDatabase.runTransaction((Transaction.Function<Object>) transaction -> {
-                    DocumentSnapshot documentSnapshot = transaction.get(docRef);
-
-                    if (documentSnapshot.exists()) {
-                        docRef.delete();
-                    } else {
-                        docRef.set(lunchRestaurant);
-                    }
-                    return null;
-                }
-        ).addOnFailureListener(failure -> Log.w("lunchRestaurant", failure.getMessage())
-        ).addOnSuccessListener(success -> Log.d("lunchRestaurant", "Transaction success!"));
+           getDateCollection()
+                   .document(getCurrentUser().getUid())
+                   .set(lunchRestaurant)
+                   .addOnCompleteListener(task -> {
+                       if (task.isSuccessful()) {
+                           Log.d("Hangyeol", "addOrRemoveLunchRestaurant() called with SUCCESS : " +
+                                   "restaurantId = [" + restaurantId + "], " +
+                                   "isSelected = [" + isSelected + "]");
+                       } else {
+                           Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with FAILURE : " +
+                                   "restaurantId = [" + restaurantId + "], " +
+                                   "isSelected = [" + isSelected + "]");
+                           task.getException().printStackTrace();
+                       }
+                   });
+       }
     }
 
-    //TODO
-    // only adding function works, removing never get called
     public void addOrRemoveLikedRestaurant(String placeId, String name, boolean isLiked) {
         if (isLiked) {
+            getUsersCollection()
+                    .document(getCurrentUser().getUid())
+                    .collection("liked_restaurants")
+                    .document(placeId)
+                    .delete()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with SUCCESS : " +
+                                    "placeId = [" + placeId + "], " +
+                                    "isLiked = [" + isLiked + "]");
+                        } else {
+                            Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with FAILURE : " +
+                                    "placeId = [" + placeId + "], " +
+                                    "isLiked = [" + isLiked + "]");
+                            task.getException().printStackTrace();
+                        }
+                    });
+        } else {
             LikedRestaurant likedRestaurant = new LikedRestaurant(placeId, name);
 
             getUsersCollection()
-                .document(getCurrentUser().getUid())
-                .collection("liked_restaurants")
-                .document(placeId)
-                .set(likedRestaurant)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with SUCCESS : " +
-                            "placeId = [" + placeId + "], " +
-                            "isLiked = [" + isLiked + "]");
-                    } else {
-                        Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with FAILURE : " +
-                            "placeId = [" + placeId + "], " +
-                            "isLiked = [" + isLiked + "]");
-                        task.getException().printStackTrace();
-                    }
-                });
-        } else {
-            getUsersCollection()
-                .document(getCurrentUser().getUid())
-                .collection("liked_restaurants")
-                .document(placeId)
-                .delete()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with SUCCESS : " +
-                            "placeId = [" + placeId + "], " +
-                            "isLiked = [" + isLiked + "]");
-                    } else {
-                        Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with FAILURE : " +
-                            "placeId = [" + placeId + "], " +
-                            "isLiked = [" + isLiked + "]");
-                        task.getException().printStackTrace();
-                    }
-                });
+                    .document(getCurrentUser().getUid())
+                    .collection("liked_restaurants")
+                    .document(placeId)
+                    .set(likedRestaurant)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with SUCCESS : " +
+                                    "placeId = [" + placeId + "], " +
+                                    "isLiked = [" + isLiked + "]");
+                        } else {
+                            Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with FAILURE : " +
+                                    "placeId = [" + placeId + "], " +
+                                    "isLiked = [" + isLiked + "]");
+                            task.getException().printStackTrace();
+                        }
+                    });
         }
-//
-//
-//
-//
-//        firestoreDatabase.runTransaction((Transaction.Function<Void>) transaction -> {
-//                    CollectionReference reference = transaction.get(collectionReference);
-//                    User user = documentSnapshot.toObject(User.class);
-//                    assert user != null;
-//
-//                    List<LikedRestaurant> likedRestaurantList = user.getLikedRestaurantList();
-//
-//                    if (likedRestaurantList.isEmpty()) {
-//                        docRef.update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
-//                        return null;
-//                    } else {
-//                        for (LikedRestaurant restaurant : likedRestaurantList) {
-//                            if (restaurant.getId().equalsIgnoreCase(likedRestaurant.getId())
-//                                    && likedRestaurantList.contains(likedRestaurant)) {
-//                                docRef.update("likedRestaurantList", FieldValue.arrayRemove(likedRestaurant));
-//                            } else {
-//                                docRef.update("likedRestaurantList", FieldValue.arrayUnion(likedRestaurant));
-//                            }
-//                            return null;
-//                        }
-//                    }
-//
-//                    return null;
-//                }
-//        ).addOnFailureListener(failure -> Log.w("likedRestaurant", failure.getMessage())
-//        ).addOnSuccessListener(success -> Log.d("likedRestaurant", "Transaction success!"));
     }
 
 

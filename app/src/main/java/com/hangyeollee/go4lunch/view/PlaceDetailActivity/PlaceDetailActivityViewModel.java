@@ -182,7 +182,7 @@ public class PlaceDetailActivityViewModel extends ViewModel {
     }
 
     public void onPlaceIdFetched(String placeId) {
-        Log.i("onPlaceIdFetched", placeId);
+//        Log.i("onPlaceIdFetched", placeId);
         placeIdMutableLiveData.setValue(placeId);
     }
 
@@ -207,20 +207,31 @@ public class PlaceDetailActivityViewModel extends ViewModel {
     }
 
     public void onButtonLikeClicked(PlaceDetailActivityViewState placeDetailActivityViewState) {
-        boolean isLiked = !placeDetailActivityViewState.isSelectedAsLikedRestaurant();
-        firebaseRepository.addOrRemoveLikedRestaurant(placeIdMutableLiveData.getValue(), placeDetailActivityViewState.getName(), isLiked);
+        firebaseRepository.addOrRemoveLikedRestaurant(
+                placeIdMutableLiveData.getValue(),
+                placeDetailActivityViewState.getName(),
+                placeDetailActivityViewState.isSelectedAsLikedRestaurant()
+        );
 
-        if (isLiked) {
-            toastMessageSingleLiveEvent.setValue(context.getString(R.string.add_to_liked_restaurant_list));
-        } else {
+        if (placeDetailActivityViewState.isSelectedAsLikedRestaurant()) {
             toastMessageSingleLiveEvent.setValue(context.getString(R.string.removed_from_the_liked_restaurant_list));
+        } else {
+            toastMessageSingleLiveEvent.setValue(context.getString(R.string.add_to_liked_restaurant_list));
         }
     }
 
     public void onFloatingActionButtonClicked(PlaceDetailActivityViewState placeDetailActivityViewState) {
+        firebaseRepository.addOrRemoveLunchRestaurant(
+                placeIdMutableLiveData.getValue(),
+                firebaseRepository.getCurrentUser().getUid(),
+                placeDetailActivityViewState.getName(),
+                MyCalendar.getCurrentDate(),
+                placeDetailActivityViewState.isSelectedAsLunchRestaurant()
+        );
+
         if (placeDetailActivityViewState.isSelectedAsLunchRestaurant()) {
             toastMessageSingleLiveEvent.setValue(
-                    context.getString(R.string.you_already_decided_to_go)
+                    context.getString(R.string.you_will_not_go_to)
                             + placeDetailActivityViewState.getName()
             );
         } else {
@@ -230,18 +241,6 @@ public class PlaceDetailActivityViewModel extends ViewModel {
                             + context.getString(R.string.for_lunch)
             );
 
-            LunchRestaurant lunchRestaurant = new LunchRestaurant(
-                    placeIdMutableLiveData.getValue(),
-                    firebaseRepository.getCurrentUser().getUid(),
-                    placeDetailActivityViewState.getName(),
-                    MyCalendar.getCurrentDate()
-            );
-
-            firebaseRepository.addOrRemoveLunchRestaurant(lunchRestaurant);
-
-            SharedPreferences.Editor mSharedPrefEditor = new MySharedPreferenceUtil(context).getInstanceOfEditor();
-            mSharedPrefEditor.putString("LunchRestaurant", lunchRestaurant.getRestaurantName());
-            mSharedPrefEditor.commit();
         }
     }
 }
