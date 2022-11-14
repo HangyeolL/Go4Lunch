@@ -11,7 +11,7 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.hangyeollee.go4lunch.R;
-import com.hangyeollee.go4lunch.view.MainHomeActivity.MainHomeActivity;
+import com.hangyeollee.go4lunch.ui.main_home_activity.MainHomeActivity;
 
 public class MyNotificationUtil {
 

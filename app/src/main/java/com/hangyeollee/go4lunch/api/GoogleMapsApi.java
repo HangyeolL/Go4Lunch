@@ -1,8 +1,8 @@
 package com.hangyeollee.go4lunch.api;
 
-import com.hangyeollee.go4lunch.model.autocompletepojo.MyAutoCompleteData;
-import com.hangyeollee.go4lunch.model.neaerbyserachpojo.MyNearBySearchData;
-import com.hangyeollee.go4lunch.model.placedetailpojo.MyPlaceDetailData;
+import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
+import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
+import com.hangyeollee.go4lunch.data.model.placedetailpojo.MyPlaceDetailData;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
