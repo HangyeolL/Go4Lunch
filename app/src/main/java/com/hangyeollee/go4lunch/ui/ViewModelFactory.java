@@ -16,6 +16,7 @@ import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
 import com.hangyeollee.go4lunch.data.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.data.repository.PlaceDetailDataRepository;
+import com.hangyeollee.go4lunch.data.repository.SettingRepository;
 import com.hangyeollee.go4lunch.utils.MyRetrofitBuilder;
 import com.hangyeollee.go4lunch.ui.dispatcher_activity.DispatcherViewModel;
 import com.hangyeollee.go4lunch.ui.logIn_activity.LogInViewModel;
@@ -28,14 +29,15 @@ import com.hangyeollee.go4lunch.ui.settings_activity.SettingsViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
-    private final Application mApplication;
+    private final Application context;
     private final FirebaseAuth firebaseAuth;
 
-    private final NearbySearchDataRepository mNearbySearchDataRepository;
-    private final PlaceDetailDataRepository mPlaceDetailDataRepository;
-    private final AutoCompleteDataRepository mAutoCompleteDataRepository;
-    private final LocationRepository mLocationRepository;
-    private final FirebaseRepository mFirebaseRepository;
+    private final NearbySearchDataRepository nearbySearchDataRepository;
+    private final PlaceDetailDataRepository placeDetailDataRepository;
+    private final AutoCompleteDataRepository autoCompleteDataRepository;
+    private final LocationRepository locationRepository;
+    private final FirebaseRepository firebaseRepository;
+    private final SettingRepository settingRepository;
 
     private static ViewModelFactory mViewModelFactory;
 
@@ -57,12 +59,13 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         GoogleMapsApi googleMapsApi = MyRetrofitBuilder.getGoogleMapsApi();
 
-        mApplication = MainApplication.getInstance();
-        mLocationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(mApplication));
-        mFirebaseRepository = new FirebaseRepository(firebaseAuth, firebaseFirestore);
-        mNearbySearchDataRepository = new NearbySearchDataRepository(googleMapsApi);
-        mPlaceDetailDataRepository = new PlaceDetailDataRepository(googleMapsApi);
-        mAutoCompleteDataRepository = new AutoCompleteDataRepository(googleMapsApi, mLocationRepository);
+        context = MainApplication.getInstance();
+        locationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(context));
+        firebaseRepository = new FirebaseRepository(firebaseAuth, firebaseFirestore);
+        nearbySearchDataRepository = new NearbySearchDataRepository(googleMapsApi);
+        placeDetailDataRepository = new PlaceDetailDataRepository(googleMapsApi);
+        autoCompleteDataRepository = new AutoCompleteDataRepository(googleMapsApi, locationRepository);
+        settingRepository = new SettingRepository(context);
     }
 
     @SuppressWarnings("unchecked")
@@ -73,25 +76,25 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new DispatcherViewModel(firebaseAuth);
         }
         else if (modelClass.isAssignableFrom(LogInViewModel.class)) {
-            return (T) new LogInViewModel(mFirebaseRepository);
+            return (T) new LogInViewModel(context, firebaseRepository);
         }
         else if (modelClass.isAssignableFrom(MainHomeViewModel.class)) {
-            return (T) new MainHomeViewModel(mApplication, mFirebaseRepository, mLocationRepository, mAutoCompleteDataRepository);
+            return (T) new MainHomeViewModel(context, firebaseRepository, locationRepository, autoCompleteDataRepository);
         }
         else if (modelClass.isAssignableFrom(MapViewModel.class)) {
-            return (T) new MapViewModel(mApplication, mLocationRepository, mNearbySearchDataRepository, mAutoCompleteDataRepository);
+            return (T) new MapViewModel(context, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository);
         }
         else if (modelClass.isAssignableFrom(ListViewModel.class)) {
-            return (T) new ListViewModel(mLocationRepository, mNearbySearchDataRepository, mAutoCompleteDataRepository);
+            return (T) new ListViewModel(locationRepository, nearbySearchDataRepository, autoCompleteDataRepository);
         }
         else if (modelClass.isAssignableFrom(WorkmatesViewModel.class)) {
-            return (T) new WorkmatesViewModel(mApplication, mFirebaseRepository, mAutoCompleteDataRepository);
+            return (T) new WorkmatesViewModel(context, firebaseRepository, autoCompleteDataRepository);
         }
         else if (modelClass.isAssignableFrom(PlaceDetailViewModel.class)) {
-            return (T) new PlaceDetailViewModel(mApplication, mPlaceDetailDataRepository, mFirebaseRepository);
+            return (T) new PlaceDetailViewModel(context, placeDetailDataRepository, firebaseRepository);
         }
         else if (modelClass.isAssignableFrom(SettingsViewModel.class)) {
-            return (T) new SettingsViewModel(mApplication, mFirebaseRepository);
+            return (T) new SettingsViewModel(context, firebaseRepository,settingRepository);
         }
 
         throw new IllegalArgumentException("Unknown ViewModel class : " + modelClass);

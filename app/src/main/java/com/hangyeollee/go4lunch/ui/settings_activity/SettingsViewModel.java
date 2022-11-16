@@ -20,7 +20,7 @@ import com.hangyeollee.go4lunch.data.repository.SettingRepository;
 import com.hangyeollee.go4lunch.utils.MySharedPreferenceUtil;
 
 public class SettingsViewModel extends ViewModel {
-    //TODO how to handle sharedPreferences with LiveData to observe ?
+    ///TODO how to handle sharedPreferences with LiveData to observe ?
     private final Application context;
     private final FirebaseRepository firebaseRepository;
     private final MediatorLiveData<SettingsViewState> mediatorLiveData = new MediatorLiveData<>();
@@ -33,7 +33,9 @@ public class SettingsViewModel extends ViewModel {
         this.context = context;
         this.firebaseRepository = firebaseRepository;
 
-        LiveData<Boolean > areNotificationEnabledLiveData = settingRepository.areNotificationsEnabledLiveData();
+        LiveData<Boolean> areNotificationEnabledLiveData = settingRepository.getIsNotificationEnabledLiveData();
+
+        //TODO why this method wont be called if i dont put initial value?
         mediatorLiveData.addSource(areNotificationEnabledLiveData, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean areNotificationEnabled) {

@@ -103,7 +103,7 @@ public class MapViewModel extends ViewModel {
             }
         } else {
             for (Prediction prediction : myAutoCompleteData.getPredictions()) {
-                for(Result result : myNearBySearchData.getResults()) {
+                for (Result result : myNearBySearchData.getResults()) {
                     if (prediction.getPlaceId().equals(result.getPlaceId()) &&
                             prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
 
@@ -125,7 +125,9 @@ public class MapViewModel extends ViewModel {
         );
     }
 
-    /** GETTERS */
+    /**
+     * GETTERS
+     */
 
     public LiveData<MapViewState> getMapsFragmentViewStateLiveData() {
         return mapsFragmentViewStateMediatorLiveData;
@@ -135,7 +137,9 @@ public class MapViewModel extends ViewModel {
         return intentSingleLiveEvent;
     }
 
-    /** EVENTS */
+    /**
+     * EVENTS
+     */
 
     public void onMapReady(List<MapMarkerViewState> mapMarkerViewStateList, GoogleMap googleMap) {
         for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
@@ -150,11 +154,9 @@ public class MapViewModel extends ViewModel {
 
     public void onMarkerClicked(List<MapMarkerViewState> mapMarkerViewStateList, Marker marker) {
         Intent intent = new Intent(context, PlaceDetailActivity.class); // TODO Hangyeol fix it
-//&& marker.getId().equalsIgnoreCase(mapMarkerViewState.getPlaceId())
         for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
-            if (marker.getTitle().equalsIgnoreCase(mapMarkerViewState.getTitle())
-                    ) {
-
+            if (marker.getTitle().equalsIgnoreCase(mapMarkerViewState.getTitle())) {
+//                PlaceDetailActivity.navigate(context, mapMarkerViewState.getPlaceId());
                 intent.putExtra("place id", mapMarkerViewState.getPlaceId());
                 Log.i("markerName", marker.getTitle());
                 break;
@@ -163,7 +165,9 @@ public class MapViewModel extends ViewModel {
         intentSingleLiveEvent.setValue(intent);
     }
 
-    /** ETC */
+    /**
+     * ETC
+     */
 
     private BitmapDescriptor getMapIcon() {
         Drawable markerIconDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_baseline_local_dining_24, null);

@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.R;
+import com.hangyeollee.go4lunch.databinding.ActivityPlaceDetailBinding;
 import com.hangyeollee.go4lunch.ui.ViewModelFactory;
 
 public class PlaceDetailActivity extends AppCompatActivity {
@@ -103,12 +104,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
             viewModel.onButtonWebsiteClicked(placeDetailViewState)
         );
 
-        //TODO How to delete from the likedList if the restaurant is already added into ?
         binding.buttonLike.setOnClickListener(v ->
             viewModel.onButtonLikeClicked(placeDetailViewState)
         );
 
-        //TODO How to delete from the LunchRestau if the restaurant is already selected ?
         binding.floatingActionBtn.setOnClickListener(v ->
             viewModel.onFloatingActionButtonClicked(placeDetailViewState)
         );

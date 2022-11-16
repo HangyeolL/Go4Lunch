@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 public class SettingRepository {
 
-    private static final String KEY_SHARED_PREFS_SETTINGS = "settings";
+    private static final String KEY_SHARED_PREFS_SETTINGS = "SETTINGS";
     private static final String KEY_SHARED_PREFS_SETTINGS_NOTIFICATION_ENABLED = "KEY_SHARED_PREFS_SETTINGS_NOTIFICATION_ENABLED";
 
     private final SharedPreferences sharedPreferences;
@@ -18,7 +18,7 @@ public class SettingRepository {
     }
 
     // GET
-    public LiveData<Boolean> areNotificationsEnabledLiveData() {
+    public LiveData<Boolean> getIsNotificationEnabledLiveData() {
         MutableLiveData<Boolean> mutableLiveData = new MutableLiveData<>(
             sharedPreferences.getBoolean(KEY_SHARED_PREFS_SETTINGS_NOTIFICATION_ENABLED, false)
         );
@@ -37,7 +37,7 @@ public class SettingRepository {
     }
 
     // INSERT
-    public void areNotificationEnabled(boolean enabled) {
+    public void isNotificationEnabled(boolean enabled) {
         sharedPreferences.edit().putBoolean(KEY_SHARED_PREFS_SETTINGS_NOTIFICATION_ENABLED, enabled).apply();
     }
 }

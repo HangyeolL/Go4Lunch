@@ -32,4 +32,8 @@
     <string name="did_not_decide_where_to_lunch">You didn\'t decide where to lunch yet</string>
     <string name="i_am_hungry">I am Hungry!</string>
     <string name="available_workmates">Available Workmates</string>
+    <string name="facebook_log_in_canceled">Facebook log in canceled</string>
+    <string name="error_occurred">Error occurred : </string>
+    <string name="google_log_in_failed">Google log in failed</string>
+    <string name="google_log_in_canceled">Google log in canceled</string>
 </resources>

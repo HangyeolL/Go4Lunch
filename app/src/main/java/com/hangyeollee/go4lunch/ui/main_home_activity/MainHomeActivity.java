@@ -2,6 +2,8 @@ package com.hangyeollee.go4lunch.ui.main_home_activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -21,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainHomeBinding;
 import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBinding;
+import com.hangyeollee.go4lunch.ui.place_detail_activity.PlaceDetailActivity;
 import com.hangyeollee.go4lunch.utils.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.ui.main_home_activity.list_fragment.ListFragment;
 import com.hangyeollee.go4lunch.ui.main_home_activity.map_fragment.MapFragment;
@@ -34,6 +37,11 @@ public class MainHomeActivity extends AppCompatActivity {
     private MainHomeViewModel viewModel;
 
     private SharedPreferences mSharedPref;
+
+    public static Intent navigate(Context context) {
+        Intent intent = new Intent(context, MainHomeActivity.class);
+        return intent;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

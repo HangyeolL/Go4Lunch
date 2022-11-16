@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.R;
+import com.hangyeollee.go4lunch.databinding.ListViewFragmentListItemBinding;
 import com.hangyeollee.go4lunch.ui.place_detail_activity.PlaceDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO Hangyeol Rename (lowercase snake_case packages + no fragment / activity everywhere)
 public class ListRecyclerViewAdapter extends RecyclerView.Adapter<ListRecyclerViewAdapter.ViewHolder> {
 
     private List<ListItemViewState> listViewFragmentRecyclerViewItemViewStateList = new ArrayList<>();
