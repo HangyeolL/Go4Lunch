@@ -76,7 +76,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new DispatcherViewModel(firebaseAuth);
         }
         else if (modelClass.isAssignableFrom(LogInViewModel.class)) {
-            return (T) new LogInViewModel(context, firebaseRepository);
+            return (T) new LogInViewModel(context, firebaseAuth);
         }
         else if (modelClass.isAssignableFrom(MainHomeViewModel.class)) {
             return (T) new MainHomeViewModel(context, firebaseRepository, locationRepository, autoCompleteDataRepository);

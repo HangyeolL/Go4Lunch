@@ -11,20 +11,15 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.facebook.login.LoginManager;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.UserInfo;
+import com.google.firebase.auth.FirebaseUser;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
-import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
 import com.hangyeollee.go4lunch.ui.logIn_activity.LogInActivity;
 import com.hangyeollee.go4lunch.ui.settings_activity.SettingsActivity;
+import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
 
 import java.util.List;
 
@@ -64,27 +59,27 @@ public class MainHomeViewModel extends ViewModel {
             return;
         }
 
-        String providerId;
-        String userName;
-        String userEmail;
-        String userPhotoUrl;
+        final String providerId;
+        final String userName;
+        final String userEmail;
+        final String userPhotoUrl;
         String lunchRestaurantName = null;
 
-        UserInfo firebaseUserInfo = firebaseRepository.getCurrentUser().getProviderData().get(1);
+        FirebaseUser firebaseUser = firebaseRepository.getCurrentUser();
 
-        providerId = firebaseUserInfo.getProviderId();
-        userName = firebaseUserInfo.getDisplayName();
+        providerId = firebaseUser.getProviderId();
+        userName = firebaseUser.getDisplayName();
 
-        if (firebaseUserInfo.getEmail() == null || firebaseUserInfo.getEmail().equals("")) {
+        if (firebaseUser.getEmail() == null || firebaseUser.getEmail().equals("")) {
             userEmail = context.getString(R.string.email_unavailable);
         } else {
-            userEmail = firebaseUserInfo.getEmail();
+            userEmail = firebaseUser.getEmail();
         }
 
-        if (firebaseUserInfo.getPhotoUrl() == null || firebaseUserInfo.getPhotoUrl().toString().isEmpty()) {
+        if (firebaseUser.getPhotoUrl() == null || firebaseUser.getPhotoUrl().toString().isEmpty()) {
             userPhotoUrl = resourceToUri(context, R.drawable.ic_baseline_person_outline_24);
         } else {
-            userPhotoUrl = firebaseUserInfo.getPhotoUrl().toString();
+            userPhotoUrl = firebaseUser.getPhotoUrl().toString();
         }
 
         if (lunchRestaurantList != null) {
@@ -121,6 +116,10 @@ public class MainHomeViewModel extends ViewModel {
      * EVENTS
      */
 
+    public void onUserLoggedIn() {
+        firebaseRepository.saveUserInFirestore();
+    }
+
     public void onYourLunchClicked(MainHomeViewState mainHomeViewState) {
         if (mainHomeViewState.getLunchRestaurantName() == null) {
             toastMessageSingleLiveEvent.setValue(context.getString(R.string.did_not_decide_where_to_lunch));
@@ -134,7 +133,7 @@ public class MainHomeViewModel extends ViewModel {
     }
 
     // TODO Hangyeol no providerId needed
-    public void onLogOutClicked(String providerId) {
+    public void onLogOutClicked() {
         firebaseRepository.signOutFromFirebaseAuth();
         intentSingleLiveEvent.setValue(new Intent(context, LogInActivity.class));
     }
@@ -155,6 +154,7 @@ public class MainHomeViewModel extends ViewModel {
     public void stopLocationRequest() {
         locationRepository.stopLocationRequest();
     }
+
 
 
 }

@@ -36,28 +36,8 @@ public class FirebaseRepository {
         this.firestoreDatabase = firestoreDatabase;
     }
 
-    // -----------FirebaseAuth method starts----------- //
-    public FirebaseAuth getFirebaseInstance() {
-        return firebaseAuth;
-    }
-
-
     public FirebaseUser getCurrentUser() {
         return firebaseAuth.getCurrentUser();
-    }
-
-    public void updateUserName(String newName) {
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(newName).build();
-        getCurrentUser().updateProfile(profileUpdates);
-    }
-
-    public void updateUserPhoto(String photoUri) {
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setPhotoUri(Uri.parse(photoUri)).build();
-        getCurrentUser().updateProfile(profileUpdates);
-    }
-
-    public void deleteUserFromFirebaseAuth() {
-        getCurrentUser().delete();
     }
 
     public void signOutFromFirebaseAuth() {

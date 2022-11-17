@@ -23,6 +23,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
@@ -34,7 +35,7 @@ import java.util.Collections;
 public class LogInViewModel extends ViewModel {
 
     private final Application context;
-    private final FirebaseRepository firebaseRepository;
+    private final FirebaseAuth firebaseAuth;
 
     private final CallbackManager callbackManager = CallbackManager.Factory.create();
 
@@ -43,10 +44,10 @@ public class LogInViewModel extends ViewModel {
 
     public LogInViewModel(
             Application context,
-            FirebaseRepository firebaseRepository
+            FirebaseAuth firebaseAuth
     ) {
         this.context = context;
-        this.firebaseRepository = firebaseRepository;
+        this.firebaseAuth = firebaseAuth;
     }
 
     /**
@@ -95,7 +96,7 @@ public class LogInViewModel extends ViewModel {
                 GoogleSignInAccount account = googleSignInAccountTask.getResult(ApiException.class);
 
                 AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-                firebaseRepository.getFirebaseInstance()
+                firebaseAuth
                         .signInWithCredential(credential).addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         Log.d("Hangyeol", "firebaseAuthWithGoogle:success");
@@ -123,7 +124,7 @@ public class LogInViewModel extends ViewModel {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 AuthCredential credential = FacebookAuthProvider.getCredential(loginResult.getAccessToken().getToken());
-                firebaseRepository.getFirebaseInstance()
+                firebaseAuth
                         .signInWithCredential(credential)
                         .addOnCompleteListener(
                                 task -> {

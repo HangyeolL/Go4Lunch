@@ -36,11 +36,8 @@ public class MainHomeActivity extends AppCompatActivity {
 
     private MainHomeViewModel viewModel;
 
-    private SharedPreferences mSharedPref;
-
     public static Intent navigate(Context context) {
-        Intent intent = new Intent(context, MainHomeActivity.class);
-        return intent;
+        return new Intent(context, MainHomeActivity.class);
     }
 
     @Override
@@ -54,15 +51,15 @@ public class MainHomeActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MainHomeViewModel.class);
 
-        mSharedPref = new MySharedPreferenceUtil(this).getInstanceOfSharedPref();
-
         ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
                     if (isGranted) {
                         viewModel.startLocationRequest();
                     } else {
                         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainHomeActivity.this);
-                        alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings").create().show();
+                        alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings")
+                                .create()
+                                .show();
                     }
                 });
 
@@ -73,6 +70,8 @@ public class MainHomeActivity extends AppCompatActivity {
             Log.d("Permission", "is not granted launch permission dialog");
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
         }
+
+        viewModel.onUserLoggedIn();
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, MapFragment.newInstance()).commit();
@@ -192,7 +191,7 @@ public class MainHomeActivity extends AppCompatActivity {
                             viewModel.onSettingsClicked();
                             break;
                         case R.id.navigationView_logout:
-                            viewModel.onLogOutClicked(mainHomeViewState.getProviderId());
+                            viewModel.onLogOutClicked();
                             break;
                     }
                     binding.drawerLayout.closeDrawer(GravityCompat.START);

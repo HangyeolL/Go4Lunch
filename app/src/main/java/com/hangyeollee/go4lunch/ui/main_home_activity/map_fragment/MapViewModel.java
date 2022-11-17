@@ -79,7 +79,11 @@ public class MapViewModel extends ViewModel {
 
     }
 
-    private void combine(@Nullable Location location, @Nullable MyNearBySearchData myNearBySearchData, @Nullable MyAutoCompleteData myAutoCompleteData) {
+    private void combine(
+            @Nullable Location location,
+            @Nullable MyNearBySearchData myNearBySearchData,
+            @Nullable MyAutoCompleteData myAutoCompleteData
+    ) {
         if (location == null || myNearBySearchData == null) {
             return;
         }
@@ -110,7 +114,10 @@ public class MapViewModel extends ViewModel {
                         MapMarkerViewState mapMarkerViewState =
                                 new MapMarkerViewState(
                                         result.getPlaceId(),
-                                        new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()),
+                                        new LatLng(
+                                                result.getGeometry().getLocation().getLat(),
+                                                result.getGeometry().getLocation().getLng()
+                                        ),
                                         result.getName()
                                 );
 
@@ -144,25 +151,23 @@ public class MapViewModel extends ViewModel {
     public void onMapReady(List<MapMarkerViewState> mapMarkerViewStateList, GoogleMap googleMap) {
         for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
             googleMap.addMarker(
-                    new MarkerOptions().
-                            icon(getMapIcon()).
-                            position(mapMarkerViewState.getPositionLatLng()).
-                            title(mapMarkerViewState.getTitle())
+                    new MarkerOptions()
+                            .icon(getMapIcon())
+                            .position(mapMarkerViewState.getPositionLatLng())
+                            .title(mapMarkerViewState.getTitle())
             );
         }
     }
 
     public void onMarkerClicked(List<MapMarkerViewState> mapMarkerViewStateList, Marker marker) {
-        Intent intent = new Intent(context, PlaceDetailActivity.class); // TODO Hangyeol fix it
         for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
             if (marker.getTitle().equalsIgnoreCase(mapMarkerViewState.getTitle())) {
-//                PlaceDetailActivity.navigate(context, mapMarkerViewState.getPlaceId());
-                intent.putExtra("place id", mapMarkerViewState.getPlaceId());
-                Log.i("markerName", marker.getTitle());
+                intentSingleLiveEvent.setValue(PlaceDetailActivity.navigate(context, mapMarkerViewState.getPlaceId()));
+                Log.d("Hangyeol", "markerName: " + marker.getTitle());
                 break;
             }
         }
-        intentSingleLiveEvent.setValue(intent);
+
     }
 
     /**
