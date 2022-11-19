@@ -1,12 +1,14 @@
 package com.hangyeollee.go4lunch.ui.place_detail_activity;
 
-import static com.hangyeollee.go4lunch.utils.ResourceToUri.resourceToUri;
+import static com.hangyeollee.go4lunch.utils.UtilBox.resourceToUri;
 
 import android.app.Application;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -21,9 +23,9 @@ import com.hangyeollee.go4lunch.data.model.User;
 import com.hangyeollee.go4lunch.data.model.placedetailpojo.MyPlaceDetailData;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.PlaceDetailDataRepository;
-import com.hangyeollee.go4lunch.utils.MyCalendar;
 import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +41,7 @@ public class PlaceDetailViewModel extends ViewModel {
     private final SingleLiveEvent<String> toastMessageSingleLiveEvent = new SingleLiveEvent<>();
     private final SingleLiveEvent<Intent> intentSingleLiveEvent = new SingleLiveEvent<>();
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public PlaceDetailViewModel(Application context, PlaceDetailDataRepository placeDetailDataRepository, FirebaseRepository firebaseRepository) {
         this.context = context;
         this.firebaseRepository = firebaseRepository;
@@ -217,12 +220,13 @@ public class PlaceDetailViewModel extends ViewModel {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void onFloatingActionButtonClicked(PlaceDetailViewState placeDetailViewState) {
         firebaseRepository.addOrRemoveLunchRestaurant(
                 placeIdMutableLiveData.getValue(),
                 firebaseRepository.getCurrentUser().getUid(),
                 placeDetailViewState.getName(),
-                MyCalendar.getCurrentDate(),
+                LocalDate.now().toString(),
                 placeDetailViewState.isSelectedAsLunchRestaurant()
         );
 

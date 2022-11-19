@@ -1,6 +1,6 @@
 package com.hangyeollee.go4lunch.ui.main_home_activity.list_fragment;
 
-import static com.hangyeollee.go4lunch.utils.ResourceToUri.resourceToUri;
+import static com.hangyeollee.go4lunch.utils.UtilBox.resourceToUri;
 
 import android.app.Application;
 import android.location.Location;

@@ -74,7 +74,6 @@ public class MainHomeActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, MapFragment.newInstance()).commit();
         }
 
-//        alarmSetup();
         linkDrawerLayoutWithToolbar();
         bottomNavigationBarSetup();
         searchViewSetup();
@@ -84,8 +83,8 @@ public class MainHomeActivity extends AppCompatActivity {
                     navigationViewHeaderBinding.textViewUserEmail.setText(mainHomeViewState.getUserEmail());
 
                     Glide.with(navigationViewHeaderBinding.imageViewUserPhoto)
-                        .load(mainHomeViewState.getUserPhotoUrl())
-                        .into(navigationViewHeaderBinding.imageViewUserPhoto);
+                            .load(mainHomeViewState.getUserPhotoUrl())
+                            .into(navigationViewHeaderBinding.imageViewUserPhoto);
 
                     setNavigationViewItemSelectedListener(mainHomeViewState);
                 }
@@ -103,33 +102,10 @@ public class MainHomeActivity extends AppCompatActivity {
 
     }
 
-//    private void alarmSetup() {
-//
-//        if (mSharedPref.getBoolean("Notification boolean", true)) {
-//
-//            AlarmManager mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-//
-//            Calendar calendar = Calendar.getInstance();
-//            calendar.set(Calendar.HOUR_OF_DAY, 12);
-//            calendar.set(Calendar.MINUTE, 0);
-//            calendar.set(Calendar.SECOND, 0);
-//
-//            Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-//            PendingIntent pendingAlarmIntent = PendingIntent.getBroadcast(this, 1, alarmIntent, PendingIntent.FLAG_IMMUTABLE);
-//
-//            Log.e("TimeInMillisNow", calendar.getTimeInMillis() + "");
-//
-//            mAlarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingAlarmIntent);
-//
-//        } else {
-//
-//        }
-//    }
-
     private void linkDrawerLayoutWithToolbar() {
         setSupportActionBar(binding.toolBar);
-
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(
+                this, binding.drawerLayout, binding.toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         binding.drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
     }

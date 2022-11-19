@@ -1,5 +1,7 @@
 package com.hangyeollee.go4lunch.ui.main_home_activity.map_fragment;
 
+import static com.hangyeollee.go4lunch.utils.UtilBox.makeDrawableIntoBitmap;
+
 import android.app.Application;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -181,14 +183,7 @@ public class MapViewModel extends ViewModel {
         return makeDrawableIntoBitmap(wrappedDrawable);
     }
 
-    public BitmapDescriptor makeDrawableIntoBitmap(Drawable drawable) {
-        Canvas canvas = new Canvas();
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(bitmap);
-        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        drawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
-    }
+
 
 
 }

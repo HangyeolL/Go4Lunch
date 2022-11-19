@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.hangyeollee.go4lunch"
-        minSdk 21
+        minSdk 26
         targetSdk 31
         versionCode 1
         versionName "1.0"
@@ -84,6 +84,9 @@ dependencies {
 
     // What the heck is this ?
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    // WorkManager
+    implementation "androidx.work:work-runtime:2.7.1"
 
     //----------------TEST implementations start----------------//
 

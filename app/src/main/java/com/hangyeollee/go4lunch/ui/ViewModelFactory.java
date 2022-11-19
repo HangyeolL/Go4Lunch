@@ -27,10 +27,13 @@ import com.hangyeollee.go4lunch.ui.main_home_activity.workmates_fragment.Workmat
 import com.hangyeollee.go4lunch.ui.place_detail_activity.PlaceDetailViewModel;
 import com.hangyeollee.go4lunch.ui.settings_activity.SettingsViewModel;
 
+import java.time.Clock;
+
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private final Application context;
     private final FirebaseAuth firebaseAuth;
+    private final Clock clock;
 
     private final NearbySearchDataRepository nearbySearchDataRepository;
     private final PlaceDetailDataRepository placeDetailDataRepository;
@@ -58,6 +61,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         GoogleMapsApi googleMapsApi = MyRetrofitBuilder.getGoogleMapsApi();
+        clock = Clock.systemDefaultZone();
 
         context = MainApplication.getInstance();
         locationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(context));
@@ -79,7 +83,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new LogInViewModel(context, firebaseAuth);
         }
         else if (modelClass.isAssignableFrom(MainHomeViewModel.class)) {
-            return (T) new MainHomeViewModel(context, firebaseRepository, locationRepository, autoCompleteDataRepository);
+            return (T) new MainHomeViewModel(context, firebaseRepository, locationRepository, autoCompleteDataRepository, settingRepository);
         }
         else if (modelClass.isAssignableFrom(MapViewModel.class)) {
             return (T) new MapViewModel(context, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository);
@@ -94,7 +98,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new PlaceDetailViewModel(context, placeDetailDataRepository, firebaseRepository);
         }
         else if (modelClass.isAssignableFrom(SettingsViewModel.class)) {
-            return (T) new SettingsViewModel(context, firebaseAuth, settingRepository);
+            return (T) new SettingsViewModel(context, firebaseAuth, settingRepository, clock);
         }
 
         throw new IllegalArgumentException("Unknown ViewModel class : " + modelClass);

@@ -1,14 +1,14 @@
 package com.hangyeollee.go4lunch.data.repository;
 
-import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -16,11 +16,10 @@ import com.google.firebase.firestore.SetOptions;
 import com.hangyeollee.go4lunch.data.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.data.model.User;
-import com.hangyeollee.go4lunch.utils.MyCalendar;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class FirebaseRepository {
 
@@ -50,8 +49,9 @@ public class FirebaseRepository {
         return firestoreDatabase.collection("users");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public CollectionReference getDateCollection() {
-        return firestoreDatabase.collection(MyCalendar.getCurrentDate());
+        return firestoreDatabase.collection(LocalDate.now().toString());
     }
 
     public void saveUserInFirestore() {
@@ -123,6 +123,7 @@ public class FirebaseRepository {
         return likedRestaurantMutableLiveData;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void addOrRemoveLunchRestaurant(String restaurantId, String userId, String restaurantName, String date, boolean isSelected) {
        if (isSelected) {
            getDateCollection()

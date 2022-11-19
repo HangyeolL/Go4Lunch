@@ -1,17 +1,21 @@
 package com.hangyeollee.go4lunch.ui.dispatcher_activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.hangyeollee.go4lunch.ui.ViewModelFactory;
 import com.hangyeollee.go4lunch.ui.logIn_activity.LogInActivity;
 import com.hangyeollee.go4lunch.ui.main_home_activity.MainHomeActivity;
-import com.hangyeollee.go4lunch.ui.ViewModelFactory;
 
 public class DispatcherActivity extends AppCompatActivity {
 
+    public static Intent navigate(Context context) {
+        return new Intent(context, DispatcherActivity.class);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,11 +26,11 @@ public class DispatcherActivity extends AppCompatActivity {
         viewModel.getViewActionSingleLiveEvent().observe(this, dispatcherViewAction -> {
             switch (dispatcherViewAction) {
                 case GO_TO_LOGIN_SCREEN:
-                    startActivity(new Intent(DispatcherActivity.this, LogInActivity.class));
+                    startActivity(LogInActivity.navigate(this));
                     finish();
                     break;
                 case GO_TO_MAIN_HOME_SCREEN:
-                    startActivity(new Intent(DispatcherActivity.this, MainHomeActivity.class));
+                    startActivity(MainHomeActivity.navigate(this));
                     finish();
                     break;
             }

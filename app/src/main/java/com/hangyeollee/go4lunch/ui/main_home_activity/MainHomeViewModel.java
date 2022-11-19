@@ -1,6 +1,6 @@
 package com.hangyeollee.go4lunch.ui.main_home_activity;
 
-import static com.hangyeollee.go4lunch.utils.ResourceToUri.resourceToUri;
+import static com.hangyeollee.go4lunch.utils.UtilBox.resourceToUri;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
@@ -17,6 +17,7 @@ import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
+import com.hangyeollee.go4lunch.data.repository.SettingRepository;
 import com.hangyeollee.go4lunch.ui.logIn_activity.LogInActivity;
 import com.hangyeollee.go4lunch.ui.settings_activity.SettingsActivity;
 import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
@@ -29,6 +30,7 @@ public class MainHomeViewModel extends ViewModel {
     private final FirebaseRepository firebaseRepository;
     private final LocationRepository locationRepository;
     private final AutoCompleteDataRepository autoCompleteDataRepository;
+    private final SettingRepository settingRepository;
 
     private final MediatorLiveData<MainHomeViewState> mainHomeActivityViewStateMediatorLiveData = new MediatorLiveData<>();
 
@@ -39,18 +41,20 @@ public class MainHomeViewModel extends ViewModel {
             Application context,
             FirebaseRepository firebaseRepository,
             LocationRepository locationRepository,
-            AutoCompleteDataRepository autoCompleteDataRepository
+            AutoCompleteDataRepository autoCompleteDataRepository,
+            SettingRepository settingRepository
     ) {
         this.context = context;
         this.firebaseRepository = firebaseRepository;
         this.locationRepository = locationRepository;
         this.autoCompleteDataRepository = autoCompleteDataRepository;
+        this.settingRepository = settingRepository;
 
         LiveData<Location> locationLiveData = this.locationRepository.getLocationLiveData();
         LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = this.firebaseRepository.getLunchRestaurantListOfAllUsers();
 
-        mainHomeActivityViewStateMediatorLiveData.addSource(locationLiveData,
-                location -> combine(location, lunchRestaurantListLiveData.getValue())
+        mainHomeActivityViewStateMediatorLiveData.addSource(locationLiveData, location ->
+                combine(location, lunchRestaurantListLiveData.getValue())
         );
     }
 
@@ -153,7 +157,5 @@ public class MainHomeViewModel extends ViewModel {
     public void stopLocationRequest() {
         locationRepository.stopLocationRequest();
     }
-
-
 
 }
