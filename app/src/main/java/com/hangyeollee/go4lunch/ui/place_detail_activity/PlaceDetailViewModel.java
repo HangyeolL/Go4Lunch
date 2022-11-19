@@ -125,7 +125,8 @@ public class PlaceDetailViewModel extends ViewModel {
         for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
             if (userList != null) {
                 for (User user : userList) {
-                    if (user.getId().equalsIgnoreCase(lunchRestaurant.getUserId())) {
+                    if (user.getId().equalsIgnoreCase(lunchRestaurant.getUserId())
+                            && lunchRestaurant.getRestaurantName().equalsIgnoreCase(myPlaceDetailData.getResult().getName())) {
                         recyclerViewItemViewStateList.add(
                                 new PlaceDetailItemViewState(
                                         user.getName(),

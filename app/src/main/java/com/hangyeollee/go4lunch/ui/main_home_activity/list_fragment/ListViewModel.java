@@ -1,5 +1,8 @@
 package com.hangyeollee.go4lunch.ui.main_home_activity.list_fragment;
 
+import static com.hangyeollee.go4lunch.utils.ResourceToUri.resourceToUri;
+
+import android.app.Application;
 import android.location.Location;
 
 import androidx.lifecycle.LiveData;
@@ -7,6 +10,8 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.hangyeollee.go4lunch.BuildConfig;
+import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.Prediction;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
@@ -23,11 +28,18 @@ import javax.annotation.Nullable;
 
 public class ListViewModel extends ViewModel {
 
+    private final Application context;
     private final LocationRepository locationRepository;
 
     private final MediatorLiveData<ListViewState> listViewFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
 
-    public ListViewModel(LocationRepository locationRepository, NearbySearchDataRepository mNearbySearchDataRepository, AutoCompleteDataRepository autoCompleteDataRepository) {
+    public ListViewModel(
+            Application context,
+            LocationRepository locationRepository,
+            NearbySearchDataRepository mNearbySearchDataRepository,
+            AutoCompleteDataRepository autoCompleteDataRepository
+    ) {
+        this.context = context;
         this.locationRepository = locationRepository;
 
         LiveData<Location> locationLiveData = locationRepository.getLocationLiveData();
@@ -72,7 +84,14 @@ public class ListViewModel extends ViewModel {
                     rating = result.getRating().floatValue();
                 }
                 if (result.getPhotos() != null) {
-                    photoReference = result.getPhotos().get(0).getPhotoReference();
+                    photoReference =
+                            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
+                                    + result.getPhotos().get(0).getPhotoReference()
+                                    + "&key="
+                                    + BuildConfig.PLACES_API_KEY;
+
+                } else {
+                    photoReference = resourceToUri(context, R.drawable.ic_baseline_local_dining_24);
                 }
 
                 resultLocation.setLatitude(result.getGeometry().getLocation().getLat());
@@ -83,7 +102,10 @@ public class ListViewModel extends ViewModel {
                 }
 
                 ListItemViewState recyclerViewItemViewState = new ListItemViewState(
-                        result.getName(), result.getVicinity(), isOpen, rating, photoReference, result.getPlaceId(), distanceBetween
+                        result.getName(), result.getVicinity(),
+                        isOpen ? context.getString(R.string.open) : context.getString(R.string.closed),
+                        isOpen ? R.color.blue : R.color.orange,
+                        rating, photoReference, result.getPlaceId(), distanceBetween
                 );
 
                 recyclerViewItemViewStateList.add(recyclerViewItemViewState);
@@ -101,7 +123,14 @@ public class ListViewModel extends ViewModel {
                             rating = result.getRating().floatValue();
                         }
                         if (result.getPhotos() != null) {
-                            photoReference = result.getPhotos().get(0).getPhotoReference();
+                            photoReference =
+                                    "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
+                                            + result.getPhotos().get(0).getPhotoReference()
+                                            + "&key="
+                                            + BuildConfig.PLACES_API_KEY;
+
+                        } else {
+                            photoReference = resourceToUri(context, R.drawable.ic_baseline_local_dining_24);
                         }
 
                         resultLocation.setLatitude(result.getGeometry().getLocation().getLat());
@@ -112,7 +141,10 @@ public class ListViewModel extends ViewModel {
                         }
 
                         ListItemViewState recyclerViewItemViewState = new ListItemViewState(
-                                result.getName(), result.getVicinity(), isOpen, rating, photoReference, result.getPlaceId(), distanceBetween
+                                result.getName(), result.getVicinity(),
+                                isOpen ? context.getString(R.string.open) : context.getString(R.string.closed),
+                                isOpen ? R.color.blue : R.color.orange,
+                                rating, photoReference, result.getPlaceId(), distanceBetween
                         );
 
                         recyclerViewItemViewStateList.add(recyclerViewItemViewState);

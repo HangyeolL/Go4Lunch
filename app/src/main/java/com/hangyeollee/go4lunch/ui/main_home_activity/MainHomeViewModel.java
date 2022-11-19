@@ -129,13 +129,12 @@ public class MainHomeViewModel extends ViewModel {
     }
 
     public void onSettingsClicked() {
-        intentSingleLiveEvent.setValue(new Intent(context, SettingsActivity.class));
+        intentSingleLiveEvent.setValue(SettingsActivity.navigate(context));
     }
 
-    // TODO Hangyeol no providerId needed
     public void onLogOutClicked() {
         firebaseRepository.signOutFromFirebaseAuth();
-        intentSingleLiveEvent.setValue(new Intent(context, LogInActivity.class));
+        intentSingleLiveEvent.setValue(LogInActivity.navigate(context));
     }
 
     public void onSearchViewTextChanged(String searchViewText) {

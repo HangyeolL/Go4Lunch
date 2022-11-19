@@ -18,12 +18,11 @@ import com.google.android.material.snackbar.Snackbar;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityLogInBinding;
 import com.hangyeollee.go4lunch.ui.ViewModelFactory;
-import com.hangyeollee.go4lunch.ui.main_home_activity.MainHomeActivity;
 
 public class LogInActivity extends AppCompatActivity {
 
     public static Intent navigate(Context context) {
-        return new Intent(context, MainHomeActivity.class);
+        return new Intent(context, LogInActivity.class);
     }
 
     @Override

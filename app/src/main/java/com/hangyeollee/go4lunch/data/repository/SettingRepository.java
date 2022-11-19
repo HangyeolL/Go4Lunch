@@ -12,6 +12,7 @@ public class SettingRepository {
     private static final String KEY_SHARED_PREFS_SETTINGS_NOTIFICATION_ENABLED = "KEY_SHARED_PREFS_SETTINGS_NOTIFICATION_ENABLED";
 
     private final SharedPreferences sharedPreferences;
+    private SharedPreferences.OnSharedPreferenceChangeListener onSharedPreferenceChangeListener;
 
     public SettingRepository(Context context) {
         sharedPreferences = context.getSharedPreferences(KEY_SHARED_PREFS_SETTINGS, Context.MODE_PRIVATE);
@@ -20,24 +21,23 @@ public class SettingRepository {
     // GET
     public LiveData<Boolean> getIsNotificationEnabledLiveData() {
         MutableLiveData<Boolean> mutableLiveData = new MutableLiveData<>(
-            sharedPreferences.getBoolean(KEY_SHARED_PREFS_SETTINGS_NOTIFICATION_ENABLED, false)
+                sharedPreferences.getBoolean(KEY_SHARED_PREFS_SETTINGS_NOTIFICATION_ENABLED, false)
         );
 
         // TODO Hangyeol check the "Java strong/weak reference" stuff online !
-        sharedPreferences.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (KEY_SHARED_PREFS_SETTINGS_NOTIFICATION_ENABLED.equalsIgnoreCase(key)) {
-                    mutableLiveData.setValue(sharedPreferences.getBoolean(key, false));
+        sharedPreferences.registerOnSharedPreferenceChangeListener(
+                onSharedPreferenceChangeListener = (sharedPreferences, key) -> {
+                    if (KEY_SHARED_PREFS_SETTINGS_NOTIFICATION_ENABLED.equalsIgnoreCase(key)) {
+                        mutableLiveData.setValue(sharedPreferences.getBoolean(key, false));
+                    }
                 }
-            }
-        });
+        );
 
         return mutableLiveData;
     }
 
     // INSERT
-    public void isNotificationEnabled(boolean enabled) {
+    public void setNotificationEnable(boolean enabled) {
         sharedPreferences.edit().putBoolean(KEY_SHARED_PREFS_SETTINGS_NOTIFICATION_ENABLED, enabled).apply();
     }
 }

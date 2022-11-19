@@ -26,7 +26,6 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.hangyeollee.go4lunch.R;
-import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.ui.main_home_activity.MainHomeActivity;
 import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
 

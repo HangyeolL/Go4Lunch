@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,8 +22,6 @@ import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ActivityMainHomeBinding;
 import com.hangyeollee.go4lunch.databinding.MainActivityHeaderNavigationViewBinding;
-import com.hangyeollee.go4lunch.ui.place_detail_activity.PlaceDetailActivity;
-import com.hangyeollee.go4lunch.utils.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.ui.main_home_activity.list_fragment.ListFragment;
 import com.hangyeollee.go4lunch.ui.main_home_activity.map_fragment.MapFragment;
 import com.hangyeollee.go4lunch.ui.main_home_activity.workmates_fragment.WorkmatesFragment;
@@ -85,11 +82,12 @@ public class MainHomeActivity extends AppCompatActivity {
         viewModel.getMainHomeActivityViewStateLiveData().observe(this, mainHomeViewState -> {
                     navigationViewHeaderBinding.textViewUserName.setText(mainHomeViewState.getUserName());
                     navigationViewHeaderBinding.textViewUserEmail.setText(mainHomeViewState.getUserEmail());
+
                     Glide.with(navigationViewHeaderBinding.imageViewUserPhoto)
                         .load(mainHomeViewState.getUserPhotoUrl())
                         .into(navigationViewHeaderBinding.imageViewUserPhoto);
 
-                    navigationViewItemSelectedListener(mainHomeViewState);
+                    setNavigationViewItemSelectedListener(mainHomeViewState);
                 }
         );
 
@@ -100,7 +98,6 @@ public class MainHomeActivity extends AppCompatActivity {
         viewModel.getIntentSingleLiveEvent().observe(this,
                 intent -> {
                     startActivity(intent);
-                    finish();
                 }
         );
 
@@ -181,7 +178,7 @@ public class MainHomeActivity extends AppCompatActivity {
         });
     }
 
-    private void navigationViewItemSelectedListener(MainHomeViewState mainHomeViewState) {
+    private void setNavigationViewItemSelectedListener(MainHomeViewState mainHomeViewState) {
         binding.NavigationView.setNavigationItemSelectedListener(item -> {
                     switch (item.getItemId()) {
                         case R.id.navigationView_yourLunch:

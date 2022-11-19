@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ListViewFragmentListItemBinding;
 import com.hangyeollee.go4lunch.ui.place_detail_activity.PlaceDetailActivity;
@@ -55,22 +54,12 @@ public class ListRecyclerViewAdapter extends RecyclerView.Adapter<ListRecyclerVi
             binding.textViewAddress.setText(itemViewState.getVicinity());
             binding.textViewDistance.setText(itemViewState.getDistanceFromUserLocation());
             binding.ratingBar.setRating(itemViewState.getRating());
+            binding.textViewIsOpenNow.setText(itemViewState.getIsOpenText());
+            binding.textViewIsOpenNow.setTextColor(itemViewState.getIsOpenTextColor());
 
-            // TODO Hangyeol do expose state, do not let the view control
-            if (itemViewState.isOpen()) {
-                binding.textViewIsOpenNow.setText(R.string.open);
-                binding.textViewIsOpenNow.setTextColor(Color.BLUE);
-            } else {
-                binding.textViewIsOpenNow.setText(R.string.closed);
-                binding.textViewIsOpenNow.setTextColor(Color.RED);
-            }
-
-            // TODO Hangyeol do concat in the ViewModel, not the adapter
-            Glide.with(itemView).load(
-                    "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
-                            + itemViewState.getPhotoReference()
-                            + "&key="
-                            + BuildConfig.PLACES_API_KEY).into(binding.imageViewRestaurant);
+            Glide.with(itemView)
+                    .load(itemViewState.getPhotoReference())
+                    .into(binding.imageViewRestaurant);
 
             itemView.setOnClickListener(i -> {
                         itemView.getContext().startActivity(

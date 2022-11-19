@@ -29,8 +29,8 @@ import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
 import com.hangyeollee.go4lunch.data.repository.NearbySearchDataRepository;
-import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
 import com.hangyeollee.go4lunch.ui.place_detail_activity.PlaceDetailActivity;
+import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
 
 import java.util.ArrayList;
 import java.util.List;

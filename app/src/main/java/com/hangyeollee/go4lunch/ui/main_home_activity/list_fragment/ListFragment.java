@@ -18,7 +18,6 @@ import com.hangyeollee.go4lunch.databinding.FragmentListViewBinding;
 import com.hangyeollee.go4lunch.ui.ViewModelFactory;
 
 public class ListFragment extends Fragment {
-    //TODO Layout file restaurant name is too long overlaps distance text!
 
     public static ListFragment newInstance() {
         return new ListFragment();

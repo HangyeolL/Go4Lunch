@@ -72,8 +72,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
         binding.textViewAddress.setText(placeDetailViewState.getAddress());
         binding.ratingBar.setRating(placeDetailViewState.getRating());
 
-        //TODO Icon color doesn't get changed !
-        // TODO Hangyeol re check?
+        //TODO Liked Button Icon color doesn't get changed !
         Drawable btnLikeDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_baseline_star_24, null);
         btnLikeDrawable.mutate().setColorFilter(
             ResourcesCompat.getColor(

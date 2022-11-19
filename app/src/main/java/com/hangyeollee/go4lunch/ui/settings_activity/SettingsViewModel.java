@@ -3,58 +3,49 @@ package com.hangyeollee.go4lunch.ui.settings_activity;
 import static com.hangyeollee.go4lunch.utils.ResourceToUri.resourceToUri;
 
 import android.app.Application;
-import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
 import com.hangyeollee.go4lunch.R;
-import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.SettingRepository;
-import com.hangyeollee.go4lunch.utils.MySharedPreferenceUtil;
 
 public class SettingsViewModel extends ViewModel {
-    ///TODO how to handle sharedPreferences with LiveData to observe ?
+
     private final Application context;
-    private final FirebaseRepository firebaseRepository;
+    private final FirebaseAuth firebaseAuth;
+    private final SettingRepository settingRepository;
+
     private final MediatorLiveData<SettingsViewState> mediatorLiveData = new MediatorLiveData<>();
 
     public SettingsViewModel(
             Application context,
-            FirebaseRepository firebaseRepository,
+            FirebaseAuth firebaseAuth,
             SettingRepository settingRepository
     ) {
         this.context = context;
-        this.firebaseRepository = firebaseRepository;
+        this.firebaseAuth = firebaseAuth;
+        this.settingRepository = settingRepository;
 
-        LiveData<Boolean> areNotificationEnabledLiveData = settingRepository.getIsNotificationEnabledLiveData();
+        LiveData<Boolean> isNotificationEnabledLiveData = settingRepository.getIsNotificationEnabledLiveData();
 
         //TODO why this method wont be called if i dont put initial value?
-        mediatorLiveData.addSource(areNotificationEnabledLiveData, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean areNotificationEnabled) {
-                combine(areNotificationEnabled);
-            }
-        });
+        mediatorLiveData.addSource(isNotificationEnabledLiveData,
+                isNotificationEnabled -> combine(isNotificationEnabled)
+        );
 
     }
 
-    public LiveData<SettingsViewState> viewStateLiveData() {
-        return mediatorLiveData;
-    }
-
-    private void combine(@Nullable Boolean areNotificationEnabled) {
-        if (areNotificationEnabled == null) {
+    private void combine(@Nullable Boolean isNotificationEnabled) {
+        if (isNotificationEnabled == null) {
             return;
         }
 
-        FirebaseUser firebaseUser = firebaseRepository.getCurrentUser();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
         final String userName = firebaseUser.getDisplayName();
         final String userEmail;
@@ -72,12 +63,25 @@ public class SettingsViewModel extends ViewModel {
             userPhotoUrl = firebaseUser.getPhotoUrl().toString();
         }
 
-//        SettingsViewState viewState = new SettingsViewState(
-//                userPhotoUrl,
-//                userName,
-//                userEmail,
-//
-//                );
+        SettingsViewState viewState = new SettingsViewState(userPhotoUrl, userName, userEmail, isNotificationEnabled);
+
+        mediatorLiveData.setValue(viewState);
     }
 
+    /**
+     * GETTERS
+     */
+
+    public LiveData<SettingsViewState> getViewStateLiveData() {
+        return mediatorLiveData;
+    }
+
+    /**
+     * EVENTS
+     */
+
+    public void onSwitchClicked(boolean enable) {
+        settingRepository.setNotificationEnable(enable);
+
+    }
 }

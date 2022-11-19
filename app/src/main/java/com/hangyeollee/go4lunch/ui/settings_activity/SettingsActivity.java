@@ -1,24 +1,28 @@
 package com.hangyeollee.go4lunch.ui.settings_activity;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.CompoundButton;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.hangyeollee.go4lunch.databinding.ActivitySettingsBinding;
-import com.hangyeollee.go4lunch.utils.MySharedPreferenceUtil;
 import com.hangyeollee.go4lunch.ui.ViewModelFactory;
+import com.hangyeollee.go4lunch.ui.main_home_activity.MainHomeActivity;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private ActivitySettingsBinding binding;
 
-    private SettingsViewModel mViewModel;
+    private SettingsViewModel viewModel;
+
+    public static Intent navigate(Context context) {
+        return new Intent(context, SettingsActivity.class);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -27,55 +31,32 @@ public class SettingsActivity extends AppCompatActivity {
         binding = ActivitySettingsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        mViewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(SettingsViewModel.class);
+        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(SettingsViewModel.class);
 
-        toolBarSetup();
-        viewSetup();
-        switchSetup(this);
-    }
-
-    private void toolBarSetup() {
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        viewModel.getViewStateLiveData().observe(this,
+                settingsViewState -> bind(settingsViewState)
+        );
     }
 
-    private void viewSetup() {
-//        Glide.with(this)
-//                .load(mViewModel.getCurrentUser().getPhotoUrl())
-//                .into(binding.imageViewUserPhoto);
-//        binding.textInputEditTextUserName.setText(mViewModel.getCurrentUser().getDisplayName());
-//
-//            binding.textInputEditTextUserEmail.setText(mViewModel.getCurrentUser().getEmail());
-//
-//            binding.textInputEditTextUserEmail.setText("not provided");
+    private void bind(SettingsViewState viewState) {
+        Glide.with(this)
+                .load(viewState.getPhotoUrl())
+                .into(binding.imageViewUserPhoto);
 
-    }
+        binding.textInputEditTextUserName.setText(viewState.getName());
+        binding.textInputEditTextUserEmail.setText(viewState.getEmail());
+        binding.switchNotification.setChecked(viewState.isSwitchBoolean());
 
-    private void switchSetup(Context context) {
-        SharedPreferences mSharedPref = new MySharedPreferenceUtil(this).getInstanceOfSharedPref();
-
-        if (mSharedPref.getBoolean("Notification boolean", true)) {
-            binding.switchNotification.setChecked(true);
-        } else {
-            binding.switchNotification.setChecked(false);
-        }
-
-        binding.switchNotification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences.Editor mEditor = new MySharedPreferenceUtil(context).getInstanceOfEditor();
-
-                if (buttonView.isChecked()) {
-                    Log.e("switch", "is checked : " + isChecked);
-                    mEditor.putBoolean("Notification boolean", true);
-                    mEditor.commit();
-                } else {
-                    Log.e("switch", "is checked : " + isChecked);
-                    mEditor.putBoolean("Notification boolean", false);
-                    mEditor.commit();
+        binding.switchNotification.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    viewModel.onSwitchClicked(isChecked);
+                    Log.e("Hangyeol", "switch is checked as : " + isChecked);
                 }
-            }
-        });
+        );
     }
+
 }
