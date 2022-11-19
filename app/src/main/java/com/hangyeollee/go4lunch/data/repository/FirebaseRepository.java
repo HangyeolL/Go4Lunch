@@ -1,6 +1,5 @@
 package com.hangyeollee.go4lunch.data.repository;
 
-import android.net.Uri;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -8,7 +7,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -20,7 +18,6 @@ import com.hangyeollee.go4lunch.utils.MyCalendar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class FirebaseRepository {
 

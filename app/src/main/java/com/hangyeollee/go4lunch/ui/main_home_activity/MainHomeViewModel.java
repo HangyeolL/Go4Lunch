@@ -4,23 +4,33 @@ import static com.hangyeollee.go4lunch.utils.ResourceToUri.resourceToUri;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Location;
+import android.provider.MediaStore;
+import android.util.Log;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.hangyeollee.go4lunch.MainApplication;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
+import com.hangyeollee.go4lunch.data.repository.SettingRepository;
+import com.hangyeollee.go4lunch.ui.dispatcher_activity.DispatcherActivity;
 import com.hangyeollee.go4lunch.ui.logIn_activity.LogInActivity;
 import com.hangyeollee.go4lunch.ui.settings_activity.SettingsActivity;
 import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
 
+import java.io.IOException;
 import java.util.List;
 
 public class MainHomeViewModel extends ViewModel {
@@ -29,6 +39,7 @@ public class MainHomeViewModel extends ViewModel {
     private final FirebaseRepository firebaseRepository;
     private final LocationRepository locationRepository;
     private final AutoCompleteDataRepository autoCompleteDataRepository;
+    private final SettingRepository settingRepository;
 
     private final MediatorLiveData<MainHomeViewState> mainHomeActivityViewStateMediatorLiveData = new MediatorLiveData<>();
 
@@ -39,18 +50,20 @@ public class MainHomeViewModel extends ViewModel {
             Application context,
             FirebaseRepository firebaseRepository,
             LocationRepository locationRepository,
-            AutoCompleteDataRepository autoCompleteDataRepository
+            AutoCompleteDataRepository autoCompleteDataRepository,
+            SettingRepository settingRepository
     ) {
         this.context = context;
         this.firebaseRepository = firebaseRepository;
         this.locationRepository = locationRepository;
         this.autoCompleteDataRepository = autoCompleteDataRepository;
+        this.settingRepository = settingRepository;
 
         LiveData<Location> locationLiveData = this.locationRepository.getLocationLiveData();
         LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = this.firebaseRepository.getLunchRestaurantListOfAllUsers();
 
-        mainHomeActivityViewStateMediatorLiveData.addSource(locationLiveData,
-                location -> combine(location, lunchRestaurantListLiveData.getValue())
+        mainHomeActivityViewStateMediatorLiveData.addSource(locationLiveData, location ->
+                combine(location, lunchRestaurantListLiveData.getValue())
         );
     }
 
@@ -141,6 +154,36 @@ public class MainHomeViewModel extends ViewModel {
         autoCompleteDataRepository.setUserSearchTextQuery(searchViewText);
     }
 
+    public void onCreateNotification(MainHomeViewState mainHomeViewState) {
+        if(Boolean.TRUE.equals(settingRepository.getIsNotificationEnabledLiveData().getValue())) {
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), firebaseRepository.getCurrentUser().getPhotoUrl());
+            } catch (IOException e) {
+                Log.d("Hangyeol", "photoUrl to bitmap converting failed");
+                e.printStackTrace();
+            }
+
+            Intent intent = DispatcherActivity.navigate(context);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, MainApplication.CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_baseline_local_dining_24)
+                    .setShowWhen(true)
+                    .setLargeIcon(bitmap)
+                    .setContentTitle(firebaseRepository.getCurrentUser().getDisplayName())
+                    .setContentText(context.getString(R.string.you_will_go_to) + mainHomeViewState.getLunchRestaurantName())
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true);
+
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+            // notificationId is a unique int for each notification that you must define
+            notificationManager.notify(1, builder.build());
+        }
+    }
+
     /**
      * Location Repository
      */
@@ -153,7 +196,5 @@ public class MainHomeViewModel extends ViewModel {
     public void stopLocationRequest() {
         locationRepository.stopLocationRequest();
     }
-
-
 
 }
