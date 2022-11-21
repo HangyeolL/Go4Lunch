@@ -78,6 +78,8 @@ public class MainHomeActivity extends AppCompatActivity {
         bottomNavigationBarSetup();
         searchViewSetup();
 
+        viewModel.onCreateNotification();
+
         viewModel.getMainHomeActivityViewStateLiveData().observe(this, mainHomeViewState -> {
                     navigationViewHeaderBinding.textViewUserName.setText(mainHomeViewState.getUserName());
                     navigationViewHeaderBinding.textViewUserEmail.setText(mainHomeViewState.getUserEmail());
