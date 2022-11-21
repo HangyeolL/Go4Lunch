@@ -78,7 +78,7 @@ public class MainHomeActivity extends AppCompatActivity {
         bottomNavigationBarSetup();
         searchViewSetup();
 
-        viewModel.onCreateNotification();
+        //viewModel.onCreateNotification();
 
         viewModel.getMainHomeActivityViewStateLiveData().observe(this, mainHomeViewState -> {
                     navigationViewHeaderBinding.textViewUserName.setText(mainHomeViewState.getUserName());
@@ -96,11 +96,7 @@ public class MainHomeActivity extends AppCompatActivity {
                 message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         );
 
-        viewModel.getIntentSingleLiveEvent().observe(this,
-                intent -> {
-                    startActivity(intent);
-                }
-        );
+        viewModel.getIntentSingleLiveEvent().observe(this, intent -> startActivity(intent));
 
     }
 
