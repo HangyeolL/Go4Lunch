@@ -38,4 +38,7 @@
     <string name="google_log_in_canceled">Google log in canceled</string>
     <string name="channel_name">channel\u00201</string>
     <string name="channel_description">channel description\u00201</string>
+    <string name="log_in_with_google">Log in with google</string>
+    <string name="log_in_with_facebook">Log in with facebook</string>
+    <string name="log_in_with_twitter">Log in with Twitter</string>
 </resources>
