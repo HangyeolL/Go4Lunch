@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dark_blue">
@@ -47,8 +48,8 @@
         android:id="@+id/Button_googleLogIn"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_google_logo"
         android:backgroundTint="@color/orange"
+        android:drawableLeft="@drawable/ic_google_logo"
         android:text="@string/log_in_with_google"
         app:layout_constraintBottom_toTopOf="@+id/Button_facebookLogIn"
         app:layout_constraintEnd_toEndOf="parent"
@@ -57,10 +58,10 @@
 
     <Button
         android:id="@+id/Button_facebookLogIn"
-        android:drawableLeft="@drawable/com_facebook_button_icon"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/purple_500"
+        android:drawableLeft="@drawable/com_facebook_button_icon"
         android:text="@string/log_in_with_facebook"
         app:layout_constraintBottom_toTopOf="@+id/button_twitterLogIn"
         app:layout_constraintEnd_toEndOf="@+id/Button_googleLogIn"
@@ -69,10 +70,10 @@
 
     <Button
         android:id="@+id/button_twitterLogIn"
-        android:drawableLeft="@drawable/ic_twitter_logo"
-        android:backgroundTint="@color/blue"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/blue"
+        android:drawableLeft="@drawable/ic_twitter_logo"
         android:text="@string/log_in_with_twitter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/Button_facebookLogIn"
