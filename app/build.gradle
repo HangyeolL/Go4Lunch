@@ -30,6 +30,9 @@ android {
         debug {
             resValue "string", "facebook_application_id", properties.getProperty("FACEBOOK_APPLICATION_ID", "")
             resValue "string", "facebook_client_token", properties.getProperty("FACEBOOK_CLIENT_TOKEN", "")
+
+            resValue "string", "twitter_api_key", properties.getProperty("TWITTER_API_KEY", "")
+            resValue "string", "twitter_api_key_secret", properties.getProperty("TWITTER_API_KEY_SECRET", "")
         }
     }
 
@@ -98,7 +101,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    //Debug To avoid Memory leak
+    //To avoid Memory leak
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 
 }

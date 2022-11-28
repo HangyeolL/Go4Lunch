@@ -43,4 +43,5 @@ public class MapViewState {
     public int hashCode() {
         return Objects.hash(userLatLng, mapMarkerViewStateList);
     }
+
 }

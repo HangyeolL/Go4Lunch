@@ -54,14 +54,17 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
             binding.textViewUserName.setText(itemViewState.getUserName());
             binding.textViewRestaurantName.setText(itemViewState.getUserLunchRestaurantName());
 
-            if (itemViewState.getUserLunchRestaurantId() != null) {
-                itemView.setOnClickListener(listener -> {
-                    Intent intent = new Intent(itemView.getContext(), PlaceDetailActivity.class);
-                    intent.putExtra("place id", itemViewState.getUserLunchRestaurantId());
-                    itemView.getContext().startActivity(intent);
-                });
-            }
+            itemView.setOnClickListener(listener -> {
+                itemView.getContext()
+                        .startActivity(
+                                PlaceDetailActivity.navigate(itemView.getContext(),
+                                        itemViewState.getUserLunchRestaurantId()
+                                )
+                        );
+            });
+
         }
+
     }
 }
 

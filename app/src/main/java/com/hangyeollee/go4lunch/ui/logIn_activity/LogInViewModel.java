@@ -20,11 +20,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FederatedAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.OAuthCredential;
+import com.google.firebase.auth.OAuthProvider;
+import com.google.firebase.auth.TwitterAuthProvider;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.ui.main_home_activity.MainHomeActivity;
 import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
@@ -86,7 +93,84 @@ public class LogInViewModel extends ViewModel {
                 );
     }
 
-    public void onGoogleLogInResult(ActivityResult result){
+    public void onTwitterLogInClicked(Activity activity) {
+        Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
+        if (pendingResultTask != null) {
+            // There's something already here! Finish the sign-in for your user.
+            pendingResultTask
+                    .addOnSuccessListener(
+                            authResult -> {
+                                Log.d("Hangyeol", "TwitterSignIn:success/ThereIsData");
+
+                                // Link With Firebase
+                                AuthCredential credential =
+                                        TwitterAuthProvider.getCredential(
+                                                ((OAuthCredential) authResult.getCredential()).getAccessToken(),
+                                                (((OAuthCredential) authResult.getCredential()).getSecret())
+                                        );
+
+                                firebaseAuth.signInWithCredential(credential)
+                                        .addOnCompleteListener(task -> {
+                                                    if(task.isSuccessful()) {
+                                                        Log.d("Hangyeol", "firebaseAuthWithTwitter:success");
+                                                        intentSingleLiveEvent.setValue(MainHomeActivity.navigate(context));
+                                                    } else {
+                                                        Log.d("Hangyeol", "firebaseAuthWithTwitter:failed");
+                                                        task.getException().printStackTrace();
+                                                        stringSingleLiveEvent.setValue(context.getString(R.string.twitter_log_in_failed));
+                                                    }
+                                                }
+                                        );
+                            }
+                    )
+                    .addOnFailureListener(
+                            exception -> {
+
+                            }
+                    );
+        } else {
+            OAuthProvider.Builder provider = OAuthProvider.newBuilder("twitter.com");
+
+            // There's no pending result so you need to start the sign-in flow.
+            firebaseAuth
+                    .startActivityForSignInWithProvider(activity, provider.build())
+                    .addOnSuccessListener(
+                            authResult -> {
+                                Log.d("Hangyeol", "TwitterSignIn:success/ThereIsData");
+
+                                // Link With Firebase
+                                AuthCredential credential =
+                                        TwitterAuthProvider.getCredential(
+                                                ((OAuthCredential) authResult.getCredential()).getAccessToken(),
+                                                (((OAuthCredential) authResult.getCredential()).getSecret())
+                                        );
+
+                                firebaseAuth.signInWithCredential(credential)
+                                        .addOnCompleteListener(task -> {
+                                                    if(task.isSuccessful()) {
+                                                        Log.d("Hangyeol", "firebaseAuthWithTwitter:success");
+                                                        intentSingleLiveEvent.setValue(MainHomeActivity.navigate(context));
+                                                    } else {
+                                                        Log.d("Hangyeol", "firebaseAuthWithTwitter:failed");
+                                                        task.getException().printStackTrace();
+                                                        stringSingleLiveEvent.setValue(context.getString(R.string.twitter_log_in_failed));
+                                                    }
+                                                }
+                                        );
+                            }
+                    )
+                    .addOnFailureListener(
+                            exception -> {
+                                Log.d("Hangyeol", "TwitterSignIn:failed/ " + exception.getMessage());
+                                exception.printStackTrace();
+                                stringSingleLiveEvent.setValue(context.getString(R.string.twitter_log_in_failed));
+                            }
+                    );
+
+        }
+    }
+
+    public void onGoogleLogInResult(ActivityResult result) {
         if (result.getResultCode() == Activity.RESULT_OK) {
             Intent data = result.getData();
             // Get signed accounts from the google log in activity
@@ -101,7 +185,7 @@ public class LogInViewModel extends ViewModel {
                                         Log.d("Hangyeol", "firebaseAuthWithGoogle:success");
                                         intentSingleLiveEvent.setValue(MainHomeActivity.navigate(context));
                                     } else {
-                                        Log.d("Hangyeol", "firebaseAuthWithGoogle:failure/");
+                                        Log.d("Hangyeol", "firebaseAuthWithGoogle:failure");
                                         task.getException().printStackTrace();
                                         stringSingleLiveEvent.setValue(context.getString(R.string.google_log_in_failed));
                                     }
@@ -151,7 +235,6 @@ public class LogInViewModel extends ViewModel {
             }
         });
     }
-
 
 }
 

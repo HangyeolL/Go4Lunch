@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.Objects;
+
 public class MapMarkerViewState {
     private final String placeId;
     private final LatLng positionLatLng;
@@ -36,12 +38,16 @@ public class MapMarkerViewState {
     }
 
     @Override
-    public int hashCode() {
-        return super.hashCode();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MapMarkerViewState that = (MapMarkerViewState) o;
+        return Objects.equals(placeId, that.placeId) && Objects.equals(positionLatLng, that.positionLatLng) && Objects.equals(title, that.title);
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
-        return super.equals(obj);
+    public int hashCode() {
+        return Objects.hash(placeId, positionLatLng, title);
     }
+
 }

@@ -5,10 +5,8 @@ import static com.hangyeollee.go4lunch.utils.UtilBox.resourceToUri;
 import android.app.Application;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -41,7 +39,6 @@ public class PlaceDetailViewModel extends ViewModel {
     private final SingleLiveEvent<String> toastMessageSingleLiveEvent = new SingleLiveEvent<>();
     private final SingleLiveEvent<Intent> intentSingleLiveEvent = new SingleLiveEvent<>();
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public PlaceDetailViewModel(Application context, PlaceDetailDataRepository placeDetailDataRepository, FirebaseRepository firebaseRepository) {
         this.context = context;
         this.firebaseRepository = firebaseRepository;
@@ -159,8 +156,8 @@ public class PlaceDetailViewModel extends ViewModel {
                 myPlaceDetailData.getResult().getInternationalPhoneNumber(),
                 myPlaceDetailData.getResult().getWebsite(),
                 recyclerViewItemViewStateList,
-                isSelectedAsLikedRestaurant ? R.color.orange : R.color.blue,
-                isSelectedAsLunchRestaurant ? R.color.orange : R.color.blue,
+                isSelectedAsLikedRestaurant ? R.color.orange : R.color.light_blue,
+                isSelectedAsLunchRestaurant ? R.color.orange : R.color.light_blue,
                 isSelectedAsLikedRestaurant,
                 isSelectedAsLunchRestaurant
         );
@@ -220,7 +217,6 @@ public class PlaceDetailViewModel extends ViewModel {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void onFloatingActionButtonClicked(PlaceDetailViewState placeDetailViewState) {
         firebaseRepository.addOrRemoveLunchRestaurant(
                 placeIdMutableLiveData.getValue(),
