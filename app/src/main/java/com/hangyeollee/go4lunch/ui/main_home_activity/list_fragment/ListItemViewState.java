@@ -13,8 +13,9 @@ public class ListItemViewState {
     private final String photoReference;
     private final String placeId;
     private final String distanceFromUserLocation;
+    private final int workmatesJoiningNumber;
 
-    public ListItemViewState(String name, String vicinity, String isOpenText, int isOpenTextColor, float rating, String photoReference, String placeId, String distanceFromUserLocation) {
+    public ListItemViewState(String name, String vicinity, String isOpenText, int isOpenTextColor, float rating, String photoReference, String placeId, String distanceFromUserLocation, int workmatesJoiningNumber) {
         this.name = name;
         this.vicinity = vicinity;
         this.isOpenText = isOpenText;
@@ -23,6 +24,7 @@ public class ListItemViewState {
         this.photoReference = photoReference;
         this.placeId = placeId;
         this.distanceFromUserLocation = distanceFromUserLocation;
+        this.workmatesJoiningNumber = workmatesJoiningNumber;
     }
 
     public String getName() {
@@ -55,5 +57,9 @@ public class ListItemViewState {
 
     public String getDistanceFromUserLocation() {
         return distanceFromUserLocation;
+    }
+
+    public int getWorkmatesJoiningNumber() {
+        return workmatesJoiningNumber;
     }
 }

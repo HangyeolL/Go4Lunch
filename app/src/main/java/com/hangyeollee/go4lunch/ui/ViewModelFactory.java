@@ -83,13 +83,13 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new LogInViewModel(context, firebaseAuth);
         }
         else if (modelClass.isAssignableFrom(MainHomeViewModel.class)) {
-            return (T) new MainHomeViewModel(context, firebaseRepository, locationRepository, autoCompleteDataRepository, settingRepository);
+            return (T) new MainHomeViewModel(context, firebaseRepository, locationRepository, autoCompleteDataRepository, settingRepository, clock);
         }
         else if (modelClass.isAssignableFrom(MapViewModel.class)) {
             return (T) new MapViewModel(context, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository);
         }
         else if (modelClass.isAssignableFrom(ListViewModel.class)) {
-            return (T) new ListViewModel(context, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository);
+            return (T) new ListViewModel(context, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository, firebaseRepository);
         }
         else if (modelClass.isAssignableFrom(WorkmatesViewModel.class)) {
             return (T) new WorkmatesViewModel(context, firebaseRepository, autoCompleteDataRepository);
@@ -98,7 +98,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new PlaceDetailViewModel(context, placeDetailDataRepository, firebaseRepository);
         }
         else if (modelClass.isAssignableFrom(SettingsViewModel.class)) {
-            return (T) new SettingsViewModel(context, firebaseAuth, settingRepository, clock);
+            return (T) new SettingsViewModel(context, firebaseAuth, settingRepository);
         }
 
         throw new IllegalArgumentException("Unknown ViewModel class : " + modelClass);

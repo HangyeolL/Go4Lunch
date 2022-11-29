@@ -21,7 +21,7 @@ public class ListRecyclerViewAdapter extends RecyclerView.Adapter<ListRecyclerVi
 
     public void submitList(List<ListItemViewState> itemViewStateList) {
         listViewFragmentRecyclerViewItemViewStateList = itemViewStateList;
-        notifyDataSetChanged(); // TODO Hangyeol you can do better here with a androidx.recyclerview.widget.ListAdapter
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -56,20 +56,21 @@ public class ListRecyclerViewAdapter extends RecyclerView.Adapter<ListRecyclerVi
             binding.ratingBar.setRating(itemViewState.getRating());
             binding.textViewIsOpenNow.setText(itemViewState.getIsOpenText());
             binding.textViewIsOpenNow.setTextColor(itemViewState.getIsOpenTextColor());
+            binding.textViewWorkmatesNumber.setText(itemViewState.getWorkmatesJoiningNumber());
 
             Glide.with(itemView)
                     .load(itemViewState.getPhotoReference())
                     .into(binding.imageViewRestaurant);
 
-            itemView.setOnClickListener(i -> {
-                        itemView.getContext().startActivity(
-                                PlaceDetailActivity.navigate(
-                                        itemView.getContext(),
-                                        itemViewState.getPlaceId()
-                                )
-                        );
-                    }
+            itemView.setOnClickListener(i ->
+                    itemView.getContext().startActivity(
+                            PlaceDetailActivity.navigate(
+                                    itemView.getContext(),
+                                    itemViewState.getPlaceId()
+                            )
+                    )
             );
+
 
         }
 

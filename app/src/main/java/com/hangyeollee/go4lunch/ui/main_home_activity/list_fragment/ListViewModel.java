@@ -12,11 +12,14 @@ import androidx.lifecycle.ViewModel;
 
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.R;
+import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
+import com.hangyeollee.go4lunch.data.model.User;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.Prediction;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
+import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
 import com.hangyeollee.go4lunch.data.repository.NearbySearchDataRepository;
 
@@ -31,13 +34,14 @@ public class ListViewModel extends ViewModel {
     private final Application context;
     private final LocationRepository locationRepository;
 
-    private final MediatorLiveData<ListViewState> listViewFragmentViewStateMediatorLiveData = new MediatorLiveData<>();
+    private final MediatorLiveData<ListViewState> mediatorLiveData = new MediatorLiveData<>();
 
     public ListViewModel(
             Application context,
             LocationRepository locationRepository,
-            NearbySearchDataRepository mNearbySearchDataRepository,
-            AutoCompleteDataRepository autoCompleteDataRepository
+            NearbySearchDataRepository nearbySearchDataRepository,
+            AutoCompleteDataRepository autoCompleteDataRepository,
+            FirebaseRepository firebaseRepository
     ) {
         this.context = context;
         this.locationRepository = locationRepository;
@@ -47,22 +51,54 @@ public class ListViewModel extends ViewModel {
         LiveData<MyNearBySearchData> myNearBySearchDataLiveData = Transformations.switchMap(locationLiveData,
                 location -> {
                     String locationToString = location.getLatitude() + "," + location.getLongitude();
-                    return mNearbySearchDataRepository.fetchAndGetMyNearBySearchLiveData(locationToString);
+                    return nearbySearchDataRepository.fetchAndGetMyNearBySearchLiveData(locationToString);
                 }
         );
 
         LiveData<MyAutoCompleteData> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
 
-        listViewFragmentViewStateMediatorLiveData.addSource(myNearBySearchDataLiveData, myNearBySearchData ->
-                combine(myNearBySearchData, myAutoCompleteDataLiveData.getValue())
+        LiveData<List<User>> userListLiveData = firebaseRepository.getUsersList();
+        LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
+
+        mediatorLiveData.addSource(myNearBySearchDataLiveData, myNearBySearchData ->
+                combine(myNearBySearchData,
+                        myAutoCompleteDataLiveData.getValue(),
+                        userListLiveData.getValue(),
+                        lunchRestaurantListLiveData.getValue()
+                )
         );
 
-        listViewFragmentViewStateMediatorLiveData.addSource(myAutoCompleteDataLiveData, myAutoCompleteData ->
-                combine(myNearBySearchDataLiveData.getValue(), myAutoCompleteData));
+        mediatorLiveData.addSource(myAutoCompleteDataLiveData, myAutoCompleteData ->
+                combine(myNearBySearchDataLiveData.getValue(),
+                        myAutoCompleteData,
+                        userListLiveData.getValue(),
+                        lunchRestaurantListLiveData.getValue()
+                )
+        );
+
+        mediatorLiveData.addSource(userListLiveData, userList ->
+                combine(myNearBySearchDataLiveData.getValue(),
+                        myAutoCompleteDataLiveData.getValue(),
+                        userList,
+                        lunchRestaurantListLiveData.getValue()
+                )
+        );
+
+        mediatorLiveData.addSource(lunchRestaurantListLiveData, lunchRestaurantList ->
+                combine(myNearBySearchDataLiveData.getValue(),
+                        myAutoCompleteDataLiveData.getValue(),
+                        userListLiveData.getValue(),
+                        lunchRestaurantList
+                )
+        );
 
     }
 
-    private void combine(@Nullable MyNearBySearchData myNearBySearchData, @Nullable MyAutoCompleteData autoCompleteData) {
+    private void combine(@Nullable MyNearBySearchData myNearBySearchData,
+                         @Nullable MyAutoCompleteData autoCompleteData,
+                         @Nullable List<User> userList,
+                         @Nullable List<LunchRestaurant> lunchRestaurantList
+    ) {
         if (myNearBySearchData == null) {
             return;
         }
@@ -71,9 +107,19 @@ public class ListViewModel extends ViewModel {
 
         boolean isOpen = false;
         float rating = 0;
-        String photoReference = "";
+        String photoReference;
         Location resultLocation = new Location("restaurant location");
         String distanceBetween = "";
+
+        List<User> workmatesJoiningList = new ArrayList<>();
+
+        for (User user : userList) {
+            for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                if (user.getId().equalsIgnoreCase(lunchRestaurant.getUserId())) {
+                    workmatesJoiningList.add(user);
+                }
+            }
+        }
 
         if (autoCompleteData == null || autoCompleteData.getPredictions().isEmpty()) {
             for (Result result : myNearBySearchData.getResults()) {
@@ -105,7 +151,8 @@ public class ListViewModel extends ViewModel {
                         result.getName(), result.getVicinity(),
                         isOpen ? context.getString(R.string.open) : context.getString(R.string.closed),
                         isOpen ? R.color.blue : R.color.orange,
-                        rating, photoReference, result.getPlaceId(), distanceBetween
+                        rating, photoReference, result.getPlaceId(), distanceBetween,
+                        workmatesJoiningList.size()
                 );
 
                 recyclerViewItemViewStateList.add(recyclerViewItemViewState);
@@ -144,7 +191,8 @@ public class ListViewModel extends ViewModel {
                                 result.getName(), result.getVicinity(),
                                 isOpen ? context.getString(R.string.open) : context.getString(R.string.closed),
                                 isOpen ? R.color.blue : R.color.orange,
-                                rating, photoReference, result.getPlaceId(), distanceBetween
+                                rating, photoReference, result.getPlaceId(), distanceBetween,
+                                workmatesJoiningList.size()
                         );
 
                         recyclerViewItemViewStateList.add(recyclerViewItemViewState);
@@ -153,10 +201,10 @@ public class ListViewModel extends ViewModel {
             }
         }
 
-        listViewFragmentViewStateMediatorLiveData.setValue(new ListViewState(recyclerViewItemViewStateList));
+        mediatorLiveData.setValue(new ListViewState(recyclerViewItemViewStateList));
     }
 
     public LiveData<ListViewState> getListViewFragmentViewStateLiveData() {
-        return listViewFragmentViewStateMediatorLiveData;
+        return mediatorLiveData;
     }
 }

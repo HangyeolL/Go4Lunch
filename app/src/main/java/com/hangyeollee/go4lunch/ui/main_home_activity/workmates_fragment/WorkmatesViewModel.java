@@ -28,6 +28,7 @@ public class WorkmatesViewModel extends ViewModel {
         AutoCompleteDataRepository autoCompleteDataRepository
     ) {
         this.context = context;
+
         LiveData<List<User>> userListLiveData = firebaseRepository.getUsersList();
         LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
         LiveData<String> userInputLiveData = autoCompleteDataRepository.getUserInputMutableLiveData();

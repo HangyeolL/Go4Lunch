@@ -19,7 +19,6 @@ public class MainApplication extends Application {
         super.onCreate();
         sInstance = this;
 
-        // TODO check with Nino! Docs says that it is recommended to execute this code as soon as the app starts
         createNotificationChannel();
     }
 

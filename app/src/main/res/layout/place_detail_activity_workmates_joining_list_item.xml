@@ -35,29 +35,27 @@
 
             <TextView
                 android:id="@+id/textView_userName"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="8dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintEnd_toStartOf="@+id/textView_text"
                 app:layout_constraintStart_toEndOf="@+id/view_userPhoto"
                 app:layout_constraintTop_toTopOf="parent"
+                android:maxLines="1"
                 tools:text="Scarlette" />
 
             <TextView
                 android:id="@+id/textView_text"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
                 android:layout_marginEnd="16dp"
                 android:text="@string/user_is_joining"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintBaseline_toBaselineOf="@+id/textView_userName"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView_userName" />
+                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
