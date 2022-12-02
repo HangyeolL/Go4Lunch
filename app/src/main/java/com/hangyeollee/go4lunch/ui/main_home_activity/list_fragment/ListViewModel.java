@@ -99,7 +99,7 @@ public class ListViewModel extends ViewModel {
                          @Nullable List<User> userList,
                          @Nullable List<LunchRestaurant> lunchRestaurantList
     ) {
-        if (myNearBySearchData == null) {
+        if (myNearBySearchData == null || userList == null || lunchRestaurantList == null) {
             return;
         }
 
@@ -111,15 +111,7 @@ public class ListViewModel extends ViewModel {
         Location resultLocation = new Location("restaurant location");
         String distanceBetween = "";
 
-        List<User> workmatesJoiningList = new ArrayList<>();
-
-        for (User user : userList) {
-            for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-                if (user.getId().equalsIgnoreCase(lunchRestaurant.getUserId())) {
-                    workmatesJoiningList.add(user);
-                }
-            }
-        }
+        // Each result should check it's own users Lists
 
         if (autoCompleteData == null || autoCompleteData.getPredictions().isEmpty()) {
             for (Result result : myNearBySearchData.getResults()) {
@@ -147,12 +139,13 @@ public class ListViewModel extends ViewModel {
                     distanceBetween = String.format(Locale.getDefault(), "%.0f", locationRepository.getLocationLiveData().getValue().distanceTo(resultLocation)) + "m";
                 }
 
+
                 ListItemViewState recyclerViewItemViewState = new ListItemViewState(
                         result.getName(), result.getVicinity(),
                         isOpen ? context.getString(R.string.open) : context.getString(R.string.closed),
                         isOpen ? R.color.blue : R.color.orange,
                         rating, photoReference, result.getPlaceId(), distanceBetween,
-                        workmatesJoiningList.size()
+                        0
                 );
 
                 recyclerViewItemViewStateList.add(recyclerViewItemViewState);
@@ -187,12 +180,13 @@ public class ListViewModel extends ViewModel {
                             distanceBetween = String.format(Locale.getDefault(), "%.0f", locationRepository.getLocationLiveData().getValue().distanceTo(resultLocation)) + "m";
                         }
 
+
                         ListItemViewState recyclerViewItemViewState = new ListItemViewState(
                                 result.getName(), result.getVicinity(),
                                 isOpen ? context.getString(R.string.open) : context.getString(R.string.closed),
                                 isOpen ? R.color.blue : R.color.orange,
                                 rating, photoReference, result.getPlaceId(), distanceBetween,
-                                workmatesJoiningList.size()
+                                0
                         );
 
                         recyclerViewItemViewStateList.add(recyclerViewItemViewState);

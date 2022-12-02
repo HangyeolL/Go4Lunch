@@ -141,11 +141,17 @@ public class PlaceDetailViewModel extends ViewModel {
         boolean isSelectedAsLikedRestaurant = false;
 
         for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-            isSelectedAsLunchRestaurant = myPlaceDetailData.getResult().getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName());
+            if (myPlaceDetailData.getResult().getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName())) {
+                isSelectedAsLunchRestaurant = true;
+                break;
+            }
         }
 
         for (LikedRestaurant likedRestaurant : likedRestaurantList) {
-            isSelectedAsLikedRestaurant = myPlaceDetailData.getResult().getName().equalsIgnoreCase(likedRestaurant.getName());
+            if (myPlaceDetailData.getResult().getName().equalsIgnoreCase(likedRestaurant.getName())) {
+                isSelectedAsLikedRestaurant = true;
+                break;
+            }
         }
 
         PlaceDetailViewState activityViewState = new PlaceDetailViewState(
@@ -156,7 +162,7 @@ public class PlaceDetailViewModel extends ViewModel {
                 myPlaceDetailData.getResult().getInternationalPhoneNumber(),
                 myPlaceDetailData.getResult().getWebsite(),
                 recyclerViewItemViewStateList,
-                isSelectedAsLikedRestaurant ? R.color.orange : R.color.light_blue,
+                isSelectedAsLikedRestaurant ? context.getColor(R.color.orange) : context.getColor(R.color.light_blue),
                 isSelectedAsLunchRestaurant ? R.color.orange : R.color.light_blue,
                 isSelectedAsLikedRestaurant,
                 isSelectedAsLunchRestaurant

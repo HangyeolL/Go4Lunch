@@ -1,5 +1,6 @@
 package com.hangyeollee.go4lunch.ui.place_detail_activity;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 
@@ -14,7 +15,7 @@ public class PlaceDetailViewState {
     private final String internationalPhoneNumber;
     private final String website;
     private final List<PlaceDetailItemViewState> recyclerViewItemViewStateList;
-    @ColorRes
+    @ColorInt
     private final int likeButtonColor;
     @ColorRes
     private final int floatActButtonColor;
@@ -29,7 +30,7 @@ public class PlaceDetailViewState {
         String internationalPhoneNumber,
         String website,
         List<PlaceDetailItemViewState> recyclerViewItemViewStateList,
-        @ColorRes
+        @ColorInt
         int likeButtonColor,
         @ColorRes
         int floatActButtonColor,
@@ -79,7 +80,7 @@ public class PlaceDetailViewState {
         return recyclerViewItemViewStateList;
     }
 
-    @ColorRes
+    @ColorInt
     public int getLikeButtonColor() {
         return likeButtonColor;
     }

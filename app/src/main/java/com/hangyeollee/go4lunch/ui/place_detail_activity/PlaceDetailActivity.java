@@ -3,6 +3,7 @@ package com.hangyeollee.go4lunch.ui.place_detail_activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -75,14 +76,10 @@ public class PlaceDetailActivity extends AppCompatActivity {
         //TODO Liked Button Icon color doesn't get changed !
         Drawable btnLikeDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_baseline_star_24, null);
         btnLikeDrawable.mutate().setColorFilter(
-            ResourcesCompat.getColor(
-                getResources(),
-                placeDetailViewState.getLikeButtonColor(),
-                null
-            ),
-            PorterDuff.Mode.MULTIPLY
+                new PorterDuffColorFilter(placeDetailViewState.getLikeButtonColor(), PorterDuff.Mode.MULTIPLY)
         );
         binding.buttonLike.setCompoundDrawables(null, btnLikeDrawable, null, null);
+
 
         Drawable fabDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_baseline_check_24, null);
         fabDrawable.mutate().setColorFilter(

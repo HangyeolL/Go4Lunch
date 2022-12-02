@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.protobuf.StringValue;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.databinding.ListViewFragmentListItemBinding;
 import com.hangyeollee.go4lunch.ui.place_detail_activity.PlaceDetailActivity;
@@ -56,7 +57,7 @@ public class ListRecyclerViewAdapter extends RecyclerView.Adapter<ListRecyclerVi
             binding.ratingBar.setRating(itemViewState.getRating());
             binding.textViewIsOpenNow.setText(itemViewState.getIsOpenText());
             binding.textViewIsOpenNow.setTextColor(itemViewState.getIsOpenTextColor());
-            binding.textViewWorkmatesNumber.setText(itemViewState.getWorkmatesJoiningNumber());
+            binding.textViewWorkmatesNumber.setText(String.valueOf(itemViewState.getWorkmatesJoiningNumber()));
 
             Glide.with(itemView)
                     .load(itemViewState.getPhotoReference())
