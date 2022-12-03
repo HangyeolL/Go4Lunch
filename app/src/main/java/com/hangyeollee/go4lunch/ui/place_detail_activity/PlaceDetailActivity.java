@@ -3,7 +3,6 @@ package com.hangyeollee.go4lunch.ui.place_detail_activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -11,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -55,57 +55,55 @@ public class PlaceDetailActivity extends AppCompatActivity {
         );
 
         viewModel.getToastMessageSingleLiveEvent().observe(this,
-            message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                message -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         );
 
         viewModel.getIntentSingleLiveEvent().observe(this,
-            intent -> startActivity(intent)
+                intent -> startActivity(intent)
         );
 
     }
 
     private void bind(PlaceDetailViewState placeDetailViewState, PlaceDetailRecyclerViewAdapter recyclerViewAdapter) {
         Glide.with(PlaceDetailActivity.this)
-            .load(placeDetailViewState.getPhotoUrl())
-            .into(binding.imageViewRestaurant);
+                .load(placeDetailViewState.getPhotoUrl())
+                .into(binding.imageViewRestaurant);
 
         binding.textViewName.setText(placeDetailViewState.getName());
         binding.textViewAddress.setText(placeDetailViewState.getAddress());
         binding.ratingBar.setRating(placeDetailViewState.getRating());
 
-        //TODO Liked Button Icon color doesn't get changed !
         Drawable btnLikeDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_baseline_star_24, null);
-        btnLikeDrawable.mutate().setColorFilter(
-                new PorterDuffColorFilter(placeDetailViewState.getLikeButtonColor(), PorterDuff.Mode.MULTIPLY)
-        );
+        btnLikeDrawable = DrawableCompat.wrap(btnLikeDrawable);
+        DrawableCompat.setTint(btnLikeDrawable.mutate(), placeDetailViewState.getLikeButtonColor());
+        btnLikeDrawable.setBounds( 0, 0, btnLikeDrawable.getIntrinsicWidth(), btnLikeDrawable.getIntrinsicHeight());
         binding.buttonLike.setCompoundDrawables(null, btnLikeDrawable, null, null);
-
 
         Drawable fabDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_baseline_check_24, null);
         fabDrawable.mutate().setColorFilter(
-            ResourcesCompat.getColor(
-                getResources(),
-                placeDetailViewState.getFloatActButtonColor(),
-                null
-            ),
-            PorterDuff.Mode.MULTIPLY
+                ResourcesCompat.getColor(
+                        getResources(),
+                        placeDetailViewState.getFloatActButtonColor(),
+                        null
+                ),
+                PorterDuff.Mode.MULTIPLY
         );
         binding.floatingActionBtn.setImageDrawable(fabDrawable);
 
         binding.buttonCall.setOnClickListener(view ->
-            viewModel.onButtonCallClicked(placeDetailViewState)
+                viewModel.onButtonCallClicked(placeDetailViewState)
         );
 
         binding.buttonWebsite.setOnClickListener(v ->
-            viewModel.onButtonWebsiteClicked(placeDetailViewState)
+                viewModel.onButtonWebsiteClicked(placeDetailViewState)
         );
 
         binding.buttonLike.setOnClickListener(v ->
-            viewModel.onButtonLikeClicked(placeDetailViewState)
+                viewModel.onButtonLikeClicked(placeDetailViewState)
         );
 
         binding.floatingActionBtn.setOnClickListener(v ->
-            viewModel.onFloatingActionButtonClicked(placeDetailViewState)
+                viewModel.onFloatingActionButtonClicked(placeDetailViewState)
         );
 
         recyclerViewAdapter.submitList(placeDetailViewState.getRecyclerViewItemViewStateList());

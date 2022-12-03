@@ -162,8 +162,8 @@ public class PlaceDetailViewModel extends ViewModel {
                 myPlaceDetailData.getResult().getInternationalPhoneNumber(),
                 myPlaceDetailData.getResult().getWebsite(),
                 recyclerViewItemViewStateList,
-                isSelectedAsLikedRestaurant ? context.getColor(R.color.orange) : context.getColor(R.color.light_blue),
-                isSelectedAsLunchRestaurant ? R.color.orange : R.color.light_blue,
+                isSelectedAsLikedRestaurant ? context.getColor(R.color.yellow) : context.getColor(R.color.grey),
+                isSelectedAsLunchRestaurant ? R.color.orange : R.color.grey,
                 isSelectedAsLikedRestaurant,
                 isSelectedAsLunchRestaurant
         );
