@@ -7,6 +7,7 @@ import android.location.Location;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
@@ -24,8 +25,10 @@ import com.hangyeollee.go4lunch.data.repository.LocationRepository;
 import com.hangyeollee.go4lunch.data.repository.NearbySearchDataRepository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -60,11 +63,25 @@ public class ListViewModel extends ViewModel {
         LiveData<List<User>> userListLiveData = firebaseRepository.getUsersList();
         LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
 
+        LiveData<Map<String, Integer>> workmatesJoiningNumberMapLiveData = Transformations.switchMap(
+                lunchRestaurantListLiveData,
+                lunchRestaurantList -> {
+                    Map<String, Integer> workmatesJoiningMap = new HashMap<>();
+                    if (lunchRestaurantList != null) {
+                        for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                            workmatesJoiningMap.merge(lunchRestaurant.getRestaurantId(), 1, Integer::sum);
+                        }
+                    }
+                    return new MutableLiveData<>(workmatesJoiningMap);
+                }
+        );
+
         mediatorLiveData.addSource(myNearBySearchDataLiveData, myNearBySearchData ->
                 combine(myNearBySearchData,
                         myAutoCompleteDataLiveData.getValue(),
                         userListLiveData.getValue(),
-                        lunchRestaurantListLiveData.getValue()
+                        lunchRestaurantListLiveData.getValue(),
+                        workmatesJoiningNumberMapLiveData.getValue()
                 )
         );
 
@@ -72,7 +89,8 @@ public class ListViewModel extends ViewModel {
                 combine(myNearBySearchDataLiveData.getValue(),
                         myAutoCompleteData,
                         userListLiveData.getValue(),
-                        lunchRestaurantListLiveData.getValue()
+                        lunchRestaurantListLiveData.getValue(),
+                        workmatesJoiningNumberMapLiveData.getValue()
                 )
         );
 
@@ -80,7 +98,8 @@ public class ListViewModel extends ViewModel {
                 combine(myNearBySearchDataLiveData.getValue(),
                         myAutoCompleteDataLiveData.getValue(),
                         userList,
-                        lunchRestaurantListLiveData.getValue()
+                        lunchRestaurantListLiveData.getValue(),
+                        workmatesJoiningNumberMapLiveData.getValue()
                 )
         );
 
@@ -88,18 +107,31 @@ public class ListViewModel extends ViewModel {
                 combine(myNearBySearchDataLiveData.getValue(),
                         myAutoCompleteDataLiveData.getValue(),
                         userListLiveData.getValue(),
-                        lunchRestaurantList
+                        lunchRestaurantList,
+                        workmatesJoiningNumberMapLiveData.getValue()
+                )
+        );
+
+        mediatorLiveData.addSource(workmatesJoiningNumberMapLiveData, workmatesJoiningNumberMap ->
+                combine(myNearBySearchDataLiveData.getValue(),
+                        myAutoCompleteDataLiveData.getValue(),
+                        userListLiveData.getValue(),
+                        lunchRestaurantListLiveData.getValue(),
+                        workmatesJoiningNumberMap
                 )
         );
 
     }
 
+    //TODO WorkmatesJoiningNumber implementation
+
     private void combine(@Nullable MyNearBySearchData myNearBySearchData,
                          @Nullable MyAutoCompleteData autoCompleteData,
                          @Nullable List<User> userList,
-                         @Nullable List<LunchRestaurant> lunchRestaurantList
+                         @Nullable List<LunchRestaurant> lunchRestaurantList,
+                         @Nullable Map<String, Integer> workmatesJoiningNumberMap
     ) {
-        if (myNearBySearchData == null || userList == null || lunchRestaurantList == null) {
+        if (myNearBySearchData == null || userList == null || lunchRestaurantList == null || workmatesJoiningNumberMap == null) {
             return;
         }
 
@@ -110,8 +142,7 @@ public class ListViewModel extends ViewModel {
         String photoReference;
         Location resultLocation = new Location("restaurant location");
         String distanceBetween = "";
-
-        // Each result should check it's own users Lists
+        int workmatesNumber;
 
         if (autoCompleteData == null || autoCompleteData.getPredictions().isEmpty()) {
             for (Result result : myNearBySearchData.getResults()) {
@@ -139,13 +170,14 @@ public class ListViewModel extends ViewModel {
                     distanceBetween = String.format(Locale.getDefault(), "%.0f", locationRepository.getLocationLiveData().getValue().distanceTo(resultLocation)) + "m";
                 }
 
+                workmatesNumber = workmatesJoiningNumberMap.getOrDefault(result.getPlaceId(), 0);
 
                 ListItemViewState recyclerViewItemViewState = new ListItemViewState(
                         result.getName(), result.getVicinity(),
                         isOpen ? context.getString(R.string.open) : context.getString(R.string.closed),
-                        isOpen ? R.color.blue : R.color.orange,
+                        isOpen ? context.getColor(R.color.blue) : context.getColor(R.color.orange),
                         rating, photoReference, result.getPlaceId(), distanceBetween,
-                        0
+                        workmatesNumber
                 );
 
                 recyclerViewItemViewStateList.add(recyclerViewItemViewState);
@@ -180,13 +212,14 @@ public class ListViewModel extends ViewModel {
                             distanceBetween = String.format(Locale.getDefault(), "%.0f", locationRepository.getLocationLiveData().getValue().distanceTo(resultLocation)) + "m";
                         }
 
+                        workmatesNumber = workmatesJoiningNumberMap.getOrDefault(result.getPlaceId(), 0);
 
                         ListItemViewState recyclerViewItemViewState = new ListItemViewState(
                                 result.getName(), result.getVicinity(),
                                 isOpen ? context.getString(R.string.open) : context.getString(R.string.closed),
-                                isOpen ? R.color.blue : R.color.orange,
+                                isOpen ? context.getColor(R.color.blue) : context.getColor(R.color.orange),
                                 rating, photoReference, result.getPlaceId(), distanceBetween,
-                                0
+                                workmatesNumber
                         );
 
                         recyclerViewItemViewStateList.add(recyclerViewItemViewState);

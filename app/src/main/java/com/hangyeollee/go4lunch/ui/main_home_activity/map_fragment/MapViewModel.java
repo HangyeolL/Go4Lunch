@@ -150,6 +150,8 @@ public class MapViewModel extends ViewModel {
      * EVENTS
      */
 
+    // TODO HOW TO TEST THOSE ?
+
     public void onMapReady(List<MapMarkerViewState> mapMarkerViewStateList, GoogleMap googleMap) {
         for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
             googleMap.addMarker(

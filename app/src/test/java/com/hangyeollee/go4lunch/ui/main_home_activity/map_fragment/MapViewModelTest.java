@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.ui.main_home_activity.MapViewFragment;
+package com.hangyeollee.go4lunch.ui.main_home_activity.map_fragment;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
@@ -20,9 +20,6 @@ import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
 import com.hangyeollee.go4lunch.data.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.utils.LiveDataTestUtils;
-import com.hangyeollee.go4lunch.ui.main_home_activity.map_fragment.MapMarkerViewState;
-import com.hangyeollee.go4lunch.ui.main_home_activity.map_fragment.MapViewState;
-import com.hangyeollee.go4lunch.ui.main_home_activity.map_fragment.MapViewModel;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,7 +29,7 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapViewFragmentViewModelTest {
+public class MapViewModelTest {
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
@@ -52,6 +49,8 @@ public class MapViewFragmentViewModelTest {
         locationRepository = Mockito.mock(LocationRepository.class);
         nearbySearchDataRepository = Mockito.mock(NearbySearchDataRepository.class);
         autoCompleteDataRepository = Mockito.mock(AutoCompleteDataRepository.class);
+
+        viewModel = new MapViewModel(application, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository);
 
         Location userLocation = Mockito.mock(Location.class);
         when(userLocation.getLatitude()).thenReturn(11.12);
@@ -73,7 +72,6 @@ public class MapViewFragmentViewModelTest {
         doReturn(nearBySearchDataMutableLiveData).when(nearbySearchDataRepository).fetchAndGetMyNearBySearchLiveData(11.12 + "," + 11.11);
         doReturn(autoCompleteDataMutableLiveData).when(autoCompleteDataRepository).getAutoCompleteDataLiveData();
 
-        viewModel = new MapViewModel(application, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository);
     }
 
     @Test

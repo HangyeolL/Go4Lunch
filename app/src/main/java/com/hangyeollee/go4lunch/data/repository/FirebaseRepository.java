@@ -123,7 +123,6 @@ public class FirebaseRepository {
         return likedRestaurantMutableLiveData;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void addOrRemoveLunchRestaurant(String restaurantId, String userId, String restaurantName, String date, boolean isSelected) {
        if (isSelected) {
            getDateCollection()
