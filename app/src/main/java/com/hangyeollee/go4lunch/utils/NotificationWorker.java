@@ -21,7 +21,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.hangyeollee.go4lunch.MainApplication;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.ui.dispatcher_activity.DispatcherActivity;
+import com.hangyeollee.go4lunch.ui.dispatcher.DispatcherActivity;
 
 import java.io.IOException;
 import java.time.LocalDate;

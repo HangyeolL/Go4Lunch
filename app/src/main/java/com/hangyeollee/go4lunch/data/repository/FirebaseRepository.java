@@ -1,9 +1,7 @@
 package com.hangyeollee.go4lunch.data.repository;
 
-import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -49,7 +47,6 @@ public class FirebaseRepository {
         return firestoreDatabase.collection("users");
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public CollectionReference getDateCollection() {
         return firestoreDatabase.collection(LocalDate.now().toString());
     }

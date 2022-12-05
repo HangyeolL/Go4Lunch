@@ -14,7 +14,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:context=".ui.main_home_activity.workmates_fragment.WorkmatesFragment"
+        tools:context=".ui.workmates.WorkmatesFragment"
         tools:listitem="@layout/workmates_fragment_list_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,14 +18,14 @@ import com.hangyeollee.go4lunch.data.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.data.repository.PlaceDetailDataRepository;
 import com.hangyeollee.go4lunch.data.repository.SettingRepository;
 import com.hangyeollee.go4lunch.utils.MyRetrofitBuilder;
-import com.hangyeollee.go4lunch.ui.dispatcher_activity.DispatcherViewModel;
-import com.hangyeollee.go4lunch.ui.logIn_activity.LogInViewModel;
-import com.hangyeollee.go4lunch.ui.main_home_activity.list_fragment.ListViewModel;
-import com.hangyeollee.go4lunch.ui.main_home_activity.MainHomeViewModel;
-import com.hangyeollee.go4lunch.ui.main_home_activity.map_fragment.MapViewModel;
-import com.hangyeollee.go4lunch.ui.main_home_activity.workmates_fragment.WorkmatesViewModel;
-import com.hangyeollee.go4lunch.ui.place_detail_activity.PlaceDetailViewModel;
-import com.hangyeollee.go4lunch.ui.settings_activity.SettingsViewModel;
+import com.hangyeollee.go4lunch.ui.dispatcher.DispatcherViewModel;
+import com.hangyeollee.go4lunch.ui.login.LogInViewModel;
+import com.hangyeollee.go4lunch.ui.list.ListViewModel;
+import com.hangyeollee.go4lunch.ui.main_home.MainHomeViewModel;
+import com.hangyeollee.go4lunch.ui.map.MapViewModel;
+import com.hangyeollee.go4lunch.ui.workmates.WorkmatesViewModel;
+import com.hangyeollee.go4lunch.ui.place_detail.PlaceDetailViewModel;
+import com.hangyeollee.go4lunch.ui.settings.SettingsViewModel;
 
 import java.time.Clock;
 
@@ -42,19 +42,19 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private final FirebaseRepository firebaseRepository;
     private final SettingRepository settingRepository;
 
-    private static ViewModelFactory mViewModelFactory;
+    private static ViewModelFactory sViewModelFactory;
 
     /**
      * Singleton
      */
     public static ViewModelFactory getInstance() {
 
-        if (mViewModelFactory == null) {
+        if (sViewModelFactory == null) {
             synchronized (ViewModelFactory.class) {
-                mViewModelFactory = new ViewModelFactory();
+                sViewModelFactory = new ViewModelFactory();
             }
         }
-        return mViewModelFactory;
+        return sViewModelFactory;
     }
 
     private ViewModelFactory() {
