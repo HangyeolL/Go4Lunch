@@ -8,15 +8,18 @@ import android.app.Application;
 import android.location.Location;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Geometry;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.OpeningHours;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
+import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
 import com.hangyeollee.go4lunch.data.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.utils.LiveDataTestUtils;
@@ -35,6 +38,7 @@ public class MapViewModelTest {
 
     private Application application;
     private LocationRepository locationRepository;
+    private FirebaseRepository firebaseRepository;
     private NearbySearchDataRepository nearbySearchDataRepository;
     private AutoCompleteDataRepository autoCompleteDataRepository;
     private MapViewModel viewModel;
@@ -42,11 +46,13 @@ public class MapViewModelTest {
     private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<MyNearBySearchData> nearBySearchDataMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<MyAutoCompleteData> autoCompleteDataMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = new MutableLiveData<>();
 
     @Before
     public void setUp() {
         application = Mockito.mock(Application.class);
         locationRepository = Mockito.mock(LocationRepository.class);
+        firebaseRepository = Mockito.mock(FirebaseRepository.class);
         nearbySearchDataRepository = Mockito.mock(NearbySearchDataRepository.class);
         autoCompleteDataRepository = Mockito.mock(AutoCompleteDataRepository.class);
 
@@ -55,6 +61,7 @@ public class MapViewModelTest {
         when(userLocation.getLongitude()).thenReturn(11.11);
 
         locationMutableLiveData.setValue(userLocation);
+        lunchRestaurantListLiveData.setValue(getLunchRestaurantList());
         nearBySearchDataMutableLiveData.setValue(
                 new MyNearBySearchData(
                         new ArrayList<>(), "", getNearbySearchResultList(), "OK")
@@ -69,8 +76,9 @@ public class MapViewModelTest {
         doReturn(locationMutableLiveData).when(locationRepository).getLocationLiveData();
         doReturn(nearBySearchDataMutableLiveData).when(nearbySearchDataRepository).fetchAndGetMyNearBySearchLiveData(11.12 + "," + 11.11);
         doReturn(autoCompleteDataMutableLiveData).when(autoCompleteDataRepository).getAutoCompleteDataLiveData();
+        doReturn(lunchRestaurantListLiveData).when(firebaseRepository).getLunchRestaurantListOfAllUsers();
 
-        viewModel = new MapViewModel(application, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository);
+        viewModel = new MapViewModel(application, locationRepository, firebaseRepository, nearbySearchDataRepository, autoCompleteDataRepository);
     }
 
     @Test
@@ -137,6 +145,17 @@ public class MapViewModelTest {
         return nearBySearchResultList;
     }
 
+    private List<LunchRestaurant> getLunchRestaurantList() {
+        List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
+
+        lunchRestaurantList.add(new LunchRestaurant("placeId1,", "userA", "happy food", "2022-12-01"));
+        lunchRestaurantList.add(new LunchRestaurant("placeId2,", "userB", "happy food2", "2022-12-02"));
+        lunchRestaurantList.add(new LunchRestaurant("placeId3,", "userC", "happy food3", "2022-12-03"));
+        lunchRestaurantList.add(new LunchRestaurant("placeId4,", "userD", "happy food4", "2022-12-04"));
+
+        return lunchRestaurantList;
+    }
+
     private List<MapMarkerViewState> getMapMarkerViewStateList() {
         List<MapMarkerViewState> mapMarkerViewStateList = new ArrayList<>();
 
@@ -145,28 +164,28 @@ public class MapViewModelTest {
                         "placeId1",
                         new LatLng(11.11, 11.11),
                         "happy food",
-                        markerColor, isSelected)
+                         true)
         );
         mapMarkerViewStateList.add(
                 new MapMarkerViewState(
                         "placeId2",
                         new LatLng(22.22, 22.22),
                         "happy food2",
-                        markerColor, isSelected)
+                        false)
         );
         mapMarkerViewStateList.add(
                 new MapMarkerViewState(
                         "placeId3",
                         new LatLng(33.33, 33.33),
                         "happy food3",
-                        markerColor, isSelected)
+                        true)
         );
         mapMarkerViewStateList.add(
                 new MapMarkerViewState(
                         "placeId4",
                         new LatLng(44.44, 44.44),
                         "happy food4",
-                        markerColor, isSelected)
+                        false)
         );
 
         return mapMarkerViewStateList;
