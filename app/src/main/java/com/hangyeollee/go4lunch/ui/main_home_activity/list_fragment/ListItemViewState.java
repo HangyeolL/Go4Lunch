@@ -2,6 +2,8 @@ package com.hangyeollee.go4lunch.ui.main_home_activity.list_fragment;
 
 import androidx.annotation.ColorInt;
 
+import java.util.Objects;
+
 public class ListItemViewState {
 
     private final String name;
@@ -61,5 +63,33 @@ public class ListItemViewState {
 
     public int getWorkmatesJoiningNumber() {
         return workmatesJoiningNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "ListItemViewState{" +
+                "name='" + name + '\'' +
+                ", vicinity='" + vicinity + '\'' +
+                ", isOpenText='" + isOpenText + '\'' +
+                ", isOpenTextColor=" + isOpenTextColor +
+                ", rating=" + rating +
+                ", photoReference='" + photoReference + '\'' +
+                ", placeId='" + placeId + '\'' +
+                ", distanceFromUserLocation='" + distanceFromUserLocation + '\'' +
+                ", workmatesJoiningNumber=" + workmatesJoiningNumber +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ListItemViewState that = (ListItemViewState) o;
+        return isOpenTextColor == that.isOpenTextColor && Float.compare(that.rating, rating) == 0 && workmatesJoiningNumber == that.workmatesJoiningNumber && Objects.equals(name, that.name) && Objects.equals(vicinity, that.vicinity) && Objects.equals(isOpenText, that.isOpenText) && Objects.equals(photoReference, that.photoReference) && Objects.equals(placeId, that.placeId) && Objects.equals(distanceFromUserLocation, that.distanceFromUserLocation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, vicinity, isOpenText, isOpenTextColor, rating, photoReference, placeId, distanceFromUserLocation, workmatesJoiningNumber);
     }
 }

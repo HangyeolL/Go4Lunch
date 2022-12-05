@@ -14,7 +14,6 @@ import androidx.lifecycle.ViewModel;
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.data.model.User;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.Prediction;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
@@ -60,7 +59,6 @@ public class ListViewModel extends ViewModel {
 
         LiveData<MyAutoCompleteData> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
 
-        LiveData<List<User>> userListLiveData = firebaseRepository.getUsersList();
         LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
 
         LiveData<Map<String, Integer>> workmatesJoiningNumberMapLiveData = Transformations.switchMap(
@@ -79,8 +77,6 @@ public class ListViewModel extends ViewModel {
         mediatorLiveData.addSource(myNearBySearchDataLiveData, myNearBySearchData ->
                 combine(myNearBySearchData,
                         myAutoCompleteDataLiveData.getValue(),
-                        userListLiveData.getValue(),
-                        lunchRestaurantListLiveData.getValue(),
                         workmatesJoiningNumberMapLiveData.getValue()
                 )
         );
@@ -88,26 +84,6 @@ public class ListViewModel extends ViewModel {
         mediatorLiveData.addSource(myAutoCompleteDataLiveData, myAutoCompleteData ->
                 combine(myNearBySearchDataLiveData.getValue(),
                         myAutoCompleteData,
-                        userListLiveData.getValue(),
-                        lunchRestaurantListLiveData.getValue(),
-                        workmatesJoiningNumberMapLiveData.getValue()
-                )
-        );
-
-        mediatorLiveData.addSource(userListLiveData, userList ->
-                combine(myNearBySearchDataLiveData.getValue(),
-                        myAutoCompleteDataLiveData.getValue(),
-                        userList,
-                        lunchRestaurantListLiveData.getValue(),
-                        workmatesJoiningNumberMapLiveData.getValue()
-                )
-        );
-
-        mediatorLiveData.addSource(lunchRestaurantListLiveData, lunchRestaurantList ->
-                combine(myNearBySearchDataLiveData.getValue(),
-                        myAutoCompleteDataLiveData.getValue(),
-                        userListLiveData.getValue(),
-                        lunchRestaurantList,
                         workmatesJoiningNumberMapLiveData.getValue()
                 )
         );
@@ -115,23 +91,17 @@ public class ListViewModel extends ViewModel {
         mediatorLiveData.addSource(workmatesJoiningNumberMapLiveData, workmatesJoiningNumberMap ->
                 combine(myNearBySearchDataLiveData.getValue(),
                         myAutoCompleteDataLiveData.getValue(),
-                        userListLiveData.getValue(),
-                        lunchRestaurantListLiveData.getValue(),
                         workmatesJoiningNumberMap
                 )
         );
 
     }
 
-    //TODO WorkmatesJoiningNumber implementation
-
     private void combine(@Nullable MyNearBySearchData myNearBySearchData,
                          @Nullable MyAutoCompleteData autoCompleteData,
-                         @Nullable List<User> userList,
-                         @Nullable List<LunchRestaurant> lunchRestaurantList,
                          @Nullable Map<String, Integer> workmatesJoiningNumberMap
     ) {
-        if (myNearBySearchData == null || userList == null || lunchRestaurantList == null || workmatesJoiningNumberMap == null) {
+        if (myNearBySearchData == null || workmatesJoiningNumberMap == null) {
             return;
         }
 

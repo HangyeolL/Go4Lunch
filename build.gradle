@@ -10,8 +10,6 @@ buildscript {
         classpath 'com.google.gms:google-services:4.3.14'
         // To hide sensitive information using google plugin
         classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:1.3.0"
-
-
     }
 }
 

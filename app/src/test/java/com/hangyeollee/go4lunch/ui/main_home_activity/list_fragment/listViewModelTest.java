@@ -9,8 +9,8 @@ import android.location.Location;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
+import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Geometry;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
@@ -20,8 +20,6 @@ import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
 import com.hangyeollee.go4lunch.data.repository.NearbySearchDataRepository;
-import com.hangyeollee.go4lunch.ui.main_home_activity.map_fragment.MapViewModel;
-import com.hangyeollee.go4lunch.ui.main_home_activity.map_fragment.MapViewState;
 import com.hangyeollee.go4lunch.utils.LiveDataTestUtils;
 
 import org.junit.Before;
@@ -30,7 +28,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class listViewModelTest {
     @Rule
@@ -47,6 +47,8 @@ public class listViewModelTest {
     private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<MyNearBySearchData> nearBySearchDataMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<MyAutoCompleteData> autoCompleteDataMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Map<String, Integer>> workmatesJoiningNumberMapMutableLiveData = new MutableLiveData<>();
 
     @Before
     public void setUp() {
@@ -55,8 +57,6 @@ public class listViewModelTest {
         nearbySearchDataRepository = Mockito.mock(NearbySearchDataRepository.class);
         autoCompleteDataRepository = Mockito.mock(AutoCompleteDataRepository.class);
         firebaseRepository = Mockito.mock(FirebaseRepository.class);
-
-        viewModel = new ListViewModel(application, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository, firebaseRepository);
 
         Location userLocation = Mockito.mock(Location.class);
         when(userLocation.getLatitude()).thenReturn(11.12);
@@ -73,10 +73,14 @@ public class listViewModelTest {
                         "OK"
                 )
         );
+        lunchRestaurantListMutableLiveData.setValue(getLunchRestaurantList());
+        workmatesJoiningNumberMapMutableLiveData.setValue(new HashMap<>());
 
         doReturn(locationMutableLiveData).when(locationRepository).getLocationLiveData();
         doReturn(nearBySearchDataMutableLiveData).when(nearbySearchDataRepository).fetchAndGetMyNearBySearchLiveData(11.12 + "," + 11.11);
         doReturn(autoCompleteDataMutableLiveData).when(autoCompleteDataRepository).getAutoCompleteDataLiveData();
+
+        viewModel = new ListViewModel(application, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository, firebaseRepository);
 
     }
 
@@ -150,10 +154,10 @@ public class listViewModelTest {
         itemViewStateList.add(
                 new ListItemViewState(
                         "happy food",
-                        "road A",
+                        "paris",
                         "OPEN",
                         1,
-                        5f,
+                        4.5f,
                         "a",
                         "placeId1",
                         "1001m",
@@ -164,10 +168,10 @@ public class listViewModelTest {
         itemViewStateList.add(
                 new ListItemViewState(
                         "happy food2",
-                        "road B",
+                        "new york",
                         "CLOSED",
                         2,
-                        4f,
+                        3.5f,
                         "b",
                         "placeId2",
                         "1002m",
@@ -178,10 +182,10 @@ public class listViewModelTest {
         itemViewStateList.add(
                 new ListItemViewState(
                         "happy food3",
-                        "road C",
+                        "seoul",
                         "OPEN",
                         3,
-                        3f,
+                        2.5f,
                         "c",
                         "placeId3",
                         "1003m",
@@ -192,10 +196,10 @@ public class listViewModelTest {
         itemViewStateList.add(
                 new ListItemViewState(
                         "happy food4",
-                        "road D",
+                        "tokyo",
                         "OPEN",
                         4,
-                        4f,
+                        1.5f,
                         "d",
                         "placeId4",
                         "1004m",
@@ -204,6 +208,17 @@ public class listViewModelTest {
         );
 
         return itemViewStateList;
+    }
+
+    private List<LunchRestaurant> getLunchRestaurantList() {
+        List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
+
+        lunchRestaurantList.add(new LunchRestaurant("placeId1,", "userA", "happy food", "2022-12-01"));
+        lunchRestaurantList.add(new LunchRestaurant("placeId2,", "userB", "happy food2", "2022-12-02"));
+        lunchRestaurantList.add(new LunchRestaurant("placeId3,", "userC", "happy food3", "2022-12-03"));
+        lunchRestaurantList.add(new LunchRestaurant("placeId4,", "userD", "happy food4", "2022-12-04"));
+
+        return lunchRestaurantList;
     }
 
     //OUTPUTS

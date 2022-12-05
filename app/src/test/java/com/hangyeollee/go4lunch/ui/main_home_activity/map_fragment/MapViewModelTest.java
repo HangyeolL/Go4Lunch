@@ -50,8 +50,6 @@ public class MapViewModelTest {
         nearbySearchDataRepository = Mockito.mock(NearbySearchDataRepository.class);
         autoCompleteDataRepository = Mockito.mock(AutoCompleteDataRepository.class);
 
-        viewModel = new MapViewModel(application, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository);
-
         Location userLocation = Mockito.mock(Location.class);
         when(userLocation.getLatitude()).thenReturn(11.12);
         when(userLocation.getLongitude()).thenReturn(11.11);
@@ -72,6 +70,7 @@ public class MapViewModelTest {
         doReturn(nearBySearchDataMutableLiveData).when(nearbySearchDataRepository).fetchAndGetMyNearBySearchLiveData(11.12 + "," + 11.11);
         doReturn(autoCompleteDataMutableLiveData).when(autoCompleteDataRepository).getAutoCompleteDataLiveData();
 
+        viewModel = new MapViewModel(application, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository);
     }
 
     @Test
