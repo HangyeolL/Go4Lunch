@@ -144,29 +144,29 @@ public class MapViewModelTest {
                 new MapMarkerViewState(
                         "placeId1",
                         new LatLng(11.11, 11.11),
-                        "happy food"
-                )
+                        "happy food",
+                        markerColor, isSelected)
         );
         mapMarkerViewStateList.add(
                 new MapMarkerViewState(
                         "placeId2",
                         new LatLng(22.22, 22.22),
-                        "happy food2"
-                )
+                        "happy food2",
+                        markerColor, isSelected)
         );
         mapMarkerViewStateList.add(
                 new MapMarkerViewState(
                         "placeId3",
                         new LatLng(33.33, 33.33),
-                        "happy food3"
-                )
+                        "happy food3",
+                        markerColor, isSelected)
         );
         mapMarkerViewStateList.add(
                 new MapMarkerViewState(
                         "placeId4",
                         new LatLng(44.44, 44.44),
-                        "happy food4"
-                )
+                        "happy food4",
+                        markerColor, isSelected)
         );
 
         return mapMarkerViewStateList;

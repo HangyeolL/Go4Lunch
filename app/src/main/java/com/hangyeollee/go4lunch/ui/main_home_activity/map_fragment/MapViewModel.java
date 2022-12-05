@@ -4,8 +4,6 @@ import static com.hangyeollee.go4lunch.utils.UtilBox.makeDrawableIntoBitmap;
 
 import android.app.Application;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.util.Log;
@@ -19,16 +17,17 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hangyeollee.go4lunch.R;
+import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.Prediction;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
+import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
 import com.hangyeollee.go4lunch.data.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.ui.place_detail_activity.PlaceDetailActivity;
@@ -50,6 +49,7 @@ public class MapViewModel extends ViewModel {
     public MapViewModel(
             Application context,
             LocationRepository locationRepository,
+            FirebaseRepository firebaseRepository,
             NearbySearchDataRepository nearbySearchDataRepository,
             AutoCompleteDataRepository autoCompleteDataRepository
     ) {
@@ -66,23 +66,44 @@ public class MapViewModel extends ViewModel {
 
         LiveData<MyAutoCompleteData> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
 
+        LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
+
         mapsFragmentViewStateMediatorLiveData.addSource(locationLiveData, location ->
-                combine(location, myNearBySearchDataLiveData.getValue(), myAutoCompleteDataLiveData.getValue())
+                combine(location,
+                        lunchRestaurantListLiveData.getValue(),
+                        myNearBySearchDataLiveData.getValue(),
+                        myAutoCompleteDataLiveData.getValue()
+                )
+        );
+
+        mapsFragmentViewStateMediatorLiveData.addSource(lunchRestaurantListLiveData, lunchRestaurantList ->
+                combine(locationLiveData.getValue(),
+                        lunchRestaurantList,
+                        myNearBySearchDataLiveData.getValue(),
+                        myAutoCompleteDataLiveData.getValue()
+                )
         );
 
         mapsFragmentViewStateMediatorLiveData.addSource(myNearBySearchDataLiveData, myNearBySearchData ->
-                combine(locationLiveData.getValue(), myNearBySearchData, myAutoCompleteDataLiveData.getValue())
+                combine(locationLiveData.getValue(),
+                        lunchRestaurantListLiveData.getValue(),
+                        myNearBySearchData,
+                        myAutoCompleteDataLiveData.getValue()
+                )
         );
 
         mapsFragmentViewStateMediatorLiveData.addSource(myAutoCompleteDataLiveData, myAutoCompleteData ->
-                combine(locationLiveData.getValue(), myNearBySearchDataLiveData.getValue(), myAutoCompleteData)
+                combine(locationLiveData.getValue(),
+                        lunchRestaurantListLiveData.getValue(),
+                        myNearBySearchDataLiveData.getValue(),
+                        myAutoCompleteData)
         );
-
 
     }
 
     private void combine(
             @Nullable Location location,
+            @Nullable List<LunchRestaurant> lunchRestaurantList,
             @Nullable MyNearBySearchData myNearBySearchData,
             @Nullable MyAutoCompleteData myAutoCompleteData
     ) {
@@ -94,16 +115,26 @@ public class MapViewModel extends ViewModel {
 
         List<MapMarkerViewState> mapMarkerViewStateList = new ArrayList<>();
 
+        boolean isSelected = false;
+
         // if myAutoCompleteData is null i want to display all the result of nearbySearch
         // if autoComplete is not null I want to do filtering
         if (myAutoCompleteData == null || myAutoCompleteData.getPredictions().isEmpty()) {
             for (Result result : myNearBySearchData.getResults()) {
+
+                for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                    if (result.getPlaceId().equalsIgnoreCase(lunchRestaurant.getRestaurantId())
+                            && result.getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName())) {
+                        isSelected = true;
+                        break;
+                    }
+                }
+
                 MapMarkerViewState mapMarkerViewState =
                         new MapMarkerViewState(
                                 result.getPlaceId(),
                                 new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()),
-                                result.getName()
-                        );
+                                result.getName(), isSelected);
 
                 mapMarkerViewStateList.add(mapMarkerViewState);
             }
@@ -113,6 +144,14 @@ public class MapViewModel extends ViewModel {
                     if (prediction.getPlaceId().equals(result.getPlaceId()) &&
                             prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
 
+                        for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                            if (result.getPlaceId().equalsIgnoreCase(lunchRestaurant.getRestaurantId())
+                                    && result.getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName())) {
+                                isSelected = true;
+                                break;
+                            }
+                        }
+
                         MapMarkerViewState mapMarkerViewState =
                                 new MapMarkerViewState(
                                         result.getPlaceId(),
@@ -120,8 +159,7 @@ public class MapViewModel extends ViewModel {
                                                 result.getGeometry().getLocation().getLat(),
                                                 result.getGeometry().getLocation().getLng()
                                         ),
-                                        result.getName()
-                                );
+                                        result.getName(), isSelected);
 
                         mapMarkerViewStateList.add(mapMarkerViewState);
                     }
@@ -156,7 +194,7 @@ public class MapViewModel extends ViewModel {
         for (MapMarkerViewState mapMarkerViewState : mapMarkerViewStateList) {
             googleMap.addMarker(
                     new MarkerOptions()
-                            .icon(getMapIcon())
+                            .icon(getMapIcon(mapMarkerViewState))
                             .position(mapMarkerViewState.getPositionLatLng())
                             .title(mapMarkerViewState.getTitle())
             );
@@ -178,10 +216,12 @@ public class MapViewModel extends ViewModel {
      * ETC
      */
 
-    private BitmapDescriptor getMapIcon() {
-        Drawable markerIconDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_baseline_local_dining_24, null);
+    private BitmapDescriptor getMapIcon(MapMarkerViewState mapMarkerViewState) {
+        Drawable markerIconDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_twotone_dining_24, null);
         Drawable wrappedDrawable = DrawableCompat.wrap(markerIconDrawable);
-        DrawableCompat.setTint(wrappedDrawable, context.getResources().getColor(R.color.orange));
+        if (mapMarkerViewState.isSelected()) {
+            DrawableCompat.setTint(wrappedDrawable, context.getColor(R.color.green));
+        }
         return makeDrawableIntoBitmap(wrappedDrawable);
     }
 

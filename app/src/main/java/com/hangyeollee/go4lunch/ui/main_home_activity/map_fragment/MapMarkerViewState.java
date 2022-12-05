@@ -1,7 +1,5 @@
 package com.hangyeollee.go4lunch.ui.main_home_activity.map_fragment;
 
-import androidx.annotation.Nullable;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Objects;
@@ -10,11 +8,13 @@ public class MapMarkerViewState {
     private final String placeId;
     private final LatLng positionLatLng;
     private final String title;
+    private final boolean isSelected;
 
-    public MapMarkerViewState(String placeId, LatLng positionLatLng, String title) {
+    public MapMarkerViewState(String placeId, LatLng positionLatLng, String title, boolean isSelected) {
         this.placeId = placeId;
         this.positionLatLng = positionLatLng;
         this.title = title;
+        this.isSelected = isSelected;
     }
 
     public String getPlaceId() {
@@ -29,11 +29,17 @@ public class MapMarkerViewState {
         return title;
     }
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
     @Override
     public String toString() {
         return "MapMarkerViewState{" +
+                "placeId='" + placeId + '\'' +
                 ", positionLatLng=" + positionLatLng +
                 ", title='" + title + '\'' +
+                ", isSelected=" + isSelected +
                 '}';
     }
 
@@ -42,12 +48,11 @@ public class MapMarkerViewState {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MapMarkerViewState that = (MapMarkerViewState) o;
-        return Objects.equals(placeId, that.placeId) && Objects.equals(positionLatLng, that.positionLatLng) && Objects.equals(title, that.title);
+        return isSelected == that.isSelected && Objects.equals(placeId, that.placeId) && Objects.equals(positionLatLng, that.positionLatLng) && Objects.equals(title, that.title);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(placeId, positionLatLng, title);
+        return Objects.hash(placeId, positionLatLng, title, isSelected);
     }
-
 }
