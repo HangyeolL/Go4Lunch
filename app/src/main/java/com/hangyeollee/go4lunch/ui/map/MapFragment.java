@@ -64,7 +64,6 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                 marker.setTag(mapMarkerViewState.getPlaceId());
             }
 
-            // TODO NINO
             googleMap.setOnInfoWindowClickListener(
                 marker -> viewModel.onMarkerClicked((String) marker.getTag())
             );
@@ -77,7 +76,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     private BitmapDescriptor getMapIcon(MapMarkerViewState mapMarkerViewState) {
         Drawable markerIconDrawable = ResourcesCompat.getDrawable(getResources(), mapMarkerViewState.getIconRes(), null);
-        Drawable wrappedDrawable = DrawableCompat.wrap(markerIconDrawable);
+        Drawable wrappedDrawable = DrawableCompat.wrap(markerIconDrawable).mutate();
         if (mapMarkerViewState.getTintRes() != null) {
             DrawableCompat.setTint(wrappedDrawable, requireContext().getColor(mapMarkerViewState.getTintRes()));
         }

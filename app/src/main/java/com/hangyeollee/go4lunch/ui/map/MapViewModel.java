@@ -114,8 +114,8 @@ public class MapViewModel extends ViewModel {
                 shouldAppear = true;
             } else {
                 for (Prediction prediction : myAutoCompleteData.getPredictions()) {
-                    if (prediction.getPlaceId().equals(result.getPlaceId()) /*&&*/
-                     /*   prediction.getStructuredFormatting().getMainText().contains(result.getName())*/) {
+                    if (prediction.getPlaceId().equals(result.getPlaceId()) &&
+                        prediction.getDescription().contains(result.getName())) {
                         shouldAppear = true;
                         break;
                     }

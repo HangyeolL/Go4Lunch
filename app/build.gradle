@@ -4,6 +4,8 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+apply plugin: 'jacoco'
+
 def Properties properties = new Properties()
 properties.load(project.rootProject.file("local.properties").newDataInputStream())
 
@@ -101,4 +103,81 @@ dependencies {
     //To avoid Memory leak
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 
+}
+
+def openReport(htmlOutDir) {
+    final reportPath = "$htmlOutDir\\index.html"
+
+    println "HTML Report: $reportPath"
+
+    def os = org.gradle.internal.os.OperatingSystem.current()
+    if (os.isWindows()) {
+        exec { commandLine 'cmd', '/c', "start $reportPath" }
+    } else if (os.isMacOsX()) {
+        exec { commandLine 'open', "$reportPath" }
+    } else if (os.isLinux()) {
+        try {
+            exec { commandLine 'xdg-open', "$reportPath" }
+        } catch (Exception ignored) {
+            if (localProperties.containsKey("linux-html-cmd")) {
+                exec { commandLine properties.get("linux-html-cmd"), "$reportPath" }
+            } else {
+                println "'linux-html-cmd' property could not be found in 'local.properties'"
+            }
+        }
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+tasks.withType(Test) {
+    jacoco {
+        includeNoLocationClasses = true
+        excludes = ['jdk.internal.*'] // Allows it to run on Java 11
+    }
+}
+
+// TODO See if this project matured : https://github.com/growse/Android-Test-Coverage-Sample
+//  or this sample : https://github.com/android/testing-samples/pull/411
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+
+    doLast {
+        openReport layout.buildDirectory.dir("reports/jacoco/$name/html").get().asFile
+    }
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter = [
+            '**/R.class',
+            '**/R$*.class',
+            '**/BuildConfig.*',
+            '**/Manifest*.*',
+            '**/*_Impl*.*', // Room implementations
+            '**/*Binding.*',
+            '**/*Fragment.*',
+            '**/*Activity.*',
+            '**/*Adapter.*',
+            '**/*DiffCallback.*',
+            '**/*ViewHolder.*',
+            '**/*ViewModelFactory.*',
+            '**/*Entity.*',
+            '**/*AppDatabase*.*',
+            '**/BuildConfigResolver.*',
+            '**/MainThreadExecutor.*',
+            '**/*Test*.*',
+            'android/**/*.*'
+    ]
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
+    sourceDirectories.setFrom(files([mainSrc]))
+    classDirectories.setFrom(files([debugTree]))
+    executionData.setFrom(fileTree(dir: project.buildDir, includes: [
+            'jacoco/testDebugUnitTest.exec', 'outputs/code_coverage/debugAndroidTest/connected/**/*.ec'
+    ]))
 }

@@ -28,7 +28,6 @@ import com.hangyeollee.go4lunch.utils.LiveDataTestUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class MapViewModelTest {
     private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<MyNearBySearchData> nearBySearchDataMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<MyAutoCompleteData> autoCompleteDataMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListMutbaleLiveData = new MutableLiveData<>();
 
     private MapViewModel viewModel;
 
@@ -63,7 +62,8 @@ public class MapViewModelTest {
         when(userLocation.getLatitude()).thenReturn(11.12);
         when(userLocation.getLongitude()).thenReturn(11.11);
         locationMutableLiveData.setValue(userLocation);
-        lunchRestaurantListLiveData.setValue(getLunchRestaurantList());
+
+        lunchRestaurantListMutbaleLiveData.setValue(new ArrayList<>());
         nearBySearchDataMutableLiveData.setValue(
             new MyNearBySearchData(
                 new ArrayList<>(), "", getNearbySearchResultList(), "OK"
@@ -79,7 +79,7 @@ public class MapViewModelTest {
         doReturn(locationMutableLiveData).when(locationRepository).getLocationLiveData();
         doReturn(nearBySearchDataMutableLiveData).when(nearbySearchDataRepository).fetchAndGetMyNearBySearchLiveData(11.12 + "," + 11.11);
         doReturn(autoCompleteDataMutableLiveData).when(autoCompleteDataRepository).getAutoCompleteDataLiveData();
-        doReturn(lunchRestaurantListLiveData).when(firebaseRepository).getLunchRestaurantListOfAllUsers();
+        doReturn(lunchRestaurantListMutbaleLiveData).when(firebaseRepository).getLunchRestaurantListOfAllUsers();
 
         viewModel = new MapViewModel(application, locationRepository, firebaseRepository, nearbySearchDataRepository, autoCompleteDataRepository);
     }
@@ -89,17 +89,34 @@ public class MapViewModelTest {
         //WHEN
         MapViewState mapViewState = LiveDataTestUtils.getValueForTesting(viewModel.getMapsFragmentViewStateLiveData());
 
+        //EXPECTED
+        MapViewState expectedViewState = new MapViewState(new LatLng(11.12, 11.11), getMapMarkerViewStateList());
+
         //THEN
-        assertEquals(getMapsFragmentViewStateForTest(), mapViewState);
+        assertEquals(expectedViewState, mapViewState);
     }
 
     @Test
-    public void edge_case_autocomplete_matches_placeId3() {
+    public void edge_case_autocomplete_is_null() {
+        // GIVEN
+        autoCompleteDataMutableLiveData.setValue(null);
+
+        // WHEN
+        MapViewState mapViewState = LiveDataTestUtils.getValueForTesting(viewModel.getMapsFragmentViewStateLiveData());
+
+        //EXPECTED
+        
+    }
+
+    @Test
+    public void edge_case_autocomplete_matches_placeId3_and_happy_food3() {
         // GIVEN
         List<Prediction> predictions = new ArrayList<>();
         Prediction prediction = Mockito.mock(Prediction.class);
         Mockito.doReturn("placeId3").when(prediction).getPlaceId();
+        Mockito.doReturn("happy food3").when(prediction).getDescription();
         predictions.add(prediction);
+
         autoCompleteDataMutableLiveData.setValue(
             new MyAutoCompleteData(
                 predictions,
@@ -110,8 +127,75 @@ public class MapViewModelTest {
         //WHEN
         MapViewState mapViewState = LiveDataTestUtils.getValueForTesting(viewModel.getMapsFragmentViewStateLiveData());
 
+        //EXPECTED
+        List<MapMarkerViewState> expectedMapMarkerViewStateList = new ArrayList<>();
+        expectedMapMarkerViewStateList.add(
+            new MapMarkerViewState(
+                "placeId3",
+                new LatLng(33.33, 33.33),
+                "happy food3",
+                R.drawable.ic_twotone_dining_24,
+                R.color.green
+            )
+        );
+        MapViewState expectedViewSate = new MapViewState(new LatLng(11.12, 11.11), expectedMapMarkerViewStateList);
+
         //THEN
-        assertEquals(getMapsFragmentViewStateForTest(), mapViewState);
+        assertEquals(expectedViewSate, mapViewState);
+    }
+
+    @Test
+    public void edge_case_selected_as_lunch_restaurant() {
+        //GIVEN
+        List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
+        lunchRestaurantList.add(new LunchRestaurant("placeId1", "userA", "happy food", "2022-12-01"));
+        lunchRestaurantListMutbaleLiveData.setValue(lunchRestaurantList);
+
+        //WHEN
+        MapViewState mapViewState = LiveDataTestUtils.getValueForTesting(viewModel.getMapsFragmentViewStateLiveData());
+
+        //EXPECTED
+        List<MapMarkerViewState> expectedMapMarkerViewStateList = new ArrayList<>();
+        expectedMapMarkerViewStateList.add(
+            new MapMarkerViewState(
+                "placeId1",
+                new LatLng(11.11, 11.11),
+                "happy food",
+                R.drawable.ic_twotone_dining_24,
+                R.color.green
+            )
+        );
+        expectedMapMarkerViewStateList.add(
+            new MapMarkerViewState(
+                "placeId2",
+                new LatLng(22.22, 22.22),
+                "happy food2",
+                R.drawable.ic_twotone_dining_24,
+                null
+            )
+        );
+        expectedMapMarkerViewStateList.add(
+            new MapMarkerViewState(
+                "placeId3",
+                new LatLng(33.33, 33.33),
+                "happy food3",
+                R.drawable.ic_twotone_dining_24,
+                null
+            )
+        );
+        expectedMapMarkerViewStateList.add(
+            new MapMarkerViewState(
+                "placeId4",
+                new LatLng(44.44, 44.44),
+                "happy food4",
+                R.drawable.ic_twotone_dining_24,
+                null
+            )
+        );
+        MapViewState expectedViewSate = new MapViewState(new LatLng(11.12, 11.11), expectedMapMarkerViewStateList);
+
+        //THEN
+        assertEquals(expectedViewSate, mapViewState);
     }
 
     // INPUTS
@@ -173,9 +257,9 @@ public class MapViewModelTest {
         List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
 
         lunchRestaurantList.add(new LunchRestaurant("placeId1", "userA", "happy food", "2022-12-01"));
-//        lunchRestaurantList.add(new LunchRestaurant("placeId2", "userB", "happy food2", "2022-12-02"));
+        lunchRestaurantList.add(new LunchRestaurant("placeId2", "userB", "happy food2", "2022-12-02"));
         lunchRestaurantList.add(new LunchRestaurant("placeId3", "userC", "happy food3", "2022-12-03"));
-//        lunchRestaurantList.add(new LunchRestaurant("placeId4", "userD", "happy food4", "2022-12-04"));
+        lunchRestaurantList.add(new LunchRestaurant("placeId4", "userD", "happy food4", "2022-12-04"));
 
         return lunchRestaurantList;
     }
@@ -222,11 +306,5 @@ public class MapViewModelTest {
 
         return mapMarkerViewStateList;
     }
-
-    //OUTPUTS
-    private MapViewState getMapsFragmentViewStateForTest() {
-        return new MapViewState(new LatLng(11.12, 11.11), getMapMarkerViewStateList());
-    }
-
 
 }
