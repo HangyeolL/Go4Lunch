@@ -3,6 +3,8 @@ package com.hangyeollee.go4lunch.data.model.placedetailpojo;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import org.jetbrains.annotations.TestOnly;
+
 import java.util.List;
 
 public class MyPlaceDetailData {
@@ -16,6 +18,14 @@ public class MyPlaceDetailData {
     @SerializedName("status")
     @Expose
     private String status;
+
+    public MyPlaceDetailData(List<Object> htmlAttributions, Result result, String status) {
+        this.htmlAttributions = htmlAttributions;
+        this.result = result;
+        this.status = status;
+    }
+
+    @TestOnly
 
     public List<Object> getHtmlAttributions() {
         return htmlAttributions;

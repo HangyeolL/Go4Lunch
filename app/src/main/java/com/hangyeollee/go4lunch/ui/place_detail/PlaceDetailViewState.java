@@ -5,6 +5,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 
 import java.util.List;
+import java.util.Objects;
 
 public class PlaceDetailViewState {
 
@@ -96,5 +97,35 @@ public class PlaceDetailViewState {
 
     public boolean isSelectedAsLunchRestaurant() {
         return isSelectedAsLunchRestaurant;
+    }
+
+    @Override
+    public String toString() {
+        return "PlaceDetailViewState{" +
+            "photoUrl='" + photoUrl + '\'' +
+            ", name='" + name + '\'' +
+            ", address='" + address + '\'' +
+            ", rating=" + rating +
+            ", internationalPhoneNumber='" + internationalPhoneNumber + '\'' +
+            ", website='" + website + '\'' +
+            ", recyclerViewItemViewStateList=" + recyclerViewItemViewStateList +
+            ", likeButtonColor=" + likeButtonColor +
+            ", floatActButtonColor=" + floatActButtonColor +
+            ", isSelectedAsLikedRestaurant=" + isSelectedAsLikedRestaurant +
+            ", isSelectedAsLunchRestaurant=" + isSelectedAsLunchRestaurant +
+            '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PlaceDetailViewState that = (PlaceDetailViewState) o;
+        return Float.compare(that.rating, rating) == 0 && likeButtonColor == that.likeButtonColor && floatActButtonColor == that.floatActButtonColor && isSelectedAsLikedRestaurant == that.isSelectedAsLikedRestaurant && isSelectedAsLunchRestaurant == that.isSelectedAsLunchRestaurant && Objects.equals(photoUrl, that.photoUrl) && Objects.equals(name, that.name) && Objects.equals(address, that.address) && Objects.equals(internationalPhoneNumber, that.internationalPhoneNumber) && Objects.equals(website, that.website) && Objects.equals(recyclerViewItemViewStateList, that.recyclerViewItemViewStateList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(photoUrl, name, address, rating, internationalPhoneNumber, website, recyclerViewItemViewStateList, likeButtonColor, floatActButtonColor, isSelectedAsLikedRestaurant, isSelectedAsLunchRestaurant);
     }
 }

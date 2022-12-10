@@ -4,6 +4,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.OpeningHours;
 
+import org.jetbrains.annotations.TestOnly;
+
 import java.util.List;
 
 public class Result {
@@ -32,6 +34,18 @@ public class Result {
     @SerializedName("website")
     @Expose
     private String website;
+
+    @TestOnly
+    public Result(Geometry geometry, String internationalPhoneNumber, String name, OpeningHours openingHours, List<Photo> photos, Double rating, String vicinity, String website) {
+        this.geometry = geometry;
+        this.internationalPhoneNumber = internationalPhoneNumber;
+        this.name = name;
+        this.openingHours = openingHours;
+        this.photos = photos;
+        this.rating = rating;
+        this.vicinity = vicinity;
+        this.website = website;
+    }
 
     public Geometry getGeometry() {
         return geometry;

@@ -156,7 +156,7 @@ public class ListViewModel extends ViewModel {
             for (Prediction prediction : autoCompleteData.getPredictions()) {
                 for (Result result : myNearBySearchData.getResults()) {
                     if (prediction.getPlaceId().equals(result.getPlaceId()) &&
-                            prediction.getStructuredFormatting().getMainText().contains(result.getName())) {
+                            prediction.getDescription().contains(result.getName())) {
 
                         if (result.getOpeningHours() != null) {
                             isOpen = result.getOpeningHours().getOpenNow();
