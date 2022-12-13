@@ -17,6 +17,7 @@ import com.hangyeollee.go4lunch.data.repository.LocationRepository;
 import com.hangyeollee.go4lunch.data.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.data.repository.PlaceDetailDataRepository;
 import com.hangyeollee.go4lunch.data.repository.SettingRepository;
+import com.hangyeollee.go4lunch.utils.DistanceCalculator;
 import com.hangyeollee.go4lunch.utils.MyRetrofitBuilder;
 import com.hangyeollee.go4lunch.ui.dispatcher.DispatcherViewModel;
 import com.hangyeollee.go4lunch.ui.login.LogInViewModel;
@@ -41,6 +42,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private final LocationRepository locationRepository;
     private final FirebaseRepository firebaseRepository;
     private final SettingRepository settingRepository;
+    private final DistanceCalculator distanceCalculator;
 
     private static ViewModelFactory sViewModelFactory;
 
@@ -70,6 +72,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         placeDetailDataRepository = new PlaceDetailDataRepository(googleMapsApi);
         autoCompleteDataRepository = new AutoCompleteDataRepository(googleMapsApi, locationRepository);
         settingRepository = new SettingRepository(context);
+        distanceCalculator = new DistanceCalculator();
     }
 
     @SuppressWarnings("unchecked")
@@ -89,7 +92,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new MapViewModel(context, locationRepository, firebaseRepository, nearbySearchDataRepository, autoCompleteDataRepository);
         }
         else if (modelClass.isAssignableFrom(ListViewModel.class)) {
-            return (T) new ListViewModel(context, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository, firebaseRepository);
+            return (T) new ListViewModel(context, locationRepository, nearbySearchDataRepository, autoCompleteDataRepository, firebaseRepository, distanceCalculator);
         }
         else if (modelClass.isAssignableFrom(WorkmatesViewModel.class)) {
             return (T) new WorkmatesViewModel(context, firebaseRepository, autoCompleteDataRepository);

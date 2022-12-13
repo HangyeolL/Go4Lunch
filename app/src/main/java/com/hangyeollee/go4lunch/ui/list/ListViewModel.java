@@ -22,6 +22,7 @@ import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
 import com.hangyeollee.go4lunch.data.repository.NearbySearchDataRepository;
+import com.hangyeollee.go4lunch.utils.DistanceCalculator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,7 @@ public class ListViewModel extends ViewModel {
 
     private final Application context;
     private final LocationRepository locationRepository;
+    private final DistanceCalculator distanceCalculator;
 
     private final MediatorLiveData<ListViewState> mediatorLiveData = new MediatorLiveData<>();
 
@@ -43,10 +45,12 @@ public class ListViewModel extends ViewModel {
             LocationRepository locationRepository,
             NearbySearchDataRepository nearbySearchDataRepository,
             AutoCompleteDataRepository autoCompleteDataRepository,
-            FirebaseRepository firebaseRepository
+            FirebaseRepository firebaseRepository,
+            DistanceCalculator distanceCalculator
     ) {
         this.context = context;
         this.locationRepository = locationRepository;
+        this.distanceCalculator = distanceCalculator;
 
         LiveData<Location> locationLiveData = locationRepository.getLocationLiveData();
 
@@ -110,7 +114,6 @@ public class ListViewModel extends ViewModel {
         boolean isOpen = false;
         float rating = 0;
         String photoReference;
-        Location resultLocation = new Location("restaurant location");
         String distanceBetween = "";
         int workmatesNumber;
 
@@ -133,11 +136,14 @@ public class ListViewModel extends ViewModel {
                     photoReference = resourceToUri(context, R.drawable.ic_baseline_local_dining_24);
                 }
 
-                resultLocation.setLatitude(result.getGeometry().getLocation().getLat());
-                resultLocation.setLongitude(result.getGeometry().getLocation().getLng());
-
-                if (locationRepository.getLocationLiveData().getValue() != null) {
-                    distanceBetween = String.format(Locale.getDefault(), "%.0f", locationRepository.getLocationLiveData().getValue().distanceTo(resultLocation)) + "m";
+                Location currentLocation = locationRepository.getLocationLiveData().getValue();
+                if (currentLocation != null) {
+                    distanceBetween = distanceCalculator.distanceBetween(
+                        currentLocation.getLatitude(),
+                        currentLocation.getLongitude(),
+                        result.getGeometry().getLocation().getLat(),
+                        result.getGeometry().getLocation().getLng()
+                    );
                 }
 
                 workmatesNumber = workmatesJoiningNumberMap.getOrDefault(result.getPlaceId(), 0);
@@ -175,11 +181,14 @@ public class ListViewModel extends ViewModel {
                             photoReference = resourceToUri(context, R.drawable.ic_baseline_local_dining_24);
                         }
 
-                        resultLocation.setLatitude(result.getGeometry().getLocation().getLat());
-                        resultLocation.setLongitude(result.getGeometry().getLocation().getLng());
-
-                        if (locationRepository.getLocationLiveData().getValue() != null) {
-                            distanceBetween = String.format(Locale.getDefault(), "%.0f", locationRepository.getLocationLiveData().getValue().distanceTo(resultLocation)) + "m";
+                        Location currentLocation = locationRepository.getLocationLiveData().getValue();
+                        if (currentLocation != null) {
+                            distanceBetween = distanceCalculator.distanceBetween(
+                                currentLocation.getLatitude(),
+                                currentLocation.getLongitude(),
+                                result.getGeometry().getLocation().getLat(),
+                                result.getGeometry().getLocation().getLng()
+                            );
                         }
 
                         workmatesNumber = workmatesJoiningNumberMap.getOrDefault(result.getPlaceId(), 0);

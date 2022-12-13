@@ -26,7 +26,7 @@ public class SettingRepository {
     }
 
     // INSERT
-    public void setNotificationEnable(boolean enabled) {
+    public void setNotificationEnabled(boolean enabled) {
         sharedPreferences.edit().putBoolean(KEY_SHARED_PREFS_SETTINGS_NOTIFICATION_ENABLED, enabled).apply();
     }
 }

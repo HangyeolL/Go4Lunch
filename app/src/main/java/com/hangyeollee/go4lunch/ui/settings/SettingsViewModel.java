@@ -81,7 +81,7 @@ public class SettingsViewModel extends ViewModel {
      */
 
     public void onSwitchClicked(boolean enable) {
-        settingRepository.setNotificationEnable(enable);
+        settingRepository.setNotificationEnabled(enable);
 
     }
 }
