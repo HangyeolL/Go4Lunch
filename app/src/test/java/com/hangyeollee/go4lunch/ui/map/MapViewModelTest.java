@@ -104,10 +104,9 @@ public class MapViewModelTest {
         // WHEN
         MapViewState mapViewState = LiveDataTestUtils.getValueForTesting(viewModel.getMapsFragmentViewStateLiveData());
 
-        //EXPECTED
+        // THEN
         MapViewState expectedViewState = new MapViewState(new LatLng(11.12, 11.11), getDefaultMapMarkerViewStateList());
 
-        // THEN
         assertEquals(expectedViewState, mapViewState);
     }
 
@@ -130,7 +129,7 @@ public class MapViewModelTest {
         //WHEN
         MapViewState mapViewState = LiveDataTestUtils.getValueForTesting(viewModel.getMapsFragmentViewStateLiveData());
 
-        //EXPECTED
+        //THEN
         List<MapMarkerViewState> expectedMapMarkerViewStateList = new ArrayList<>();
         expectedMapMarkerViewStateList.add(
             new MapMarkerViewState(
@@ -143,7 +142,6 @@ public class MapViewModelTest {
         );
         MapViewState expectedViewSate = new MapViewState(new LatLng(11.12, 11.11), expectedMapMarkerViewStateList);
 
-        //THEN
         assertEquals(expectedViewSate, mapViewState);
     }
 
@@ -157,7 +155,7 @@ public class MapViewModelTest {
         //WHEN
         MapViewState mapViewState = LiveDataTestUtils.getValueForTesting(viewModel.getMapsFragmentViewStateLiveData());
 
-        //EXPECTED
+        //THEN
         List<MapMarkerViewState> expectedMapMarkerViewStateList = new ArrayList<>();
         expectedMapMarkerViewStateList.add(
             new MapMarkerViewState(
@@ -197,7 +195,6 @@ public class MapViewModelTest {
         );
         MapViewState expectedViewSate = new MapViewState(new LatLng(11.12, 11.11), expectedMapMarkerViewStateList);
 
-        //THEN
         assertEquals(expectedViewSate, mapViewState);
     }
 

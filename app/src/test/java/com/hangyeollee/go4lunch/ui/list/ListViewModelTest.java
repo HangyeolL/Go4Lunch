@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 
 import android.app.Application;
@@ -12,6 +13,7 @@ import android.location.Location;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.MutableLiveData;
 
+import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.Prediction;
@@ -28,7 +30,6 @@ import com.hangyeollee.go4lunch.utils.DistanceCalculator;
 import com.hangyeollee.go4lunch.utils.LiveDataTestUtils;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -53,6 +54,9 @@ public class ListViewModelTest {
     private FirebaseRepository firebaseRepository;
     private DistanceCalculator distanceCalculator;
 
+    private OpeningHours openingHours;
+    private Photo photo;
+
     private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<MyNearBySearchData> nearBySearchDataMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<MyAutoCompleteData> autoCompleteDataMutableLiveData = new MutableLiveData<>();
@@ -68,7 +72,10 @@ public class ListViewModelTest {
         nearbySearchDataRepository = Mockito.mock(NearbySearchDataRepository.class);
         autoCompleteDataRepository = Mockito.mock(AutoCompleteDataRepository.class);
         firebaseRepository = Mockito.mock(FirebaseRepository.class);
+
         distanceCalculator = Mockito.mock(DistanceCalculator.class);
+        Result nearbySearchResult = Mockito.mock(Result.class);
+        openingHours = Mockito.mock(OpeningHours.class);
 
         Location userLocation = Mockito.mock(Location.class);
         when(userLocation.getLatitude()).thenReturn(DEFAULT_USER_LAT);
@@ -89,15 +96,22 @@ public class ListViewModelTest {
         workmatesJoiningNumberMapMutableLiveData.setValue(new HashMap<>());
 
         doReturn(locationMutableLiveData).when(locationRepository).getLocationLiveData();
-        doReturn(nearBySearchDataMutableLiveData).when(nearbySearchDataRepository).fetchAndGetMyNearBySearchLiveData(DEFAULT_USER_LAT + "," + DEFAULT_USER_LONG);
+        doReturn(nearBySearchDataMutableLiveData)
+            .when(nearbySearchDataRepository).fetchAndGetMyNearBySearchLiveData(DEFAULT_USER_LAT + "," + DEFAULT_USER_LONG);
         doReturn(autoCompleteDataMutableLiveData).when(autoCompleteDataRepository).getAutoCompleteDataLiveData();
         doReturn(lunchRestaurantListMutableLiveData).when(firebaseRepository).getLunchRestaurantListOfAllUsers();
+
         doReturn("distanceBetween").when(distanceCalculator).distanceBetween(
             anyDouble(),
             anyDouble(),
             anyDouble(),
             anyDouble()
         );
+        doReturn(openingHours).when(nearbySearchResult).getOpeningHours();
+        doReturn("OPEN").when(application).getString(R.string.open);
+        doReturn("CLOSED").when(application).getString(R.string.closed);
+        doReturn(R.color.blue).when(application).getColor(R.color.blue);
+        doReturn(R.color.orange).when(application).getColor(R.color.orange);
 
         viewModel = new ListViewModel(
             application,
@@ -116,10 +130,24 @@ public class ListViewModelTest {
 
         //THEN
         ListViewState expectedListViewState = new ListViewState(getDefaultItemViewStateList());
+
         assertEquals(expectedListViewState, viewState);
     }
 
-    @Ignore // TODO FIXME
+    @Test
+    public void edge_case_autoComplete_is_null() {
+        //GIVEN
+        autoCompleteDataMutableLiveData.setValue(null);
+
+        //WHEN
+        ListViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getListViewFragmentViewStateLiveData());
+
+        //THEN
+        ListViewState expectedListViewState = new ListViewState(getDefaultItemViewStateList());
+
+        assertEquals(expectedListViewState, viewState);
+    }
+
     @Test
     public void edge_case_autocomplete_matches_placeId3_and_happy_food3() {
         // GIVEN
@@ -139,33 +167,104 @@ public class ListViewModelTest {
         //WHEN
         ListViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getListViewFragmentViewStateLiveData());
 
-        //EXPECTED
+        //THEN
         List<ListItemViewState> expectedItemViewStateList = new ArrayList<>();
         expectedItemViewStateList.add(
             new ListItemViewState(
                 "happy food3",
                 "seoul",
                 "OPEN",
-                3,
+                R.color.blue,
                 2.5f,
-                "c",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId3",
-                "1003m",
-                3
+                "distanceBetween",
+                0
             )
         );
         ListViewState expectedViewState = new ListViewState(expectedItemViewStateList);
 
-        //THEN
         assertEquals(expectedViewState, viewState);
+    }
 
+    @Test
+    public void edge_case_placeId1_and_happy_food_is_selected_as_lunch_restaurant() {
+        //GIVEN
+        List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
+        lunchRestaurantList.add(new LunchRestaurant("placeId1", "userA", "happy food", "2022-12-01"));
+        lunchRestaurantListMutableLiveData.setValue(lunchRestaurantList);
+
+        //WHEN
+        ListViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getListViewFragmentViewStateLiveData());
+
+        //THEN
+        List<ListItemViewState> expectedItemViewStateList = new ArrayList<>();
+        doReturn(true).when(openingHours).getOpenNow();
+        expectedItemViewStateList.add(
+            new ListItemViewState(
+                "happy food",
+                "paris",
+                "OPEN",
+                R.color.blue,
+                4.5f,
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "placeId1",
+                "distanceBetween",
+                1
+            )
+        );
+
+        expectedItemViewStateList.add(
+            new ListItemViewState(
+                "happy food2",
+                "new york",
+                "OPEN",
+                R.color.blue,
+                3.5f,
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "placeId2",
+                "distanceBetween",
+                0
+            )
+        );
+
+        expectedItemViewStateList.add(
+            new ListItemViewState(
+                "happy food3",
+                "seoul",
+                "OPEN",
+                R.color.blue,
+                2.5f,
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "placeId3",
+                "distanceBetween",
+                0
+            )
+        );
+
+        expectedItemViewStateList.add(
+            new ListItemViewState(
+                "happy food4",
+                "tokyo",
+                "OPEN",
+                R.color.blue,
+                1.5f,
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "placeId4",
+                "distanceBetween",
+                0
+            )
+        );
+        ListViewState expectedListViewState = new ListViewState(expectedItemViewStateList);
+
+        assertEquals(expectedListViewState, viewState);
     }
 
     // INPUTS
     private List<Result> getDefaultNearbySearchResultList() {
         List<Result> nearBySearchResultList = new ArrayList<>();
 
-        Photo photo = Mockito.mock(Photo.class);
+        photo = Mockito.mock(Photo.class);
         doReturn("photo").when(photo).getPhotoReference();
         doReturn(250).when(photo).getHeight();
         doReturn(250).when(photo).getWidth();
@@ -225,17 +324,19 @@ public class ListViewModelTest {
     private List<ListItemViewState> getDefaultItemViewStateList() {
         List<ListItemViewState> itemViewStateList = new ArrayList<>();
 
+        doReturn(true).when(openingHours).getOpenNow();
+
         itemViewStateList.add(
             new ListItemViewState(
                 "happy food",
                 "paris",
                 "OPEN",
-                1,
+                R.color.blue,
                 4.5f,
-                "a",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId1",
                 "distanceBetween",
-                1
+                0
             )
         );
 
@@ -244,12 +345,12 @@ public class ListViewModelTest {
                 "happy food2",
                 "new york",
                 "OPEN",
-                2,
+                R.color.blue,
                 3.5f,
-                "b",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId2",
                 "distanceBetween",
-                2
+                0
             )
         );
 
@@ -258,12 +359,12 @@ public class ListViewModelTest {
                 "happy food3",
                 "seoul",
                 "OPEN",
-                3,
+                R.color.blue,
                 2.5f,
-                "c",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId3",
                 "distanceBetween",
-                3
+                0
             )
         );
 
@@ -272,12 +373,12 @@ public class ListViewModelTest {
                 "happy food4",
                 "tokyo",
                 "OPEN",
-                4,
+                R.color.blue,
                 1.5f,
-                "d",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId4",
                 "distanceBetween",
-                4
+                0
             )
         );
 
