@@ -1,5 +1,6 @@
 package com.hangyeollee.go4lunch.ui.workmates;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 
 import android.app.Application;
@@ -47,27 +48,125 @@ public class workmatesViewModelTest {
 
         userListMutableLiveData.setValue(getDefaultUserList());
         lunchRestaurantListMutableLiveData.setValue(new ArrayList<>());
-        userInputMutableLiveData.setValue("input");
-
-        doReturn("Not going to restaurant (yet ?)").when(application).getString(R.string.not_going_to_restaurant_yet);
+        userInputMutableLiveData.setValue(null);
 
         doReturn(userListMutableLiveData).when(firebaseRepository).getUsersList();
         doReturn(lunchRestaurantListMutableLiveData).when(firebaseRepository).getLunchRestaurantListOfAllUsers();
         doReturn(userInputMutableLiveData).when(autoCompleteDataRepository).getUserInputMutableLiveData();
 
-        viewModel = Mockito.mock(WorkmatesViewModel.class);
+        doReturn("Not going to restaurant (yet ?)").when(application).getString(R.string.not_going_to_restaurant_yet);
+
+        viewModel = new WorkmatesViewModel(
+            application,
+            firebaseRepository,
+            autoCompleteDataRepository
+        );
     }
 
-//    @Test
-//    public void nominal_case() {
-//        // WHEN
-//        WorkmatesViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getWorkmatesFragmentViewStateLiveData());
-//
-//        // THEN
-//        WorkmatesViewState expectedViewState = new WorkmatesViewState(getDefaultWorkmatesItemViewStateList());
-//
-//        Assert.assertEquals(expectedViewState, viewState);
-//    }
+    @Test
+    public void nominal_case() {
+        // WHEN
+        WorkmatesViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getWorkmatesFragmentViewStateLiveData());
+
+        // THEN
+        WorkmatesViewState expectedViewState = new WorkmatesViewState(getDefaultWorkmatesItemViewStateList());
+
+        assertEquals(expectedViewState, viewState);
+    }
+
+    @Test
+    public void edge_case_userInput_is_user1() {
+        //GIVEN
+        userInputMutableLiveData.setValue("user1");
+
+        //WHEN
+        WorkmatesViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getWorkmatesFragmentViewStateLiveData());
+
+        //THEN
+        List<WorkmatesItemViewState> expectedWorkmatesItemViewStateList = new ArrayList<>();
+        expectedWorkmatesItemViewStateList.add(new WorkmatesItemViewState(
+                "photoUrl1",
+                "user1",
+                application.getString(R.string.not_going_to_restaurant_yet),
+                null
+            )
+        );
+        WorkmatesViewState expectedViewState = new WorkmatesViewState(expectedWorkmatesItemViewStateList);
+
+        assertEquals(expectedViewState, viewState);
+    }
+
+    @Test
+    public void edge_case_user1_and_user2_chose_lunch_restaurant_rest_of_users_did_not_yet() {
+        //GIVEN
+        List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
+        lunchRestaurantList.add(new LunchRestaurant("placeId1", "userId1", "happy food", "2022-12-01"));
+        lunchRestaurantList.add(new LunchRestaurant("placeId2", "userId2", "happy food2", "2022-12-01"));
+        lunchRestaurantListMutableLiveData.setValue(lunchRestaurantList);
+
+        //WHEN
+        WorkmatesViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getWorkmatesFragmentViewStateLiveData());
+
+        //THEN
+        List<WorkmatesItemViewState> expectedWorkmatesItemViewStateList = new ArrayList<>();
+        expectedWorkmatesItemViewStateList.add(new WorkmatesItemViewState(
+                "photoUrl1",
+                "user1",
+                "happy food",
+                "placeId1"
+            )
+        );
+        expectedWorkmatesItemViewStateList.add(new WorkmatesItemViewState(
+                "photoUrl2",
+                "user2",
+                "happy food2",
+                "placeId2"
+            )
+        );
+        expectedWorkmatesItemViewStateList.add(new WorkmatesItemViewState(
+                "photoUrl3",
+                "user3",
+                application.getString(R.string.not_going_to_restaurant_yet),
+                null
+            )
+        );
+        expectedWorkmatesItemViewStateList.add(new WorkmatesItemViewState(
+                "photoUrl4",
+                "user4",
+                application.getString(R.string.not_going_to_restaurant_yet),
+                null
+            )
+        );
+        WorkmatesViewState expectedViewState = new WorkmatesViewState(expectedWorkmatesItemViewStateList);
+
+        assertEquals(expectedViewState, viewState);
+    }
+
+    @Test
+    public void edge_case_userInput_is_happy_food3_and_user3_selected_happy_food3_as_lunch_restaurant() {
+        //GIVEN
+        userInputMutableLiveData.setValue("happy food3");
+
+        List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
+        lunchRestaurantList.add(new LunchRestaurant("placeId3", "userId3", "happy food3", "2022-12-01"));
+        lunchRestaurantListMutableLiveData.setValue(lunchRestaurantList);
+
+        //WHEN
+        WorkmatesViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getWorkmatesFragmentViewStateLiveData());
+
+        //THEN
+        List<WorkmatesItemViewState> expectedWorkmatesItemViewStateList = new ArrayList<>();
+        expectedWorkmatesItemViewStateList.add(new WorkmatesItemViewState(
+                "photoUrl3",
+                "user3",
+                "happy food3",
+                "placeId3"
+            )
+        );
+        WorkmatesViewState expectedViewState = new WorkmatesViewState(expectedWorkmatesItemViewStateList);
+
+        assertEquals(expectedViewState, viewState);
+    }
 
     //INPUTS
     private List<User> getDefaultUserList() {

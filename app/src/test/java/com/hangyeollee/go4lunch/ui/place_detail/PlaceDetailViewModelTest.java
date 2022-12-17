@@ -52,8 +52,6 @@ public class PlaceDetailViewModelTest {
     private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LikedRestaurant>> likedRestaurantListMutableLiveData = new MutableLiveData<>();
 
-    private final SingleLiveEvent<String> toastMessageSingleLiveEvent = new SingleLiveEvent<>();
-
     private PlaceDetailViewModel viewModel;
 
     @Before

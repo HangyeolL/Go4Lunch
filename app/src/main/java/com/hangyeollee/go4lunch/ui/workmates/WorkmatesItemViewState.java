@@ -3,6 +3,8 @@ package com.hangyeollee.go4lunch.ui.workmates;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Objects;
+
 public class WorkmatesItemViewState {
 
     @Nullable
@@ -47,5 +49,28 @@ public class WorkmatesItemViewState {
     @Nullable
     public String getUserLunchRestaurantId() {
         return userLunchRestaurantId;
+    }
+
+    @Override
+    public String toString() {
+        return "WorkmatesItemViewState{" +
+            "userPhotoUrl='" + userPhotoUrl + '\'' +
+            ", userName='" + userName + '\'' +
+            ", userLunchRestaurantName='" + userLunchRestaurantName + '\'' +
+            ", userLunchRestaurantId='" + userLunchRestaurantId + '\'' +
+            '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WorkmatesItemViewState that = (WorkmatesItemViewState) o;
+        return Objects.equals(userPhotoUrl, that.userPhotoUrl) && userName.equals(that.userName) && userLunchRestaurantName.equals(that.userLunchRestaurantName) && Objects.equals(userLunchRestaurantId, that.userLunchRestaurantId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userPhotoUrl, userName, userLunchRestaurantName, userLunchRestaurantId);
     }
 }
