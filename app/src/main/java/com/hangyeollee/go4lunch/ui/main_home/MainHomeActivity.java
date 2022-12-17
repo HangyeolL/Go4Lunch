@@ -54,7 +54,7 @@ public class MainHomeActivity extends AppCompatActivity {
                         viewModel.startLocationRequest();
                     } else {
                         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(MainHomeActivity.this);
-                        alertBuilder.setMessage("Location is not authorized.\nPlease authorize location permission in settings")
+                        alertBuilder.setMessage(R.string.location_is_not_authorized_please_authorize_in_settings)
                                 .create()
                                 .show();
                     }

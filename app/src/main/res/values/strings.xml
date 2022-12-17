@@ -42,4 +42,5 @@
     <string name="log_in_with_facebook">Log in with facebook</string>
     <string name="log_in_with_twitter">Log in with Twitter</string>
     <string name="twitter_log_in_failed">Twitter Log In Failed</string>
+    <string name="location_is_not_authorized_please_authorize_in_settings">Location is not authorized.\nPlease authorize location permission in settings</string>
 </resources>

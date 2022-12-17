@@ -82,7 +82,6 @@ public class MainHomeViewModel extends ViewModel {
             return;
         }
 
-        final String providerId;
         final String userName;
         final String userEmail;
         final String userPhotoUrl;
@@ -90,7 +89,6 @@ public class MainHomeViewModel extends ViewModel {
 
         FirebaseUser firebaseUser = firebaseRepository.getCurrentUser();
 
-        providerId = firebaseUser.getProviderId();
         userName = firebaseUser.getDisplayName();
 
         if (firebaseUser.getEmail() == null || firebaseUser.getEmail().equals("")) {
@@ -114,7 +112,7 @@ public class MainHomeViewModel extends ViewModel {
         }
 
         MainHomeViewState mainHomeViewState = new MainHomeViewState(
-                providerId, userName, userEmail, userPhotoUrl, lunchRestaurantName);
+               userName, userEmail, userPhotoUrl, lunchRestaurantName);
 
         mainHomeActivityViewStateMediatorLiveData.setValue(mainHomeViewState);
     }
@@ -122,7 +120,6 @@ public class MainHomeViewModel extends ViewModel {
     /**
      * GETTERS
      */
-
     public LiveData<MainHomeViewState> getMainHomeActivityViewStateLiveData() {
         return mainHomeActivityViewStateMediatorLiveData;
     }
@@ -138,7 +135,6 @@ public class MainHomeViewModel extends ViewModel {
     /**
      * EVENTS
      */
-
     public void onUserLoggedIn() {
         firebaseRepository.saveUserInFirestore();
 
