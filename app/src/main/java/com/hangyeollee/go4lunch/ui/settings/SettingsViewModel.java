@@ -33,7 +33,6 @@ public class SettingsViewModel extends ViewModel {
 
         LiveData<Boolean> isNotificationEnabledLiveData = settingRepository.getIsNotificationEnabledLiveData();
 
-        //TODO why this method wont be called if i dont put initial value?
         mediatorLiveData.addSource(isNotificationEnabledLiveData,
                 isNotificationEnabled -> combine(isNotificationEnabled)
         );

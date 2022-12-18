@@ -170,7 +170,6 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
             '**/MainThreadExecutor.*',
             '**/*Test*.*',
             'android/**/*.*',
-            '**/*FirebaseRepository.*',
     ]
     def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug", excludes: fileFilter)
     def mainSrc = "$project.projectDir/src/main/java"

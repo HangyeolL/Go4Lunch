@@ -12,7 +12,6 @@ public class DispatcherViewModel extends ViewModel {
     private final SingleLiveEvent<DispatcherViewAction> viewActionSingleLiveEvent = new SingleLiveEvent<>();
 
     public DispatcherViewModel(@NonNull FirebaseAuth firebaseAuth) {
-        // User not connected
         if (firebaseAuth.getCurrentUser() == null) {
             viewActionSingleLiveEvent.setValue(DispatcherViewAction.GO_TO_LOGIN_SCREEN);
         } else {
