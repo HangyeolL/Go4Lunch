@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Worker;
@@ -21,6 +23,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.hangyeollee.go4lunch.MainApplication;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
+import com.hangyeollee.go4lunch.data.model.User;
 import com.hangyeollee.go4lunch.ui.dispatcher.DispatcherActivity;
 
 import java.io.IOException;
@@ -40,21 +43,21 @@ public class NotificationWorker extends Worker {
         this.context = context;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @NonNull
     @Override
     public Result doWork() {
         List<LunchRestaurant> lunchRestaurantList = getLunchRestaurantList();
+        List<User> userList = getUserList();
 
-        if (didUserChooseLunchRestaurant(lunchRestaurantList)) {
-            createNotification(lunchRestaurantList);
-        }
+        createNotification(lunchRestaurantList, userList);
 
         return Result.success();
         // (Returning RETRY tells WorkManager to try this task again
         // later; FAILURE says not to try again.)
     }
 
-    private void createNotification(List<LunchRestaurant> lunchRestaurantList) {
+    private void createNotification(List<LunchRestaurant> lunchRestaurantList, List<User> userList) {
         Bitmap bitmap = null;
         if (FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl() != null) {
             try {
@@ -68,6 +71,17 @@ public class NotificationWorker extends Worker {
             bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_baseline_person_outline_24);
         }
 
+        String userName = "";
+        String lunchRestaurantName = "";
+
+        for (User user : userList) {
+            userName = user.getName();
+        }
+
+        for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+            lunchRestaurantName = lunchRestaurant.getRestaurantName();
+        }
+
         Intent dispatcherIntent = DispatcherActivity.navigate(context);
         dispatcherIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, dispatcherIntent, PendingIntent.FLAG_IMMUTABLE);
@@ -76,8 +90,11 @@ public class NotificationWorker extends Worker {
             .setSmallIcon(R.drawable.ic_baseline_local_dining_24)
             .setShowWhen(true)
             .setLargeIcon(bitmap)
-            .setContentTitle(FirebaseAuth.getInstance().getCurrentUser().getDisplayName())
-            .setContentText(context.getString(R.string.you_will_go_to) + getUsersLunchRestaurantName(lunchRestaurantList))
+            .setContentTitle(context.getString(R.string.today_lunch_list))
+            .setContentText(userName
+                + ": "
+                + lunchRestaurantName
+            )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true);
@@ -87,6 +104,7 @@ public class NotificationWorker extends Worker {
         notificationManager.notify(1, builder.build());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<LunchRestaurant> getLunchRestaurantList() {
         List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
         CountDownLatch latch = new CountDownLatch(1);
@@ -111,6 +129,33 @@ public class NotificationWorker extends Worker {
         }
 
         return lunchRestaurantList;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private List<User> getUserList() {
+        List<User> userList = new ArrayList<>();
+        CountDownLatch latch = new CountDownLatch(1);
+
+        FirebaseFirestore.getInstance().collection("users").addSnapshotListener((querySnapshot, error) -> {
+            if (error != null) {
+                return;
+            }
+            if (querySnapshot != null) {
+                for (QueryDocumentSnapshot document : querySnapshot) {
+                    User user = document.toObject(User.class);
+                    userList.add(user);
+                }
+                latch.countDown();
+            }
+        });
+
+        try {
+            latch.await(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return userList;
     }
 
     private boolean didUserChooseLunchRestaurant(List<LunchRestaurant> lunchRestaurantList) {

@@ -13,7 +13,7 @@ public class NearBySearchDataRepositoryTest {
     @Before
     public void setUp() {
         myRetrofitBuilder = Mockito.mock(MyRetrofitBuilder.class);
-        nearbySearchDataRepository = new NearbySearchDataRepository(myRetrofitBuilder.getGoogleMapsApi());
+        nearbySearchDataRepository = new NearbySearchDataRepository(myRetrofitBuilder.getGoogleApi());
     }
 
     public void fetchDataNearbySearchDataTest() {

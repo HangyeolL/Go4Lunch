@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.hangyeollee.go4lunch.BuildConfig;
-import com.hangyeollee.go4lunch.api.GoogleMapsApi;
+import com.hangyeollee.go4lunch.api.GoogleApi;
 import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
 
 import retrofit2.Call;
@@ -17,12 +17,12 @@ import retrofit2.Response;
 
 public class AutoCompleteDataRepository {
 
-    private final GoogleMapsApi mGoogleMapsApi;
+    private final GoogleApi mGoogleApi;
     private final LiveData<MyAutoCompleteData> mAutoCompleteDataLiveData;
     private final MutableLiveData<String> userInputMutableLiveData = new MutableLiveData<>();
 
-    public AutoCompleteDataRepository(GoogleMapsApi googleMapsApi, LocationRepository locationRepository) {
-        mGoogleMapsApi = googleMapsApi;
+    public AutoCompleteDataRepository(GoogleApi googleApi, LocationRepository locationRepository) {
+        mGoogleApi = googleApi;
 
         LiveData<Location> locationLiveData = locationRepository.getLocationLiveData();
 
@@ -57,7 +57,7 @@ public class AutoCompleteDataRepository {
     public LiveData<MyAutoCompleteData> fetchAndGetAutoCompleteData(String userInput, String location) {
         MutableLiveData<MyAutoCompleteData> mutableLiveData = new MutableLiveData<>();
 
-        Call<MyAutoCompleteData> call = mGoogleMapsApi.getAutoCompleteData(userInput, location, 3000, "restaurant", "en", true, BuildConfig.PLACES_API_KEY);
+        Call<MyAutoCompleteData> call = mGoogleApi.getAutoCompleteData(userInput, location, 3000, "restaurant", "en", true, BuildConfig.PLACES_API_KEY);
         call.enqueue(new Callback<MyAutoCompleteData>() {
             @Override
             public void onResponse(Call<MyAutoCompleteData> call, Response<MyAutoCompleteData> response) {

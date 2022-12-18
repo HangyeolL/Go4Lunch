@@ -6,7 +6,9 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Intent;
 import android.location.Location;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
@@ -43,7 +45,7 @@ public class MainHomeViewModel extends ViewModel {
 
     private final Clock clock;
 
-    private final WorkManager workManager;
+    private WorkManager workManager;
 
     private static final String REMINDER_REQUEST = "REMINDER_REQUEST";
 
@@ -67,7 +69,6 @@ public class MainHomeViewModel extends ViewModel {
         this.settingRepository = settingRepository;
         this.clock = clock;
 
-        this.workManager = WorkManager.getInstance(context);
 
         LiveData<Location> locationLiveData = this.locationRepository.getLocationLiveData();
         LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = this.firebaseRepository.getLunchRestaurantListOfAllUsers();
@@ -105,7 +106,7 @@ public class MainHomeViewModel extends ViewModel {
 
         if (lunchRestaurantList != null) {
             for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-                if (firebaseRepository.getCurrentUser().getUid().equals(lunchRestaurant.getUserId())) {
+                if (firebaseUser.getUid().equals(lunchRestaurant.getUserId())) {
                     lunchRestaurantName = lunchRestaurant.getRestaurantName();
                 }
             }
@@ -135,6 +136,7 @@ public class MainHomeViewModel extends ViewModel {
     /**
      * EVENTS
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void onUserLoggedIn() {
         firebaseRepository.saveUserInFirestore();
 
@@ -145,6 +147,8 @@ public class MainHomeViewModel extends ViewModel {
             if (currentDate.isAfter(thisNoon)) {
                 thisNoon = thisNoon.plusDays(1);
             }
+
+            workManager = WorkManager.getInstance(context);
 
             long timeLeft = ChronoUnit
                     .SECONDS

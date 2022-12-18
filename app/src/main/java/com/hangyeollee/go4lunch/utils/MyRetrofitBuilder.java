@@ -1,6 +1,6 @@
 package com.hangyeollee.go4lunch.utils;
 
-import com.hangyeollee.go4lunch.api.GoogleMapsApi;
+import com.hangyeollee.go4lunch.api.GoogleApi;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -27,8 +27,8 @@ public class MyRetrofitBuilder {
         return INSTANCE;
     }
 
-    public static GoogleMapsApi getGoogleMapsApi() {
-       return getRetrofit().create(GoogleMapsApi.class);
+    public static GoogleApi getGoogleApi() {
+       return getRetrofit().create(GoogleApi.class);
     }
 
 }

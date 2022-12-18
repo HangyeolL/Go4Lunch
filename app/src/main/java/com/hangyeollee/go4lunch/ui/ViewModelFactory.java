@@ -1,8 +1,10 @@
 package com.hangyeollee.go4lunch.ui;
 
 import android.app.Application;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -10,7 +12,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hangyeollee.go4lunch.MainApplication;
-import com.hangyeollee.go4lunch.api.GoogleMapsApi;
+import com.hangyeollee.go4lunch.api.GoogleApi;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
@@ -35,6 +37,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private final Application context;
     private final FirebaseAuth firebaseAuth;
     private final Clock clock;
+    private final DistanceCalculator distanceCalculator;
 
     private final NearbySearchDataRepository nearbySearchDataRepository;
     private final PlaceDetailDataRepository placeDetailDataRepository;
@@ -42,13 +45,13 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private final LocationRepository locationRepository;
     private final FirebaseRepository firebaseRepository;
     private final SettingRepository settingRepository;
-    private final DistanceCalculator distanceCalculator;
 
     private static ViewModelFactory sViewModelFactory;
 
     /**
      * Singleton
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static ViewModelFactory getInstance() {
 
         if (sViewModelFactory == null) {
@@ -59,20 +62,21 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         return sViewModelFactory;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private ViewModelFactory() {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        GoogleMapsApi googleMapsApi = MyRetrofitBuilder.getGoogleMapsApi();
+        GoogleApi googleApi = MyRetrofitBuilder.getGoogleApi();
         clock = Clock.systemDefaultZone();
-
+        distanceCalculator = new DistanceCalculator();
         context = MainApplication.getInstance();
+
         locationRepository = new LocationRepository(LocationServices.getFusedLocationProviderClient(context));
         firebaseRepository = new FirebaseRepository(firebaseAuth, firebaseFirestore);
-        nearbySearchDataRepository = new NearbySearchDataRepository(googleMapsApi);
-        placeDetailDataRepository = new PlaceDetailDataRepository(googleMapsApi);
-        autoCompleteDataRepository = new AutoCompleteDataRepository(googleMapsApi, locationRepository);
+        nearbySearchDataRepository = new NearbySearchDataRepository(googleApi);
+        placeDetailDataRepository = new PlaceDetailDataRepository(googleApi);
+        autoCompleteDataRepository = new AutoCompleteDataRepository(googleApi, locationRepository);
         settingRepository = new SettingRepository(context);
-        distanceCalculator = new DistanceCalculator();
     }
 
     @SuppressWarnings("unchecked")

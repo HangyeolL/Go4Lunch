@@ -14,11 +14,13 @@ import androidx.work.WorkManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
 import com.hangyeollee.go4lunch.data.repository.SettingRepository;
+import com.hangyeollee.go4lunch.ui.settings.SettingsViewState;
 import com.hangyeollee.go4lunch.utils.LiveDataTestUtils;
 
 import org.junit.Before;
@@ -44,6 +46,8 @@ public class MainHomeViewModelTest {
 
     private Clock clock;
 
+    private FirebaseUser firebaseUser;
+
     private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListMutableLiveData = new MutableLiveData<>();
 
@@ -58,8 +62,6 @@ public class MainHomeViewModelTest {
         settingRepository = Mockito.mock(SettingRepository.class);
 
         clock = Mockito.mock(Clock.class);
-        WorkManager workManager = Mockito.spy(WorkManager.class);
-        when(WorkManager.getInstance(application)).thenReturn(workManager);
 
         android.location.Location userLocation = Mockito.mock(android.location.Location.class);
         when(userLocation.getLatitude()).thenReturn(11.12);
@@ -71,16 +73,17 @@ public class MainHomeViewModelTest {
         doReturn(locationMutableLiveData).when(locationRepository).getLocationLiveData();
         doReturn(lunchRestaurantListMutableLiveData).when(firebaseRepository).getLunchRestaurantListOfAllUsers();
 
-        FirebaseAuth firebaseAuth = Mockito.mock(FirebaseAuth.class);
-        FirebaseUser firebaseUser = Mockito.mock(FirebaseUser.class);
+        firebaseUser = Mockito.mock(FirebaseUser.class);
         Uri uri = Mockito.mock(Uri.class);
 
-        doReturn(firebaseUser).when(firebaseAuth).getCurrentUser();
-        doReturn("userId").when(firebaseUser).getUid();
+        doReturn(firebaseUser).when(firebaseRepository).getCurrentUser();
+        doReturn("userId1").when(firebaseUser).getUid();
         doReturn("userName").when(firebaseUser).getDisplayName();
         doReturn("userEmail").when(firebaseUser).getEmail();
         doReturn(uri).when(firebaseUser).getPhotoUrl();
         doReturn("userPhotoUrl").when(uri).toString();
+
+        doReturn("Email unavailable").when(application).getString(R.string.email_unavailable);
 
         viewModel = new MainHomeViewModel(
           application,
@@ -92,7 +95,6 @@ public class MainHomeViewModelTest {
         );
     }
 
-    @Ignore
     @Test
     public void nominal_case () {
         //WHEN
@@ -105,8 +107,52 @@ public class MainHomeViewModelTest {
         assertEquals(expectedViewState, viewState);
     }
 
+    @Test
+    public void email_unavailable() {
+        //GIVEN
+        doReturn(null).when(firebaseUser).getEmail();
 
+        //WHEN
+        MainHomeViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getMainHomeActivityViewStateLiveData());
 
+        //THEN
+        MainHomeViewState expectedViewState = new MainHomeViewState(
+            "userName", "Email unavailable", "userPhotoUrl", null
+        );
+        assertEquals(expectedViewState, viewState);
+    }
+
+    @Test
+    public void user_has_chosen_happy_food1_as_lunch_restaurant() {
+        //GIVEN
+        List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
+        lunchRestaurantList.add(new LunchRestaurant(
+                "placeId1",
+                "userId1",
+                "happy food1",
+                "2022-12-01"
+            )
+        );
+        lunchRestaurantListMutableLiveData.setValue(lunchRestaurantList);
+
+        //WHEN
+        MainHomeViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getMainHomeActivityViewStateLiveData());
+
+        //THEN
+        MainHomeViewState expectedViewState = new MainHomeViewState(
+            "userName", "userEmail", "userPhotoUrl", "happy food1"
+        );
+        assertEquals(expectedViewState, viewState);
+    }
+
+    @Test
+    public void searchView_input_test() {
+        //GIVEN
+        viewModel.onSearchViewTextChanged("input");
+
+        //THEN
+        Mockito.verify(autoCompleteDataRepository).setUserSearchTextQuery("input");
+    }
 
 
 }
