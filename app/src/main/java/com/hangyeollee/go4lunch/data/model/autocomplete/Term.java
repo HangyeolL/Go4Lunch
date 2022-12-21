@@ -1,24 +1,15 @@
-package com.hangyeollee.go4lunch.data.model.autocompletepojo;
+package com.hangyeollee.go4lunch.data.model.autocomplete;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class MatchedSubstring {
-
-    @SerializedName("length")
-    @Expose
-    private Integer length;
+public class Term {
     @SerializedName("offset")
     @Expose
     private Integer offset;
-
-    public Integer getLength() {
-        return length;
-    }
-
-    public void setLength(Integer length) {
-        this.length = length;
-    }
+    @SerializedName("value")
+    @Expose
+    private String value;
 
     public Integer getOffset() {
         return offset;
@@ -26,6 +17,14 @@ public class MatchedSubstring {
 
     public void setOffset(Integer offset) {
         this.offset = offset;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

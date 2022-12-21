@@ -1,9 +1,9 @@
-package com.hangyeollee.go4lunch.data.model.autocompletepojo;
+package com.hangyeollee.go4lunch.data.model.autocomplete;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class MainTextMatchedSubstring {
+public class MatchedSubstringResponse {
 
     @SerializedName("length")
     @Expose

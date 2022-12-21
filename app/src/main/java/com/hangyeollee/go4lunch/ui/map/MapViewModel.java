@@ -13,8 +13,8 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.gms.maps.model.LatLng;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
-import com.hangyeollee.go4lunch.data.model.autocompletepojo.Prediction;
+import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteDataResponse;
+import com.hangyeollee.go4lunch.data.model.autocomplete.Prediction;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
@@ -55,7 +55,7 @@ public class MapViewModel extends ViewModel {
             }
         );
 
-        LiveData<MyAutoCompleteData> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
+        LiveData<MyAutoCompleteDataResponse> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
 
         LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
 
@@ -97,7 +97,7 @@ public class MapViewModel extends ViewModel {
         @Nullable Location location,
         @Nullable List<LunchRestaurant> lunchRestaurantList,
         @Nullable MyNearBySearchData myNearBySearchData,
-        @Nullable MyAutoCompleteData myAutoCompleteData
+        @Nullable MyAutoCompleteDataResponse myAutoCompleteDataResponse
     ) {
         if (location == null || myNearBySearchData == null) {
             return;
@@ -110,10 +110,10 @@ public class MapViewModel extends ViewModel {
         for (Result result : myNearBySearchData.getResults()) {
             boolean shouldAppear = false;
 
-            if (myAutoCompleteData == null || myAutoCompleteData.getPredictions().isEmpty()) {
+            if (myAutoCompleteDataResponse == null || myAutoCompleteDataResponse.getPredictions().isEmpty()) {
                 shouldAppear = true;
             } else {
-                for (Prediction prediction : myAutoCompleteData.getPredictions()) {
+                for (Prediction prediction : myAutoCompleteDataResponse.getPredictions()) {
                     if (prediction.getPlaceId().equals(result.getPlaceId()) &&
                         prediction.getDescription().contains(result.getName())) {
                         shouldAppear = true;

@@ -42,10 +42,8 @@ public class MainHomeViewModel extends ViewModel {
     private final LocationRepository locationRepository;
     private final AutoCompleteDataRepository autoCompleteDataRepository;
     private final SettingRepository settingRepository;
-
+    private final WorkManager workManager;
     private final Clock clock;
-
-    private WorkManager workManager;
 
     private static final String REMINDER_REQUEST = "REMINDER_REQUEST";
 
@@ -60,6 +58,7 @@ public class MainHomeViewModel extends ViewModel {
             LocationRepository locationRepository,
             AutoCompleteDataRepository autoCompleteDataRepository,
             SettingRepository settingRepository,
+            WorkManager workManager,
             Clock clock
     ) {
         this.context = context;
@@ -67,6 +66,7 @@ public class MainHomeViewModel extends ViewModel {
         this.locationRepository = locationRepository;
         this.autoCompleteDataRepository = autoCompleteDataRepository;
         this.settingRepository = settingRepository;
+        this.workManager = workManager;
         this.clock = clock;
 
 
@@ -136,7 +136,7 @@ public class MainHomeViewModel extends ViewModel {
     /**
      * EVENTS
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    // TODO Hangyeol Test it!
     public void onUserLoggedIn() {
         firebaseRepository.saveUserInFirestore();
 
@@ -147,8 +147,6 @@ public class MainHomeViewModel extends ViewModel {
             if (currentDate.isAfter(thisNoon)) {
                 thisNoon = thisNoon.plusDays(1);
             }
-
-            workManager = WorkManager.getInstance(context);
 
             long timeLeft = ChronoUnit
                     .SECONDS
@@ -162,13 +160,15 @@ public class MainHomeViewModel extends ViewModel {
             workManager.enqueueUniquePeriodicWork(
                     REMINDER_REQUEST,
                     ExistingPeriodicWorkPolicy.REPLACE,
-                    workRequest);
+                    workRequest
+            );
 
         } else {
             workManager.cancelAllWork();
         }
     }
 
+    // TODO Hangyeol Test it!
     public void onYourLunchClicked(MainHomeViewState mainHomeViewState) {
         if (mainHomeViewState.getLunchRestaurantName() == null) {
             toastMessageSingleLiveEvent.setValue(context.getString(R.string.did_not_decide_where_to_lunch));
@@ -195,10 +195,12 @@ public class MainHomeViewModel extends ViewModel {
      */
 
     @SuppressLint("MissingPermission")
+    // TODO Hangyeol Test it!
     public void startLocationRequest() {
         locationRepository.startLocationRequest();
     }
 
+    // TODO Hangyeol Test it!
     public void stopLocationRequest() {
         locationRepository.stopLocationRequest();
     }

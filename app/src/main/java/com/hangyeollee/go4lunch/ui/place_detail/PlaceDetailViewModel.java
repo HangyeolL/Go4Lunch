@@ -120,6 +120,7 @@ public class PlaceDetailViewModel extends ViewModel {
         if (myPlaceDetailData.getResult().getRating() != null) {
             rating = myPlaceDetailData.getResult().getRating().floatValue();
         } else {
+            // TODO Hangyeol Test it!
             rating = 0;
         }
 
@@ -211,6 +212,7 @@ public class PlaceDetailViewModel extends ViewModel {
         }
     }
 
+    // TODO Hangyeol Test it!
     public void onButtonLikeClicked(PlaceDetailViewState placeDetailViewState) {
         firebaseRepository.addOrRemoveLikedRestaurant(
             placeIdMutableLiveData.getValue(),
@@ -225,6 +227,7 @@ public class PlaceDetailViewModel extends ViewModel {
         }
     }
 
+    // TODO Hangyeol Test it!
     public void onFloatingActionButtonClicked(PlaceDetailViewState placeDetailViewState) {
         firebaseRepository.addOrRemoveLunchRestaurant(
             placeIdMutableLiveData.getValue(),

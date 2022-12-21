@@ -13,8 +13,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.maps.model.LatLng;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
-import com.hangyeollee.go4lunch.data.model.autocompletepojo.Prediction;
+import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteDataResponse;
+import com.hangyeollee.go4lunch.data.model.autocomplete.Prediction;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Geometry;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.OpeningHours;
@@ -45,7 +45,7 @@ public class MapViewModelTest {
 
     private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<MyNearBySearchData> nearBySearchDataMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<MyAutoCompleteData> autoCompleteDataMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<MyAutoCompleteDataResponse> autoCompleteDataMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListMutableLiveData = new MutableLiveData<>();
 
     private MapViewModel viewModel;
@@ -70,7 +70,7 @@ public class MapViewModelTest {
             )
         );
         autoCompleteDataMutableLiveData.setValue(
-            new MyAutoCompleteData(
+            new MyAutoCompleteDataResponse(
                 new ArrayList<>(),
                 "OK"
             )
@@ -120,7 +120,7 @@ public class MapViewModelTest {
         predictions.add(prediction);
 
         autoCompleteDataMutableLiveData.setValue(
-            new MyAutoCompleteData(
+            new MyAutoCompleteDataResponse(
                 predictions,
                 "OK"
             )

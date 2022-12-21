@@ -14,8 +14,8 @@ import androidx.lifecycle.ViewModel;
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
-import com.hangyeollee.go4lunch.data.model.autocompletepojo.Prediction;
+import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteDataResponse;
+import com.hangyeollee.go4lunch.data.model.autocomplete.Prediction;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Result;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
@@ -27,7 +27,6 @@ import com.hangyeollee.go4lunch.utils.DistanceCalculator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -61,7 +60,7 @@ public class ListViewModel extends ViewModel {
                 }
         );
 
-        LiveData<MyAutoCompleteData> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
+        LiveData<MyAutoCompleteDataResponse> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
 
         LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
 
@@ -102,7 +101,7 @@ public class ListViewModel extends ViewModel {
     }
 
     private void combine(@Nullable MyNearBySearchData myNearBySearchData,
-                         @Nullable MyAutoCompleteData autoCompleteData,
+                         @Nullable MyAutoCompleteDataResponse autoCompleteData,
                          @Nullable Map<String, Integer> workmatesJoiningNumberMap
     ) {
         if (myNearBySearchData == null || workmatesJoiningNumberMap == null) {

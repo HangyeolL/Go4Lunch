@@ -1,4 +1,6 @@
-package com.hangyeollee.go4lunch.data.model.autocompletepojo;
+package com.hangyeollee.go4lunch.data.model.autocomplete;
+
+import androidx.annotation.VisibleForTesting;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -7,17 +9,17 @@ import org.jetbrains.annotations.TestOnly;
 
 import java.util.List;
 
-public class MyAutoCompleteData {
+public class MyAutoCompleteDataResponse {
 
     @SerializedName("predictions")
     @Expose
-    private List<Prediction> predictions = null;
+    private final List<Prediction> predictions;
     @SerializedName("status")
     @Expose
-    private String status;
+    private final String status;
 
-    @TestOnly
-    public MyAutoCompleteData(List<Prediction> predictions, String status) {
+    @VisibleForTesting
+    public MyAutoCompleteDataResponse(List<Prediction> predictions, String status) {
         this.predictions = predictions;
         this.status = status;
     }
@@ -26,16 +28,7 @@ public class MyAutoCompleteData {
         return predictions;
     }
 
-    public void setPredictions(List<Prediction> predictions) {
-        this.predictions = predictions;
-    }
-
     public String getStatus() {
         return status;
     }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
 }

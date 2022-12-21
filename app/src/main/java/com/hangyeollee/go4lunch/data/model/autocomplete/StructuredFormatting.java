@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.data.model.autocompletepojo;
+package com.hangyeollee.go4lunch.data.model.autocomplete;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -11,7 +11,7 @@ public class StructuredFormatting {
     private String mainText;
     @SerializedName("main_text_matched_substrings")
     @Expose
-    private List<MainTextMatchedSubstring> mainTextMatchedSubstrings = null;
+    private List<MainTextMatchedSubstringResponse> mainTextMatchedSubstringResponses = null;
     @SerializedName("secondary_text")
     @Expose
     private String secondaryText;
@@ -24,12 +24,12 @@ public class StructuredFormatting {
         this.mainText = mainText;
     }
 
-    public List<MainTextMatchedSubstring> getMainTextMatchedSubstrings() {
-        return mainTextMatchedSubstrings;
+    public List<MainTextMatchedSubstringResponse> getMainTextMatchedSubstrings() {
+        return mainTextMatchedSubstringResponses;
     }
 
-    public void setMainTextMatchedSubstrings(List<MainTextMatchedSubstring> mainTextMatchedSubstrings) {
-        this.mainTextMatchedSubstrings = mainTextMatchedSubstrings;
+    public void setMainTextMatchedSubstrings(List<MainTextMatchedSubstringResponse> mainTextMatchedSubstringResponses) {
+        this.mainTextMatchedSubstringResponses = mainTextMatchedSubstringResponses;
     }
 
     public String getSecondaryText() {

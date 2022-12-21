@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.work.WorkManager;
 
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
@@ -90,7 +91,15 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new LogInViewModel(context, firebaseAuth);
         }
         else if (modelClass.isAssignableFrom(MainHomeViewModel.class)) {
-            return (T) new MainHomeViewModel(context, firebaseRepository, locationRepository, autoCompleteDataRepository, settingRepository, clock);
+            return (T) new MainHomeViewModel(
+                context,
+                firebaseRepository,
+                locationRepository,
+                autoCompleteDataRepository,
+                settingRepository,
+                WorkManager.getInstance(context),
+                clock
+            );
         }
         else if (modelClass.isAssignableFrom(MapViewModel.class)) {
             return (T) new MapViewModel(context, locationRepository, firebaseRepository, nearbySearchDataRepository, autoCompleteDataRepository);

@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.data.model.autocompletepojo;
+package com.hangyeollee.go4lunch.data.model.autocomplete;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -11,7 +11,7 @@ public class Prediction {
     private String description;
     @SerializedName("matched_substrings")
     @Expose
-    private List<MatchedSubstring> matchedSubstrings = null;
+    private List<MatchedSubstringResponse> matchedSubstrings = null;
     @SerializedName("place_id")
     @Expose
     private String placeId;
@@ -36,11 +36,11 @@ public class Prediction {
         this.description = description;
     }
 
-    public List<MatchedSubstring> getMatchedSubstrings() {
+    public List<MatchedSubstringResponse> getMatchedSubstrings() {
         return matchedSubstrings;
     }
 
-    public void setMatchedSubstrings(List<MatchedSubstring> matchedSubstrings) {
+    public void setMatchedSubstrings(List<MatchedSubstringResponse> matchedSubstrings) {
         this.matchedSubstrings = matchedSubstrings;
     }
 

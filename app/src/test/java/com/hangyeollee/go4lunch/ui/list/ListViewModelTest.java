@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 
 import android.app.Application;
@@ -15,8 +14,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.data.model.autocompletepojo.MyAutoCompleteData;
-import com.hangyeollee.go4lunch.data.model.autocompletepojo.Prediction;
+import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteDataResponse;
+import com.hangyeollee.go4lunch.data.model.autocomplete.Prediction;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Geometry;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
 import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.OpeningHours;
@@ -59,7 +58,7 @@ public class ListViewModelTest {
 
     private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<MyNearBySearchData> nearBySearchDataMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<MyAutoCompleteData> autoCompleteDataMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<MyAutoCompleteDataResponse> autoCompleteDataMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Map<String, Integer>> workmatesJoiningNumberMapMutableLiveData = new MutableLiveData<>();
 
@@ -87,7 +86,7 @@ public class ListViewModelTest {
                 new ArrayList<>(), "", getDefaultNearbySearchResultList(), "OK")
         );
         autoCompleteDataMutableLiveData.setValue(
-            new MyAutoCompleteData(
+            new MyAutoCompleteDataResponse(
                 new ArrayList<>(),
                 "OK"
             )
@@ -158,7 +157,7 @@ public class ListViewModelTest {
         predictions.add(prediction);
 
         autoCompleteDataMutableLiveData.setValue(
-            new MyAutoCompleteData(
+            new MyAutoCompleteDataResponse(
                 predictions,
                 "OK"
             )

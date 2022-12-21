@@ -78,7 +78,7 @@ public class SettingsViewModel extends ViewModel {
     /**
      * EVENTS
      */
-
+    // TODO Hangyeol Test it!
     public void onSwitchClicked(boolean enable) {
         settingRepository.setNotificationEnabled(enable);
 

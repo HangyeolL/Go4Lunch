@@ -31,6 +31,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +46,7 @@ public class MainHomeViewModelTest {
     private LocationRepository locationRepository;
     private AutoCompleteDataRepository autoCompleteDataRepository;
     private SettingRepository settingRepository;
-
+    private WorkManager workManager;
     private Clock clock;
 
     private FirebaseUser firebaseUser;
@@ -60,8 +63,11 @@ public class MainHomeViewModelTest {
         locationRepository = Mockito.mock(LocationRepository.class);
         autoCompleteDataRepository = Mockito.mock(AutoCompleteDataRepository.class);
         settingRepository = Mockito.mock(SettingRepository.class);
-
-        clock = Mockito.mock(Clock.class);
+        workManager = Mockito.mock(WorkManager.class);
+        clock = Clock.fixed(
+            Instant.ofEpochSecond(1671632869), // 21/12/2022 - 15:27:49 - Paris
+            ZoneOffset.UTC
+        );
 
         android.location.Location userLocation = Mockito.mock(android.location.Location.class);
         when(userLocation.getLatitude()).thenReturn(11.12);
@@ -91,6 +97,7 @@ public class MainHomeViewModelTest {
           locationRepository,
           autoCompleteDataRepository,
           settingRepository,
+          workManager,
           clock
         );
     }
