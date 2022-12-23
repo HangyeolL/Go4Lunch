@@ -20,7 +20,7 @@
 
     <string name="international_phone_number_unavailable">international phone number not available</string>
     <string name="user_is_joining"> is joining!</string>
-    <string name="add_to_liked_restaurant_list"> added to liked restaurant list</string>
+    <string name="add_to_liked_restaurant_list">added to liked restaurant list</string>
     <string name="is_already_liked"> is already liked</string>
     <string name="you_will_not_go_to">You won\'t go to\u0020</string>
     <string name="email_unavailable">Email unavailable</string>

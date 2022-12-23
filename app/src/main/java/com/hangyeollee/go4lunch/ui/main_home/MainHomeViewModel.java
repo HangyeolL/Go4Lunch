@@ -136,7 +136,6 @@ public class MainHomeViewModel extends ViewModel {
     /**
      * EVENTS
      */
-    // TODO Hangyeol Test it!
     public void onUserLoggedIn() {
         firebaseRepository.saveUserInFirestore();
 
@@ -168,7 +167,6 @@ public class MainHomeViewModel extends ViewModel {
         }
     }
 
-    // TODO Hangyeol Test it!
     public void onYourLunchClicked(MainHomeViewState mainHomeViewState) {
         if (mainHomeViewState.getLunchRestaurantName() == null) {
             toastMessageSingleLiveEvent.setValue(context.getString(R.string.did_not_decide_where_to_lunch));
@@ -195,12 +193,10 @@ public class MainHomeViewModel extends ViewModel {
      */
 
     @SuppressLint("MissingPermission")
-    // TODO Hangyeol Test it!
     public void startLocationRequest() {
         locationRepository.startLocationRequest();
     }
 
-    // TODO Hangyeol Test it!
     public void stopLocationRequest() {
         locationRepository.stopLocationRequest();
     }

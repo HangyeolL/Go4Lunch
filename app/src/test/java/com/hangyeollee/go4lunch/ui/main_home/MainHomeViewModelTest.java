@@ -10,9 +10,10 @@ import android.net.Uri;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.MutableLiveData;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
@@ -20,7 +21,6 @@ import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
 import com.hangyeollee.go4lunch.data.repository.SettingRepository;
-import com.hangyeollee.go4lunch.ui.settings.SettingsViewState;
 import com.hangyeollee.go4lunch.utils.LiveDataTestUtils;
 
 import org.junit.Before;
@@ -32,7 +32,6 @@ import org.mockito.Mockito;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +52,7 @@ public class MainHomeViewModelTest {
 
     private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isNotificationEnabledBooleanLiveData = new MutableLiveData<>();
 
     private MainHomeViewModel viewModel;
 
@@ -75,9 +75,11 @@ public class MainHomeViewModelTest {
         locationMutableLiveData.setValue(userLocation);
 
         lunchRestaurantListMutableLiveData.setValue(new ArrayList<>());
+        isNotificationEnabledBooleanLiveData.setValue(false);
 
         doReturn(locationMutableLiveData).when(locationRepository).getLocationLiveData();
         doReturn(lunchRestaurantListMutableLiveData).when(firebaseRepository).getLunchRestaurantListOfAllUsers();
+        doReturn(isNotificationEnabledBooleanLiveData).when(settingRepository).getIsNotificationEnabledLiveData();
 
         firebaseUser = Mockito.mock(FirebaseUser.class);
         Uri uri = Mockito.mock(Uri.class);
@@ -90,6 +92,7 @@ public class MainHomeViewModelTest {
         doReturn("userPhotoUrl").when(uri).toString();
 
         doReturn("Email unavailable").when(application).getString(R.string.email_unavailable);
+        doReturn("You didn\\'t decide where to lunch yet").when(application).getString(R.string.did_not_decide_where_to_lunch);
 
         viewModel = new MainHomeViewModel(
           application,
@@ -152,6 +155,80 @@ public class MainHomeViewModelTest {
         assertEquals(expectedViewState, viewState);
     }
 
+    @Ignore //TODO NINO check
+    @Test
+    public void onUserLoggedIn_notification_is_enabled() {
+        //GIVEN
+        PeriodicWorkRequest workRequest = Mockito.mock(PeriodicWorkRequest.class);
+        isNotificationEnabledBooleanLiveData.setValue(true);
+
+        //WHEN
+        viewModel.onUserLoggedIn();
+
+        //THEN
+        Mockito.verify(workManager).enqueueUniquePeriodicWork(
+            "REMINDER_REQUEST",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            workRequest
+        );
+        Mockito.verify(firebaseRepository).saveUserInFirestore();
+    }
+
+    @Test
+    public void onUserLoggedIn_notification_is_disabled() {
+        //WHEN
+        viewModel.onUserLoggedIn();
+
+        //THEN
+        Mockito.verify(workManager).cancelAllWork();
+        Mockito.verify(firebaseRepository).saveUserInFirestore();
+    }
+
+    @Test
+    public void onYourLunchClicked_user_did_not_choose_lunch_restaurant_yet() {
+        //WHEN
+        MainHomeViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getMainHomeActivityViewStateLiveData());
+        viewModel.onYourLunchClicked(viewState);
+
+        String actualString = LiveDataTestUtils.getValueForTesting(viewModel.getToastMessageSingleLiveEvent());
+
+        //THEN
+        assertEquals("You didn\\'t decide where to lunch yet", actualString);
+    }
+
+    @Test
+    public void onYourLunchClicked_user_chose_happy_food1_as_lunch_restaurant() {
+        //GIVEN
+        //GIVEN
+        List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
+        lunchRestaurantList.add(new LunchRestaurant(
+                "placeId1",
+                "userId1",
+                "happy food1",
+                "2022-12-01"
+            )
+        );
+        lunchRestaurantListMutableLiveData.setValue(lunchRestaurantList);
+
+        //WHEN
+        MainHomeViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getMainHomeActivityViewStateLiveData());
+        viewModel.onYourLunchClicked(viewState);
+
+        String actualString = LiveDataTestUtils.getValueForTesting(viewModel.getToastMessageSingleLiveEvent());
+
+        //THEN
+        assertEquals("happy food1", actualString);
+    }
+
+    @Test
+    public void onLogOutClicked() {
+        //WHEN
+        viewModel.onLogOutClicked();
+
+        //THEN
+        Mockito.verify(firebaseRepository).signOutFromFirebaseAuth();
+    }
+
     @Test
     public void searchView_input_test() {
         //GIVEN
@@ -161,5 +238,22 @@ public class MainHomeViewModelTest {
         Mockito.verify(autoCompleteDataRepository).setUserSearchTextQuery("input");
     }
 
+    @Test
+    public void startLocationRequest() {
+        //GIVEN
+        viewModel.startLocationRequest();
+
+        //THEN
+        Mockito.verify(locationRepository).startLocationRequest();
+    }
+
+    @Test
+    public void stopLocationRequest() {
+        //GIVEN
+        viewModel.stopLocationRequest();
+
+        //THEN
+        Mockito.verify(locationRepository).stopLocationRequest();
+    }
 
 }

@@ -96,6 +96,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.+'
     testImplementation 'org.mockito:mockito-core:3.+'
+    testImplementation "org.mockito:mockito-inline:3.11.2"
     // Helps testing livedata : InstantTaskExecutorRule for example
     testImplementation "androidx.arch.core:core-testing:2.1.0"
 

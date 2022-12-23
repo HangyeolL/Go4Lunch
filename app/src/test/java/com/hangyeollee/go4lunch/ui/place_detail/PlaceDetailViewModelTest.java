@@ -27,6 +27,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -48,8 +49,6 @@ public class PlaceDetailViewModelTest {
     private final MutableLiveData<List<User>> userListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LikedRestaurant>> likedRestaurantListMutableLiveData = new MutableLiveData<>();
-
-    private final SingleLiveEvent<String> toastMessageSingleLiveEvent = new SingleLiveEvent<>();
 
     private PlaceDetailViewModel viewModel;
 
@@ -89,10 +88,14 @@ public class PlaceDetailViewModelTest {
         doReturn(lunchRestaurantListMutableLiveData).when(firebaseRepository).getLunchRestaurantListOfAllUsers();
         doReturn(likedRestaurantListMutableLiveData).when(firebaseRepository).getLikedRestaurantList();
 
+        doReturn()
+
         doReturn(R.color.grey).when(application).getColor(R.color.grey);
         doReturn(R.color.yellow).when(application).getColor(R.color.yellow);
-
-//        doReturn("website not available").when(application).getString(R.string.website_unavailable);
+        doReturn("website not available").when(application).getString(R.string.website_unavailable);
+        doReturn("international phone number not available").when(application).getString(R.string.international_phone_number_unavailable);
+        doReturn("removed from the liked restaurant List").when(application).getString(R.string.removed_from_the_liked_restaurant_list);
+        doReturn("added to liked restaurant list").when(application).getString(R.string.add_to_liked_restaurant_list);
 
         viewModel = new PlaceDetailViewModel(application, placeDetailDataRepository, firebaseRepository);
     }
@@ -253,9 +256,40 @@ public class PlaceDetailViewModelTest {
         assertEquals(expectedViewState, viewState);
     }
 
-    @Ignore
     @Test
-    public void edge_case_website_unavailable_should_put_null_in_string_single_live_event() {
+    public void onButtonCallClicked_international_phoneNumber_unavailable() {
+        // GIVEN
+        viewModel.onPlaceIdFetched("placeId1");
+
+        myPlaceDetailDataMutableLiveData.setValue(
+            new MyPlaceDetailData(
+                new ArrayList<>(),
+                new Result(
+                    new Geometry(),
+                    null,
+                    "placeDetailDataResult",
+                    new OpeningHours(true),
+                    photoList,
+                    4.5,
+                    "Seoul",
+                    null
+                ),
+                "OK"
+            )
+        );
+
+        // WHEN
+        PlaceDetailViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getPlaceDetailActivityViewStateLiveData());
+        viewModel.onButtonCallClicked(viewState);
+
+        String expectedString = LiveDataTestUtils.getValueForTesting(viewModel.getToastMessageSingleLiveEvent());
+
+        // THEN
+        assertEquals("international phone number not available", expectedString);
+    }
+
+    @Test
+    public void onButtonWebsiteClicked_website_unavailable() {
         // GIVEN
         viewModel.onPlaceIdFetched("placeId1");
 
@@ -280,9 +314,132 @@ public class PlaceDetailViewModelTest {
         PlaceDetailViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getPlaceDetailActivityViewStateLiveData());
         viewModel.onButtonWebsiteClicked(viewState);
 
+        String expectedString = LiveDataTestUtils.getValueForTesting(viewModel.getToastMessageSingleLiveEvent());
+
         // THEN
-        assertEquals("website not available", toastMessageSingleLiveEvent.getValue());
+        assertEquals("website not available", expectedString);
     }
+
+    @Test
+    public void onButtonLikeClicked_not_selected_as_liked_restaurant() {
+        // GIVEN
+        viewModel.onPlaceIdFetched("placeId1");
+
+        myPlaceDetailDataMutableLiveData.setValue(
+            new MyPlaceDetailData(
+                new ArrayList<>(),
+                new Result(
+                    new Geometry(),
+                    "007",
+                    "placeDetailDataResult",
+                    new OpeningHours(true),
+                    photoList,
+                    4.5,
+                    "Seoul",
+                    "website"
+                ),
+                "OK"
+            )
+        );
+
+        // WHEN
+        PlaceDetailViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getPlaceDetailActivityViewStateLiveData());
+        viewModel.onButtonLikeClicked(viewState);
+
+        //THEN
+        Mockito.verify(firebaseRepository).addOrRemoveLikedRestaurant(
+            "placeId1",
+            viewState.getName(),
+            viewState.isSelectedAsLikedRestaurant()
+        );
+
+        String actualString = LiveDataTestUtils.getValueForTesting(viewModel.getToastMessageSingleLiveEvent());
+        assertEquals("added to liked restaurant list", actualString);
+    }
+
+    @Test
+    public void onButtonLikeClicked_selected_as_liked_restaurant() {
+        // GIVEN
+        List<LikedRestaurant> likedRestaurantList = new ArrayList<>();
+        likedRestaurantList.add(new LikedRestaurant(
+                "placeId1",
+                "placeDetailDataResult"
+            )
+        );
+        likedRestaurantListMutableLiveData.setValue(likedRestaurantList);
+
+        viewModel.onPlaceIdFetched("placeId1");
+
+        myPlaceDetailDataMutableLiveData.setValue(
+            new MyPlaceDetailData(
+                new ArrayList<>(),
+                new Result(
+                    new Geometry(),
+                    "007",
+                    "placeDetailDataResult",
+                    new OpeningHours(true),
+                    photoList,
+                    4.5,
+                    "Seoul",
+                    "website"
+                ),
+                "OK"
+            )
+        );
+
+        // WHEN
+        PlaceDetailViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getPlaceDetailActivityViewStateLiveData());
+        viewModel.onButtonLikeClicked(viewState);
+
+        //THEN
+        Mockito.verify(firebaseRepository).addOrRemoveLikedRestaurant(
+            "placeId1",
+            viewState.getName(),
+            viewState.isSelectedAsLikedRestaurant()
+        );
+
+        String actualString = LiveDataTestUtils.getValueForTesting(viewModel.getToastMessageSingleLiveEvent());
+        assertEquals("removed from the liked restaurant List", actualString);
+    }
+
+    @Test
+    public void onFloatingActionButtonClicked() {
+        // GIVEN
+        viewModel.onPlaceIdFetched("placeId1");
+
+        myPlaceDetailDataMutableLiveData.setValue(
+            new MyPlaceDetailData(
+                new ArrayList<>(),
+                new Result(
+                    new Geometry(),
+                    "007",
+                    "placeDetailDataResult",
+                    new OpeningHours(true),
+                    photoList,
+                    4.5,
+                    "Seoul",
+                    "website"
+                ),
+                "OK"
+            )
+        );
+
+        // WHEN
+        PlaceDetailViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getPlaceDetailActivityViewStateLiveData());
+        viewModel.onButtonLikeClicked(viewState);
+
+        // THEN
+        Mockito.verify(firebaseRepository).addOrRemoveLunchRestaurant(
+            "placeId1",
+
+        );
+    }
+
+
+
+
+
+
 
 
     //INPUTS

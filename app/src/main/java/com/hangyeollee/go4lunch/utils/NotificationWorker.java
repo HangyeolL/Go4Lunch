@@ -43,7 +43,6 @@ public class NotificationWorker extends Worker {
         this.context = context;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @NonNull
     @Override
     public Result doWork() {
@@ -104,7 +103,6 @@ public class NotificationWorker extends Worker {
         notificationManager.notify(1, builder.build());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<LunchRestaurant> getLunchRestaurantList() {
         List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
         CountDownLatch latch = new CountDownLatch(1);
@@ -131,7 +129,6 @@ public class NotificationWorker extends Worker {
         return lunchRestaurantList;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<User> getUserList() {
         List<User> userList = new ArrayList<>();
         CountDownLatch latch = new CountDownLatch(1);
