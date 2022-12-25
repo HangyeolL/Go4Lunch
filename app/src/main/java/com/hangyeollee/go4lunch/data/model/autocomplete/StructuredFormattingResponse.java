@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class StructuredFormatting {
+public class StructuredFormattingResponse {
     @SerializedName("main_text")
     @Expose
     private String mainText;
@@ -20,24 +20,12 @@ public class StructuredFormatting {
         return mainText;
     }
 
-    public void setMainText(String mainText) {
-        this.mainText = mainText;
-    }
-
     public List<MainTextMatchedSubstringResponse> getMainTextMatchedSubstrings() {
         return mainTextMatchedSubstringResponses;
     }
 
-    public void setMainTextMatchedSubstrings(List<MainTextMatchedSubstringResponse> mainTextMatchedSubstringResponses) {
-        this.mainTextMatchedSubstringResponses = mainTextMatchedSubstringResponses;
-    }
-
     public String getSecondaryText() {
         return secondaryText;
-    }
-
-    public void setSecondaryText(String secondaryText) {
-        this.secondaryText = secondaryText;
     }
 
 }

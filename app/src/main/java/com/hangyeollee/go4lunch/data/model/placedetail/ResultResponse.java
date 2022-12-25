@@ -1,18 +1,18 @@
-package com.hangyeollee.go4lunch.data.model.placedetailpojo;
+package com.hangyeollee.go4lunch.data.model.placedetail;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.OpeningHours;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.OpeningHoursResponse;
 
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.List;
 
-public class Result {
+public class ResultResponse {
 
-    @SerializedName("geometry")
+    @SerializedName("geometryResponse")
     @Expose
-    private Geometry geometry;
+    private GeometryResponse geometryResponse;
     @SerializedName("international_phone_number")
     @Expose
     private String internationalPhoneNumber;
@@ -21,10 +21,10 @@ public class Result {
     private String name;
     @SerializedName("opening_hours")
     @Expose
-    private OpeningHours openingHours;
-    @SerializedName("photos")
+    private OpeningHoursResponse openingHoursResponse;
+    @SerializedName("photoResponses")
     @Expose
-    private List<Photo> photos = null;
+    private List<PhotoResponse> photoResponses = null;
     @SerializedName("rating")
     @Expose
     private Double rating;
@@ -36,23 +36,23 @@ public class Result {
     private String website;
 
     @TestOnly
-    public Result(Geometry geometry, String internationalPhoneNumber, String name, OpeningHours openingHours, List<Photo> photos, Double rating, String vicinity, String website) {
-        this.geometry = geometry;
+    public ResultResponse(GeometryResponse geometryResponse, String internationalPhoneNumber, String name, OpeningHoursResponse openingHoursResponse, List<PhotoResponse> photoResponses, Double rating, String vicinity, String website) {
+        this.geometryResponse = geometryResponse;
         this.internationalPhoneNumber = internationalPhoneNumber;
         this.name = name;
-        this.openingHours = openingHours;
-        this.photos = photos;
+        this.openingHoursResponse = openingHoursResponse;
+        this.photoResponses = photoResponses;
         this.rating = rating;
         this.vicinity = vicinity;
         this.website = website;
     }
 
-    public Geometry getGeometry() {
-        return geometry;
+    public GeometryResponse getGeometry() {
+        return geometryResponse;
     }
 
-    public void setGeometry(Geometry geometry) {
-        this.geometry = geometry;
+    public void setGeometry(GeometryResponse geometryResponse) {
+        this.geometryResponse = geometryResponse;
     }
 
     public String getInternationalPhoneNumber() {
@@ -71,20 +71,20 @@ public class Result {
         this.name = name;
     }
 
-    public OpeningHours getOpeningHours() {
-        return openingHours;
+    public OpeningHoursResponse getOpeningHours() {
+        return openingHoursResponse;
     }
 
-    public void setOpeningHours(OpeningHours openingHours) {
-        this.openingHours = openingHours;
+    public void setOpeningHours(OpeningHoursResponse openingHoursResponse) {
+        this.openingHoursResponse = openingHoursResponse;
     }
 
-    public List<Photo> getPhotos() {
-        return photos;
+    public List<PhotoResponse> getPhotos() {
+        return photoResponses;
     }
 
-    public void setPhotos(List<Photo> photos) {
-        this.photos = photos;
+    public void setPhotos(List<PhotoResponse> photoResponses) {
+        this.photoResponses = photoResponses;
     }
 
     public Double getRating() {

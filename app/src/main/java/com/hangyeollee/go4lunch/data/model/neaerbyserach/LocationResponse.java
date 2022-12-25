@@ -1,16 +1,23 @@
-package com.hangyeollee.go4lunch.data.model.placedetailpojo;
+package com.hangyeollee.go4lunch.data.model.neaerbyserach;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Location {
+import org.jetbrains.annotations.TestOnly;
 
+public class LocationResponse {
     @SerializedName("lat")
     @Expose
     private Double lat;
     @SerializedName("lng")
     @Expose
     private Double lng;
+
+    @TestOnly
+    public LocationResponse(Double lat, Double lng) {
+        this.lat = lat;
+        this.lng = lng;
+    }
 
     public Double getLat() {
         return lat;

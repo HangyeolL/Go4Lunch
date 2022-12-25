@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Prediction {
+public class PredictionResponse {
     @SerializedName("description")
     @Expose
     private String description;
@@ -20,10 +20,10 @@ public class Prediction {
     private String reference;
     @SerializedName("structured_formatting")
     @Expose
-    private StructuredFormatting structuredFormatting;
-    @SerializedName("terms")
+    private StructuredFormattingResponse structuredFormattingResponse;
+    @SerializedName("termResponses")
     @Expose
-    private List<Term> terms = null;
+    private List<TermResponse> termResponses = null;
     @SerializedName("types")
     @Expose
     private List<String> types = null;
@@ -60,20 +60,20 @@ public class Prediction {
         this.reference = reference;
     }
 
-    public StructuredFormatting getStructuredFormatting() {
-        return structuredFormatting;
+    public StructuredFormattingResponse getStructuredFormatting() {
+        return structuredFormattingResponse;
     }
 
-    public void setStructuredFormatting(StructuredFormatting structuredFormatting) {
-        this.structuredFormatting = structuredFormatting;
+    public void setStructuredFormatting(StructuredFormattingResponse structuredFormattingResponse) {
+        this.structuredFormattingResponse = structuredFormattingResponse;
     }
 
-    public List<Term> getTerms() {
-        return terms;
+    public List<TermResponse> getTerms() {
+        return termResponses;
     }
 
-    public void setTerms(List<Term> terms) {
-        this.terms = terms;
+    public void setTerms(List<TermResponse> termResponses) {
+        this.termResponses = termResponses;
     }
 
     public List<String> getTypes() {

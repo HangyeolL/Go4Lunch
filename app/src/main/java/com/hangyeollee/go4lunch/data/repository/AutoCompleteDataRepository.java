@@ -9,7 +9,7 @@ import androidx.lifecycle.Transformations;
 
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.api.GoogleApi;
-import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteDataResponse;
+import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -18,7 +18,7 @@ import retrofit2.Response;
 public class AutoCompleteDataRepository {
 
     private final GoogleApi mGoogleApi;
-    private final LiveData<MyAutoCompleteDataResponse> mAutoCompleteDataLiveData;
+    private final LiveData<MyAutoCompleteResponse> autoCompleteDataLiveData;
     private final MutableLiveData<String> userInputMutableLiveData = new MutableLiveData<>();
 
     public AutoCompleteDataRepository(GoogleApi googleApi, LocationRepository locationRepository) {
@@ -26,7 +26,7 @@ public class AutoCompleteDataRepository {
 
         LiveData<Location> locationLiveData = locationRepository.getLocationLiveData();
 
-        mAutoCompleteDataLiveData = Transformations.switchMap(
+        autoCompleteDataLiveData = Transformations.switchMap(
                 locationLiveData,
                 location -> Transformations.switchMap(
                         userInputMutableLiveData,
@@ -42,8 +42,8 @@ public class AutoCompleteDataRepository {
 
     }
 
-    public LiveData<MyAutoCompleteDataResponse> getAutoCompleteDataLiveData() {
-        return mAutoCompleteDataLiveData;
+    public LiveData<MyAutoCompleteResponse> getAutoCompleteDataLiveData() {
+        return autoCompleteDataLiveData;
     }
 
     public LiveData<String> getUserInputMutableLiveData() {
@@ -54,18 +54,18 @@ public class AutoCompleteDataRepository {
         userInputMutableLiveData.setValue(userSearchTextQuery);
     }
 
-    public LiveData<MyAutoCompleteDataResponse> fetchAndGetAutoCompleteData(String userInput, String location) {
-        MutableLiveData<MyAutoCompleteDataResponse> mutableLiveData = new MutableLiveData<>();
+    public LiveData<MyAutoCompleteResponse> fetchAndGetAutoCompleteData(String userInput, String location) {
+        MutableLiveData<MyAutoCompleteResponse> mutableLiveData = new MutableLiveData<>();
 
-        Call<MyAutoCompleteDataResponse> call = mGoogleApi.getAutoCompleteData(userInput, location, 3000, "restaurant", "en", true, BuildConfig.PLACES_API_KEY);
-        call.enqueue(new Callback<MyAutoCompleteDataResponse>() {
+        Call<MyAutoCompleteResponse> call = mGoogleApi.getAutoCompleteData(userInput, location, 3000, "restaurant", "en", true, BuildConfig.PLACES_API_KEY);
+        call.enqueue(new Callback<MyAutoCompleteResponse>() {
             @Override
-            public void onResponse(Call<MyAutoCompleteDataResponse> call, Response<MyAutoCompleteDataResponse> response) {
+            public void onResponse(Call<MyAutoCompleteResponse> call, Response<MyAutoCompleteResponse> response) {
                 mutableLiveData.setValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<MyAutoCompleteDataResponse> call, Throwable t) {
+            public void onFailure(Call<MyAutoCompleteResponse> call, Throwable t) {
                 Log.w("AutoComplete", "failed", t);
                 mutableLiveData.postValue(null);
             }

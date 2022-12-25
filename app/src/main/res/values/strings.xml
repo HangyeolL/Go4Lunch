@@ -22,9 +22,9 @@
     <string name="user_is_joining"> is joining!</string>
     <string name="add_to_liked_restaurant_list">added to liked restaurant list</string>
     <string name="is_already_liked"> is already liked</string>
-    <string name="you_will_not_go_to">You won\'t go to\u0020</string>
+    <string name="you_will_not_go_to">you won\'t go to \u0020</string>
     <string name="email_unavailable">Email unavailable</string>
-    <string name="you_will_go_to">you will go to\u0020</string>
+    <string name="you_will_go_to">you will go to \u0020</string>
     <string name="for_lunch">\u0020for lunch</string>
     <string name="open">OPEN</string>
     <string name="closed">CLOSED</string>
@@ -42,6 +42,6 @@
     <string name="log_in_with_facebook">Log in with facebook</string>
     <string name="log_in_with_twitter">Log in with Twitter</string>
     <string name="twitter_log_in_failed">Twitter Log In Failed</string>
-    <string name="location_is_not_authorized_please_authorize_in_settings">Location is not authorized.\nPlease authorize location permission in settings</string>
+    <string name="location_is_not_authorized_please_authorize_in_settings">Location is not authorized.\nPlease authorize locationResponse permission in settings</string>
     <string name="today_lunch_list">Today\'s Lunch list !</string>
 </resources>

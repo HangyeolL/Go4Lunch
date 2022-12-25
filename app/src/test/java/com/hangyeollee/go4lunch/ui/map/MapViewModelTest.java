@@ -13,12 +13,13 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.maps.model.LatLng;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteDataResponse;
-import com.hangyeollee.go4lunch.data.model.autocomplete.Prediction;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Geometry;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.OpeningHours;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Result;
+import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteResponse;
+import com.hangyeollee.go4lunch.data.model.autocomplete.PredictionResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.GeometryResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.LocationResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.MyNearBySearchResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.OpeningHoursResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.ResultResponse;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
@@ -44,8 +45,8 @@ public class MapViewModelTest {
     private AutoCompleteDataRepository autoCompleteDataRepository;
 
     private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<MyNearBySearchData> nearBySearchDataMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<MyAutoCompleteDataResponse> autoCompleteDataMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<MyNearBySearchResponse> nearBySearchDataMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<MyAutoCompleteResponse> autoCompleteDataMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListMutableLiveData = new MutableLiveData<>();
 
     private MapViewModel viewModel;
@@ -65,12 +66,12 @@ public class MapViewModelTest {
 
         lunchRestaurantListMutableLiveData.setValue(new ArrayList<>());
         nearBySearchDataMutableLiveData.setValue(
-            new MyNearBySearchData(
+            new MyNearBySearchResponse(
                 new ArrayList<>(), "", getDefaultNearbySearchResultList(), "OK"
             )
         );
         autoCompleteDataMutableLiveData.setValue(
-            new MyAutoCompleteDataResponse(
+            new MyAutoCompleteResponse(
                 new ArrayList<>(),
                 "OK"
             )
@@ -113,15 +114,15 @@ public class MapViewModelTest {
     @Test
     public void edge_case_autocomplete_matches_placeId3_and_happy_food3() {
         // GIVEN
-        List<Prediction> predictions = new ArrayList<>();
-        Prediction prediction = Mockito.mock(Prediction.class);
-        Mockito.doReturn("placeId3").when(prediction).getPlaceId();
-        Mockito.doReturn("happy food3").when(prediction).getDescription();
-        predictions.add(prediction);
+        List<PredictionResponse> predictionResponses = new ArrayList<>();
+        PredictionResponse predictionResponse = Mockito.mock(PredictionResponse.class);
+        Mockito.doReturn("placeId3").when(predictionResponse).getPlaceId();
+        Mockito.doReturn("happy food3").when(predictionResponse).getDescription();
+        predictionResponses.add(predictionResponse);
 
         autoCompleteDataMutableLiveData.setValue(
-            new MyAutoCompleteDataResponse(
-                predictions,
+            new MyAutoCompleteResponse(
+                predictionResponses,
                 "OK"
             )
         );
@@ -199,14 +200,14 @@ public class MapViewModelTest {
     }
 
     // DEFAULT INPUTS
-    private List<Result> getDefaultNearbySearchResultList() {
-        List<Result> nearBySearchResultList = new ArrayList<>();
+    private List<ResultResponse> getDefaultNearbySearchResultList() {
+        List<ResultResponse> nearBySearchResultResponseList = new ArrayList<>();
 
-        nearBySearchResultList.add(
-            new Result(
-                new Geometry(new com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Location(11.11, 11.11)),
+        nearBySearchResultResponseList.add(
+            new ResultResponse(
+                new GeometryResponse(new LocationResponse(11.11, 11.11)),
                 "happy food",
-                new OpeningHours(true),
+                new OpeningHoursResponse(true),
                 new ArrayList<>(),
                 "placeId1",
                 4.5,
@@ -214,11 +215,11 @@ public class MapViewModelTest {
             )
         );
 
-        nearBySearchResultList.add(
-            new Result(
-                new Geometry(new com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Location(22.22, 22.22)),
+        nearBySearchResultResponseList.add(
+            new ResultResponse(
+                new GeometryResponse(new LocationResponse(22.22, 22.22)),
                 "happy food2",
-                new OpeningHours(true),
+                new OpeningHoursResponse(true),
                 new ArrayList<>(),
                 "placeId2",
                 3.5,
@@ -226,11 +227,11 @@ public class MapViewModelTest {
             )
         );
 
-        nearBySearchResultList.add(
-            new Result(
-                new Geometry(new com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Location(33.33, 33.33)),
+        nearBySearchResultResponseList.add(
+            new ResultResponse(
+                new GeometryResponse(new LocationResponse(33.33, 33.33)),
                 "happy food3",
-                new OpeningHours(true),
+                new OpeningHoursResponse(true),
                 new ArrayList<>(),
                 "placeId3",
                 2.5,
@@ -238,11 +239,11 @@ public class MapViewModelTest {
             )
         );
 
-        nearBySearchResultList.add(
-            new Result(
-                new Geometry(new com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Location(44.44, 44.44)),
+        nearBySearchResultResponseList.add(
+            new ResultResponse(
+                new GeometryResponse(new LocationResponse(44.44, 44.44)),
                 "happy food4",
-                new OpeningHours(true),
+                new OpeningHoursResponse(true),
                 new ArrayList<>(),
                 "placeId4",
                 1.5,
@@ -250,7 +251,7 @@ public class MapViewModelTest {
             )
         );
 
-        return nearBySearchResultList;
+        return nearBySearchResultResponseList;
     }
 
     private List<MapMarkerViewState> getDefaultMapMarkerViewStateList() {

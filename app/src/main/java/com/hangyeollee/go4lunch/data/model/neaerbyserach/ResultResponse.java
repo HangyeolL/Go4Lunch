@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.data.model.neaerbyserachpojo;
+package com.hangyeollee.go4lunch.data.model.neaerbyserach;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,13 +11,13 @@ import org.jetbrains.annotations.TestOnly;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Result implements Parcelable {
+public class ResultResponse {
     @SerializedName("business_status")
     @Expose
     private String businessStatus;
-    @SerializedName("geometry")
+    @SerializedName("geometryResponse")
     @Expose
-    private Geometry geometry;
+    private GeometryResponse geometryResponse;
     @SerializedName("icon")
     @Expose
     private String icon;
@@ -32,16 +32,16 @@ public class Result implements Parcelable {
     private String name;
     @SerializedName("opening_hours")
     @Expose
-    private OpeningHours openingHours;
-    @SerializedName("photos")
+    private OpeningHoursResponse openingHoursResponse;
+    @SerializedName("photoResponses")
     @Expose
-    private List<Photo> photos;
+    private List<PhotoResponse> photoResponses;
     @SerializedName("place_id")
     @Expose
     private String placeId;
     @SerializedName("plus_code")
     @Expose
-    private PlusCode plusCode;
+    private PlusCodeResponse plusCodeResponse;
     @SerializedName("price_level")
     @Expose
     private Integer priceLevel;
@@ -68,62 +68,15 @@ public class Result implements Parcelable {
     private Boolean permanentlyClosed;
 
     @TestOnly
-    public Result(Geometry geometry, String name, OpeningHours openingHours, List<Photo> photos, String placeId, Double rating, String vicinity) {
-        this.geometry = geometry;
+    public ResultResponse(GeometryResponse geometryResponse, String name, OpeningHoursResponse openingHoursResponse, List<PhotoResponse> photoResponses, String placeId, Double rating, String vicinity) {
+        this.geometryResponse = geometryResponse;
         this.name = name;
-        this.openingHours = openingHours;
-        this.photos = photos;
+        this.openingHoursResponse = openingHoursResponse;
+        this.photoResponses = photoResponses;
         this.placeId = placeId;
         this.rating = rating;
         this.vicinity = vicinity;
     }
-
-    protected Result(Parcel in) {
-        businessStatus = in.readString();
-        icon = in.readString();
-        iconBackgroundColor = in.readString();
-        iconMaskBaseUri = in.readString();
-        name = in.readString();
-
-        //NEW
-        photos = new ArrayList<>();
-        in.readList(photos, Photo.class.getClassLoader());
-
-        placeId = in.readString();
-        if (in.readByte() == 0) {
-            priceLevel = null;
-        } else {
-            priceLevel = in.readInt();
-        }
-        if (in.readByte() == 0) {
-            rating = null;
-        } else {
-            rating = in.readDouble();
-        }
-        reference = in.readString();
-        scope = in.readString();
-        types = in.createStringArrayList();
-        if (in.readByte() == 0) {
-            userRatingsTotal = null;
-        } else {
-            userRatingsTotal = in.readInt();
-        }
-        vicinity = in.readString();
-        byte tmpPermanentlyClosed = in.readByte();
-        permanentlyClosed = tmpPermanentlyClosed == 0 ? null : tmpPermanentlyClosed == 1;
-    }
-
-    public static final Creator<Result> CREATOR = new Creator<Result>() {
-        @Override
-        public Result createFromParcel(Parcel in) {
-            return new Result(in);
-        }
-
-        @Override
-        public Result[] newArray(int size) {
-            return new Result[size];
-        }
-    };
 
     public String getBusinessStatus() {
         return businessStatus;
@@ -133,12 +86,12 @@ public class Result implements Parcelable {
         this.businessStatus = businessStatus;
     }
 
-    public Geometry getGeometry() {
-        return geometry;
+    public GeometryResponse getGeometry() {
+        return geometryResponse;
     }
 
-    public void setGeometry(Geometry geometry) {
-        this.geometry = geometry;
+    public void setGeometry(GeometryResponse geometryResponse) {
+        this.geometryResponse = geometryResponse;
     }
 
     public String getIcon() {
@@ -173,20 +126,20 @@ public class Result implements Parcelable {
         this.name = name;
     }
 
-    public OpeningHours getOpeningHours() {
-        return openingHours;
+    public OpeningHoursResponse getOpeningHours() {
+        return openingHoursResponse;
     }
 
-    public void setOpeningHours(OpeningHours openingHours) {
-        this.openingHours = openingHours;
+    public void setOpeningHours(OpeningHoursResponse openingHoursResponse) {
+        this.openingHoursResponse = openingHoursResponse;
     }
 
-    public List<Photo> getPhotos() {
-        return photos;
+    public List<PhotoResponse> getPhotos() {
+        return photoResponses;
     }
 
-    public void setPhotos(List<Photo> photos) {
-        this.photos = photos;
+    public void setPhotos(List<PhotoResponse> photoResponses) {
+        this.photoResponses = photoResponses;
     }
 
     public String getPlaceId() {
@@ -197,12 +150,12 @@ public class Result implements Parcelable {
         this.placeId = placeId;
     }
 
-    public PlusCode getPlusCode() {
-        return plusCode;
+    public PlusCodeResponse getPlusCode() {
+        return plusCodeResponse;
     }
 
-    public void setPlusCode(PlusCode plusCode) {
-        this.plusCode = plusCode;
+    public void setPlusCode(PlusCodeResponse plusCodeResponse) {
+        this.plusCodeResponse = plusCodeResponse;
     }
 
     public Integer getPriceLevel() {
@@ -269,44 +222,4 @@ public class Result implements Parcelable {
         this.permanentlyClosed = permanentlyClosed;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(businessStatus);
-        dest.writeString(icon);
-        dest.writeString(iconBackgroundColor);
-        dest.writeString(iconMaskBaseUri);
-        dest.writeString(name);
-
-        dest.writeList(photos);
-
-        dest.writeString(placeId);
-        if (priceLevel == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(priceLevel);
-        }
-        if (rating == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeDouble(rating);
-        }
-        dest.writeString(reference);
-        dest.writeString(scope);
-        dest.writeStringList(types);
-        if (userRatingsTotal == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(userRatingsTotal);
-        }
-        dest.writeString(vicinity);
-        dest.writeByte((byte) (permanentlyClosed == null ? 0 : permanentlyClosed ? 1 : 2));
-    }
 }

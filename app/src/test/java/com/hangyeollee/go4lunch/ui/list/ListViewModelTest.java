@@ -14,13 +14,14 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteDataResponse;
-import com.hangyeollee.go4lunch.data.model.autocomplete.Prediction;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Geometry;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.OpeningHours;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Photo;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Result;
+import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteResponse;
+import com.hangyeollee.go4lunch.data.model.autocomplete.PredictionResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.GeometryResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.LocationResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.MyNearBySearchResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.OpeningHoursResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.PhotoResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.ResultResponse;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
@@ -53,12 +54,12 @@ public class ListViewModelTest {
     private FirebaseRepository firebaseRepository;
     private DistanceCalculator distanceCalculator;
 
-    private OpeningHours openingHours;
-    private Photo photo;
+    private OpeningHoursResponse openingHoursResponse;
+    private PhotoResponse photoResponse;
 
     private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<MyNearBySearchData> nearBySearchDataMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<MyAutoCompleteDataResponse> autoCompleteDataMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<MyNearBySearchResponse> nearBySearchDataMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<MyAutoCompleteResponse> autoCompleteDataMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Map<String, Integer>> workmatesJoiningNumberMapMutableLiveData = new MutableLiveData<>();
 
@@ -73,8 +74,8 @@ public class ListViewModelTest {
         firebaseRepository = Mockito.mock(FirebaseRepository.class);
 
         distanceCalculator = Mockito.mock(DistanceCalculator.class);
-        Result nearbySearchResult = Mockito.mock(Result.class);
-        openingHours = Mockito.mock(OpeningHours.class);
+        ResultResponse nearbySearchResultResponse = Mockito.mock(ResultResponse.class);
+        openingHoursResponse = Mockito.mock(OpeningHoursResponse.class);
 
         Location userLocation = Mockito.mock(Location.class);
         when(userLocation.getLatitude()).thenReturn(DEFAULT_USER_LAT);
@@ -82,11 +83,11 @@ public class ListViewModelTest {
         locationMutableLiveData.setValue(userLocation);
 
         nearBySearchDataMutableLiveData.setValue(
-            new MyNearBySearchData(
+            new MyNearBySearchResponse(
                 new ArrayList<>(), "", getDefaultNearbySearchResultList(), "OK")
         );
         autoCompleteDataMutableLiveData.setValue(
-            new MyAutoCompleteDataResponse(
+            new MyAutoCompleteResponse(
                 new ArrayList<>(),
                 "OK"
             )
@@ -106,7 +107,7 @@ public class ListViewModelTest {
             anyDouble(),
             anyDouble()
         );
-        doReturn(openingHours).when(nearbySearchResult).getOpeningHours();
+        doReturn(openingHoursResponse).when(nearbySearchResultResponse).getOpeningHours();
         doReturn("OPEN").when(application).getString(R.string.open);
         doReturn("CLOSED").when(application).getString(R.string.closed);
         doReturn(R.color.blue).when(application).getColor(R.color.blue);
@@ -150,15 +151,15 @@ public class ListViewModelTest {
     @Test
     public void edge_case_autocomplete_matches_placeId3_and_happy_food3() {
         // GIVEN
-        List<Prediction> predictions = new ArrayList<>();
-        Prediction prediction = Mockito.mock(Prediction.class);
-        Mockito.doReturn("placeId3").when(prediction).getPlaceId();
-        Mockito.doReturn("happy food3").when(prediction).getDescription();
-        predictions.add(prediction);
+        List<PredictionResponse> predictionResponses = new ArrayList<>();
+        PredictionResponse predictionResponse = Mockito.mock(PredictionResponse.class);
+        Mockito.doReturn("placeId3").when(predictionResponse).getPlaceId();
+        Mockito.doReturn("happy food3").when(predictionResponse).getDescription();
+        predictionResponses.add(predictionResponse);
 
         autoCompleteDataMutableLiveData.setValue(
-            new MyAutoCompleteDataResponse(
-                predictions,
+            new MyAutoCompleteResponse(
+                predictionResponses,
                 "OK"
             )
         );
@@ -175,7 +176,7 @@ public class ListViewModelTest {
                 "OPEN",
                 R.color.blue,
                 2.5f,
-                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId3",
                 "distanceBetween",
                 0
@@ -198,7 +199,7 @@ public class ListViewModelTest {
 
         //THEN
         List<ListItemViewState> expectedItemViewStateList = new ArrayList<>();
-        doReturn(true).when(openingHours).getOpenNow();
+        doReturn(true).when(openingHoursResponse).getOpenNow();
         expectedItemViewStateList.add(
             new ListItemViewState(
                 "happy food",
@@ -206,7 +207,7 @@ public class ListViewModelTest {
                 "OPEN",
                 R.color.blue,
                 4.5f,
-                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId1",
                 "distanceBetween",
                 1
@@ -220,7 +221,7 @@ public class ListViewModelTest {
                 "OPEN",
                 R.color.blue,
                 3.5f,
-                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId2",
                 "distanceBetween",
                 0
@@ -234,7 +235,7 @@ public class ListViewModelTest {
                 "OPEN",
                 R.color.blue,
                 2.5f,
-                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId3",
                 "distanceBetween",
                 0
@@ -248,7 +249,7 @@ public class ListViewModelTest {
                 "OPEN",
                 R.color.blue,
                 1.5f,
-                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId4",
                 "distanceBetween",
                 0
@@ -260,70 +261,70 @@ public class ListViewModelTest {
     }
 
     // INPUTS
-    private List<Result> getDefaultNearbySearchResultList() {
-        List<Result> nearBySearchResultList = new ArrayList<>();
+    private List<ResultResponse> getDefaultNearbySearchResultList() {
+        List<ResultResponse> nearBySearchResultResponseList = new ArrayList<>();
 
-        photo = Mockito.mock(Photo.class);
-        doReturn("photo").when(photo).getPhotoReference();
-        doReturn(250).when(photo).getHeight();
-        doReturn(250).when(photo).getWidth();
-        doReturn(new ArrayList<>()).when(photo).getHtmlAttributions();
+        photoResponse = Mockito.mock(PhotoResponse.class);
+        doReturn("photoResponse").when(photoResponse).getPhotoReference();
+        doReturn(250).when(photoResponse).getHeight();
+        doReturn(250).when(photoResponse).getWidth();
+        doReturn(new ArrayList<>()).when(photoResponse).getHtmlAttributions();
 
-        nearBySearchResultList.add(
-            new Result(
-                new Geometry(new com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Location(11.11, 11.11)),
+        nearBySearchResultResponseList.add(
+            new ResultResponse(
+                new GeometryResponse(new LocationResponse(11.11, 11.11)),
                 "happy food",
-                new OpeningHours(true),
-                Collections.singletonList(photo),
+                new OpeningHoursResponse(true),
+                Collections.singletonList(photoResponse),
                 "placeId1",
                 4.5,
                 "paris"
             )
         );
 
-        nearBySearchResultList.add(
-            new Result(
-                new Geometry(new com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Location(22.22, 22.22)),
+        nearBySearchResultResponseList.add(
+            new ResultResponse(
+                new GeometryResponse(new LocationResponse(22.22, 22.22)),
                 "happy food2",
-                new OpeningHours(true),
-                Collections.singletonList(photo),
+                new OpeningHoursResponse(true),
+                Collections.singletonList(photoResponse),
                 "placeId2",
                 3.5,
                 "new york"
             )
         );
 
-        nearBySearchResultList.add(
-            new Result(
-                new Geometry(new com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Location(33.33, 33.33)),
+        nearBySearchResultResponseList.add(
+            new ResultResponse(
+                new GeometryResponse(new LocationResponse(33.33, 33.33)),
                 "happy food3",
-                new OpeningHours(true),
-                Collections.singletonList(photo),
+                new OpeningHoursResponse(true),
+                Collections.singletonList(photoResponse),
                 "placeId3",
                 2.5,
                 "seoul"
             )
         );
 
-        nearBySearchResultList.add(
-            new Result(
-                new Geometry(new com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Location(44.44, 44.44)),
+        nearBySearchResultResponseList.add(
+            new ResultResponse(
+                new GeometryResponse(new LocationResponse(44.44, 44.44)),
                 "happy food4",
-                new OpeningHours(true),
-                Collections.singletonList(photo),
+                new OpeningHoursResponse(true),
+                Collections.singletonList(photoResponse),
                 "placeId4",
                 1.5,
                 "tokyo"
             )
         );
 
-        return nearBySearchResultList;
+        return nearBySearchResultResponseList;
     }
 
     private List<ListItemViewState> getDefaultItemViewStateList() {
         List<ListItemViewState> itemViewStateList = new ArrayList<>();
 
-        doReturn(true).when(openingHours).getOpenNow();
+        doReturn(true).when(openingHoursResponse).getOpenNow();
 
         itemViewStateList.add(
             new ListItemViewState(
@@ -332,7 +333,7 @@ public class ListViewModelTest {
                 "OPEN",
                 R.color.blue,
                 4.5f,
-                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId1",
                 "distanceBetween",
                 0
@@ -346,7 +347,7 @@ public class ListViewModelTest {
                 "OPEN",
                 R.color.blue,
                 3.5f,
-                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId2",
                 "distanceBetween",
                 0
@@ -360,7 +361,7 @@ public class ListViewModelTest {
                 "OPEN",
                 R.color.blue,
                 2.5f,
-                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId3",
                 "distanceBetween",
                 0
@@ -374,7 +375,7 @@ public class ListViewModelTest {
                 "OPEN",
                 R.color.blue,
                 1.5f,
-                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
                 "placeId4",
                 "distanceBetween",
                 0

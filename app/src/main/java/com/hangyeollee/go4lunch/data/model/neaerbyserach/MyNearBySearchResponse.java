@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.data.model.neaerbyserachpojo;
+package com.hangyeollee.go4lunch.data.model.neaerbyserach;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -7,25 +7,25 @@ import org.jetbrains.annotations.TestOnly;
 
 import java.util.List;
 
-public class MyNearBySearchData {
+public class MyNearBySearchResponse {
     @SerializedName("html_attributions")
     @Expose
     private List<Object> htmlAttributions = null;
     @SerializedName("next_page_token")
     @Expose
     private String nextPageToken;
-    @SerializedName("results")
+    @SerializedName("resultResponses")
     @Expose
-    private List<Result> results = null;
+    private List<ResultResponse> resultResponses = null;
     @SerializedName("status")
     @Expose
     private String status;
 
     @TestOnly
-    public MyNearBySearchData(List<Object> htmlAttributions, String nextPageToken, List<Result> results, String status) {
+    public MyNearBySearchResponse(List<Object> htmlAttributions, String nextPageToken, List<ResultResponse> resultResponses, String status) {
         this.htmlAttributions = htmlAttributions;
         this.nextPageToken = nextPageToken;
-        this.results = results;
+        this.resultResponses = resultResponses;
         this.status = status;
     }
 
@@ -45,12 +45,12 @@ public class MyNearBySearchData {
         this.nextPageToken = nextPageToken;
     }
 
-    public List<Result> getResults() {
-        return results;
+    public List<ResultResponse> getResults() {
+        return resultResponses;
     }
 
-    public void setResults(List<Result> results) {
-        this.results = results;
+    public void setResults(List<ResultResponse> resultResponses) {
+        this.resultResponses = resultResponses;
     }
 
     public String getStatus() {

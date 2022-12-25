@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.api.GoogleApi;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.MyNearBySearchResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -19,18 +19,18 @@ public class NearbySearchDataRepository {
         this.googleApi = googleApi;
     }
 
-    public LiveData<MyNearBySearchData> fetchAndGetMyNearBySearchLiveData (String location) {
-        MutableLiveData<MyNearBySearchData> nearBySearchMutableLiveData = new MutableLiveData<>();
+    public LiveData<MyNearBySearchResponse> fetchAndGetMyNearBySearchLiveData (String location) {
+        MutableLiveData<MyNearBySearchResponse> nearBySearchMutableLiveData = new MutableLiveData<>();
 
-        Call<MyNearBySearchData> call = googleApi.getNearbySearchData(location, 3000, "restaurant", BuildConfig.PLACES_API_KEY);
-        call.enqueue(new Callback<MyNearBySearchData>() {
+        Call<MyNearBySearchResponse> call = googleApi.getNearbySearchData(location, 3000, "restaurant", BuildConfig.PLACES_API_KEY);
+        call.enqueue(new Callback<MyNearBySearchResponse>() {
             @Override
-            public void onResponse(Call<MyNearBySearchData> call, Response<MyNearBySearchData> response) {
+            public void onResponse(Call<MyNearBySearchResponse> call, Response<MyNearBySearchResponse> response) {
                 nearBySearchMutableLiveData.setValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<MyNearBySearchData> call, Throwable t) {
+            public void onFailure(Call<MyNearBySearchResponse> call, Throwable t) {
                 nearBySearchMutableLiveData.postValue(null);
             }
         });

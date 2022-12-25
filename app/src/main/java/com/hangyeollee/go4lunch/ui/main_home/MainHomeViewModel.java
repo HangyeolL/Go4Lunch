@@ -189,7 +189,7 @@ public class MainHomeViewModel extends ViewModel {
     }
 
     /**
-     * Location Repository
+     * LocationResponse Repository
      */
 
     @SuppressLint("MissingPermission")

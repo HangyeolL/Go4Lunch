@@ -14,10 +14,10 @@ import androidx.lifecycle.ViewModel;
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteDataResponse;
-import com.hangyeollee.go4lunch.data.model.autocomplete.Prediction;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Result;
+import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteResponse;
+import com.hangyeollee.go4lunch.data.model.autocomplete.PredictionResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.MyNearBySearchResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.ResultResponse;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
@@ -53,14 +53,14 @@ public class ListViewModel extends ViewModel {
 
         LiveData<Location> locationLiveData = locationRepository.getLocationLiveData();
 
-        LiveData<MyNearBySearchData> myNearBySearchDataLiveData = Transformations.switchMap(locationLiveData,
+        LiveData<MyNearBySearchResponse> myNearBySearchDataLiveData = Transformations.switchMap(locationLiveData,
                 location -> {
                     String locationToString = location.getLatitude() + "," + location.getLongitude();
                     return nearbySearchDataRepository.fetchAndGetMyNearBySearchLiveData(locationToString);
                 }
         );
 
-        LiveData<MyAutoCompleteDataResponse> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
+        LiveData<MyAutoCompleteResponse> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
 
         LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
 
@@ -100,8 +100,8 @@ public class ListViewModel extends ViewModel {
 
     }
 
-    private void combine(@Nullable MyNearBySearchData myNearBySearchData,
-                         @Nullable MyAutoCompleteDataResponse autoCompleteData,
+    private void combine(@Nullable MyNearBySearchResponse myNearBySearchData,
+                         @Nullable MyAutoCompleteResponse autoCompleteData,
                          @Nullable Map<String, Integer> workmatesJoiningNumberMap
     ) {
         if (myNearBySearchData == null || workmatesJoiningNumberMap == null) {
@@ -117,17 +117,17 @@ public class ListViewModel extends ViewModel {
         int workmatesNumber;
 
         if (autoCompleteData == null || autoCompleteData.getPredictions().isEmpty()) {
-            for (Result result : myNearBySearchData.getResults()) {
-                if (result.getOpeningHours() != null) {
-                    isOpen = result.getOpeningHours().getOpenNow();
+            for (ResultResponse resultResponse : myNearBySearchData.getResults()) {
+                if (resultResponse.getOpeningHours() != null) {
+                    isOpen = resultResponse.getOpeningHours().getOpenNow();
                 }
-                if (result.getRating() != null) {
-                    rating = result.getRating().floatValue();
+                if (resultResponse.getRating() != null) {
+                    rating = resultResponse.getRating().floatValue();
                 }
-                if (result.getPhotos() != null) {
+                if (resultResponse.getPhotos() != null) {
                     photoReference =
                             "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
-                                    + result.getPhotos().get(0).getPhotoReference()
+                                    + resultResponse.getPhotos().get(0).getPhotoReference()
                                     + "&key="
                                     + BuildConfig.PLACES_API_KEY;
 
@@ -140,39 +140,39 @@ public class ListViewModel extends ViewModel {
                     distanceBetween = distanceCalculator.distanceBetween(
                         currentLocation.getLatitude(),
                         currentLocation.getLongitude(),
-                        result.getGeometry().getLocation().getLat(),
-                        result.getGeometry().getLocation().getLng()
+                        resultResponse.getGeometry().getLocation().getLat(),
+                        resultResponse.getGeometry().getLocation().getLng()
                     );
                 }
 
-                workmatesNumber = workmatesJoiningNumberMap.getOrDefault(result.getPlaceId(), 0);
+                workmatesNumber = workmatesJoiningNumberMap.getOrDefault(resultResponse.getPlaceId(), 0);
 
                 ListItemViewState recyclerViewItemViewState = new ListItemViewState(
-                        result.getName(), result.getVicinity(),
+                        resultResponse.getName(), resultResponse.getVicinity(),
                         isOpen ? context.getString(R.string.open) : context.getString(R.string.closed),
                         isOpen ? context.getColor(R.color.blue) : context.getColor(R.color.orange),
-                        rating, photoReference, result.getPlaceId(), distanceBetween,
+                        rating, photoReference, resultResponse.getPlaceId(), distanceBetween,
                         workmatesNumber
                 );
 
                 recyclerViewItemViewStateList.add(recyclerViewItemViewState);
             }
         } else {
-            for (Prediction prediction : autoCompleteData.getPredictions()) {
-                for (Result result : myNearBySearchData.getResults()) {
-                    if (prediction.getPlaceId().equals(result.getPlaceId()) &&
-                            prediction.getDescription().contains(result.getName())) {
+            for (PredictionResponse predictionResponse : autoCompleteData.getPredictions()) {
+                for (ResultResponse resultResponse : myNearBySearchData.getResults()) {
+                    if (predictionResponse.getPlaceId().equals(resultResponse.getPlaceId()) &&
+                            predictionResponse.getDescription().contains(resultResponse.getName())) {
 
-                        if (result.getOpeningHours() != null) {
-                            isOpen = result.getOpeningHours().getOpenNow();
+                        if (resultResponse.getOpeningHours() != null) {
+                            isOpen = resultResponse.getOpeningHours().getOpenNow();
                         }
-                        if (result.getRating() != null) {
-                            rating = result.getRating().floatValue();
+                        if (resultResponse.getRating() != null) {
+                            rating = resultResponse.getRating().floatValue();
                         }
-                        if (result.getPhotos() != null) {
+                        if (resultResponse.getPhotos() != null) {
                             photoReference =
                                     "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
-                                            + result.getPhotos().get(0).getPhotoReference()
+                                            + resultResponse.getPhotos().get(0).getPhotoReference()
                                             + "&key="
                                             + BuildConfig.PLACES_API_KEY;
 
@@ -185,18 +185,18 @@ public class ListViewModel extends ViewModel {
                             distanceBetween = distanceCalculator.distanceBetween(
                                 currentLocation.getLatitude(),
                                 currentLocation.getLongitude(),
-                                result.getGeometry().getLocation().getLat(),
-                                result.getGeometry().getLocation().getLng()
+                                resultResponse.getGeometry().getLocation().getLat(),
+                                resultResponse.getGeometry().getLocation().getLng()
                             );
                         }
 
-                        workmatesNumber = workmatesJoiningNumberMap.getOrDefault(result.getPlaceId(), 0);
+                        workmatesNumber = workmatesJoiningNumberMap.getOrDefault(resultResponse.getPlaceId(), 0);
 
                         ListItemViewState recyclerViewItemViewState = new ListItemViewState(
-                                result.getName(), result.getVicinity(),
+                                resultResponse.getName(), resultResponse.getVicinity(),
                                 isOpen ? context.getString(R.string.open) : context.getString(R.string.closed),
                                 isOpen ? context.getColor(R.color.blue) : context.getColor(R.color.orange),
-                                rating, photoReference, result.getPlaceId(), distanceBetween,
+                                rating, photoReference, resultResponse.getPlaceId(), distanceBetween,
                                 workmatesNumber
                         );
 

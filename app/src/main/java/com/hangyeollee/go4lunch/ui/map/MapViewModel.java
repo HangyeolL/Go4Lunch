@@ -13,10 +13,10 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.gms.maps.model.LatLng;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
-import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteDataResponse;
-import com.hangyeollee.go4lunch.data.model.autocomplete.Prediction;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.MyNearBySearchData;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.Result;
+import com.hangyeollee.go4lunch.data.model.autocomplete.MyAutoCompleteResponse;
+import com.hangyeollee.go4lunch.data.model.autocomplete.PredictionResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.MyNearBySearchResponse;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.ResultResponse;
 import com.hangyeollee.go4lunch.data.repository.AutoCompleteDataRepository;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.LocationRepository;
@@ -48,14 +48,14 @@ public class MapViewModel extends ViewModel {
 
         LiveData<Location> locationLiveData = locationRepository.getLocationLiveData();
 
-        LiveData<MyNearBySearchData> myNearBySearchDataLiveData = Transformations.switchMap(locationLiveData,
+        LiveData<MyNearBySearchResponse> myNearBySearchDataLiveData = Transformations.switchMap(locationLiveData,
             location -> {
                 String locationToString = location.getLatitude() + "," + location.getLongitude();
                 return nearbySearchDataRepository.fetchAndGetMyNearBySearchLiveData(locationToString);
             }
         );
 
-        LiveData<MyAutoCompleteDataResponse> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
+        LiveData<MyAutoCompleteResponse> myAutoCompleteDataLiveData = autoCompleteDataRepository.getAutoCompleteDataLiveData();
 
         LiveData<List<LunchRestaurant>> lunchRestaurantListLiveData = firebaseRepository.getLunchRestaurantListOfAllUsers();
 
@@ -96,8 +96,8 @@ public class MapViewModel extends ViewModel {
     private void combine(
         @Nullable Location location,
         @Nullable List<LunchRestaurant> lunchRestaurantList,
-        @Nullable MyNearBySearchData myNearBySearchData,
-        @Nullable MyAutoCompleteDataResponse myAutoCompleteDataResponse
+        @Nullable MyNearBySearchResponse myNearBySearchData,
+        @Nullable MyAutoCompleteResponse myAutoCompleteResponse
     ) {
         if (location == null || myNearBySearchData == null) {
             return;
@@ -107,15 +107,15 @@ public class MapViewModel extends ViewModel {
 
         List<MapMarkerViewState> mapMarkerViewStateList = new ArrayList<>();
 
-        for (Result result : myNearBySearchData.getResults()) {
+        for (ResultResponse resultResponse : myNearBySearchData.getResults()) {
             boolean shouldAppear = false;
 
-            if (myAutoCompleteDataResponse == null || myAutoCompleteDataResponse.getPredictions().isEmpty()) {
+            if (myAutoCompleteResponse == null || myAutoCompleteResponse.getPredictions().isEmpty()) {
                 shouldAppear = true;
             } else {
-                for (Prediction prediction : myAutoCompleteDataResponse.getPredictions()) {
-                    if (prediction.getPlaceId().equals(result.getPlaceId()) &&
-                        prediction.getDescription().contains(result.getName())) {
+                for (PredictionResponse predictionResponse : myAutoCompleteResponse.getPredictions()) {
+                    if (predictionResponse.getPlaceId().equals(resultResponse.getPlaceId()) &&
+                        predictionResponse.getDescription().contains(resultResponse.getName())) {
                         shouldAppear = true;
                         break;
                     }
@@ -125,17 +125,17 @@ public class MapViewModel extends ViewModel {
             if (shouldAppear) {
                 boolean isSelected = false;
                 for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-                    if (result.getPlaceId().equalsIgnoreCase(lunchRestaurant.getRestaurantId())
-                        && result.getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName())) {
+                    if (resultResponse.getPlaceId().equalsIgnoreCase(lunchRestaurant.getRestaurantId())
+                        && resultResponse.getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName())) {
                         isSelected = true;
                         break;
                     }
                 }
 
                 MapMarkerViewState mapMarkerViewState = new MapMarkerViewState(
-                    result.getPlaceId(),
-                    new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng()),
-                    result.getName(),
+                    resultResponse.getPlaceId(),
+                    new LatLng(resultResponse.getGeometry().getLocation().getLat(), resultResponse.getGeometry().getLocation().getLng()),
+                    resultResponse.getName(),
                     R.drawable.ic_twotone_dining_24,
                     isSelected ? R.color.green : null
                 );

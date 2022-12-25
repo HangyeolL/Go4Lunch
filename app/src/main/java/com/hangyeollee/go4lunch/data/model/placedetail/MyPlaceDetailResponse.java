@@ -1,4 +1,4 @@
-package com.hangyeollee.go4lunch.data.model.placedetailpojo;
+package com.hangyeollee.go4lunch.data.model.placedetail;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -7,21 +7,21 @@ import org.jetbrains.annotations.TestOnly;
 
 import java.util.List;
 
-public class MyPlaceDetailData {
+public class MyPlaceDetailResponse {
 
     @SerializedName("html_attributions")
     @Expose
     private List<Object> htmlAttributions = null;
-    @SerializedName("result")
+    @SerializedName("resultResponse")
     @Expose
-    private Result result;
+    private ResultResponse resultResponse;
     @SerializedName("status")
     @Expose
     private String status;
 
-    public MyPlaceDetailData(List<Object> htmlAttributions, Result result, String status) {
+    public MyPlaceDetailResponse(List<Object> htmlAttributions, ResultResponse resultResponse, String status) {
         this.htmlAttributions = htmlAttributions;
-        this.result = result;
+        this.resultResponse = resultResponse;
         this.status = status;
     }
 
@@ -35,12 +35,12 @@ public class MyPlaceDetailData {
         this.htmlAttributions = htmlAttributions;
     }
 
-    public Result getResult() {
-        return result;
+    public ResultResponse getResult() {
+        return resultResponse;
     }
 
-    public void setResult(Result result) {
-        this.result = result;
+    public void setResult(ResultResponse resultResponse) {
+        this.resultResponse = resultResponse;
     }
 
     public String getStatus() {

@@ -1,9 +1,9 @@
-package com.hangyeollee.go4lunch.data.model.neaerbyserachpojo;
+package com.hangyeollee.go4lunch.data.model.neaerbyserach;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Southwest {
+public class SouthwestResponse {
     @SerializedName("lat")
     @Expose
     private Double lat;

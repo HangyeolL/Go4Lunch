@@ -18,6 +18,7 @@ import com.hangyeollee.go4lunch.utils.LiveDataTestUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 public class SettingsViewModelTest {
@@ -85,4 +86,12 @@ public class SettingsViewModelTest {
         assertEquals(expectedViewState, viewState);
     }
 
+    @Test
+    public void onSwitchClicked() {
+        // WHEN
+        viewModel.onSwitchClicked(true);
+
+        // THEN
+        Mockito.verify(settingRepository).setNotificationEnabled(true);
+    }
 }

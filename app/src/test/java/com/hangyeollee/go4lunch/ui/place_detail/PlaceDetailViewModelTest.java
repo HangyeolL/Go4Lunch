@@ -8,29 +8,28 @@ import android.app.Application;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.data.model.User;
-import com.hangyeollee.go4lunch.data.model.neaerbyserachpojo.OpeningHours;
-import com.hangyeollee.go4lunch.data.model.placedetailpojo.Geometry;
-import com.hangyeollee.go4lunch.data.model.placedetailpojo.MyPlaceDetailData;
-import com.hangyeollee.go4lunch.data.model.placedetailpojo.Photo;
-import com.hangyeollee.go4lunch.data.model.placedetailpojo.Result;
+import com.hangyeollee.go4lunch.data.model.neaerbyserach.OpeningHoursResponse;
+import com.hangyeollee.go4lunch.data.model.placedetail.GeometryResponse;
+import com.hangyeollee.go4lunch.data.model.placedetail.MyPlaceDetailResponse;
+import com.hangyeollee.go4lunch.data.model.placedetail.PhotoResponse;
+import com.hangyeollee.go4lunch.data.model.placedetail.ResultResponse;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.PlaceDetailDataRepository;
 import com.hangyeollee.go4lunch.utils.LiveDataTestUtils;
-import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,9 +42,9 @@ public class PlaceDetailViewModelTest {
     private FirebaseRepository firebaseRepository;
     private PlaceDetailDataRepository placeDetailDataRepository;
 
-    private List<Photo> photoList;
+    private List<PhotoResponse> photoResponseList;
 
-    private final MutableLiveData<MyPlaceDetailData> myPlaceDetailDataMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<MyPlaceDetailResponse> myPlaceDetailDataMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<User>> userListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LunchRestaurant>> lunchRestaurantListMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<LikedRestaurant>> likedRestaurantListMutableLiveData = new MutableLiveData<>();
@@ -58,20 +57,20 @@ public class PlaceDetailViewModelTest {
         firebaseRepository = Mockito.mock(FirebaseRepository.class);
         placeDetailDataRepository = Mockito.mock(PlaceDetailDataRepository.class);
 
-        photoList = new ArrayList<>();
-        Photo photo = Mockito.mock(Photo.class);
-        doReturn("photo").when(photo).getPhotoReference();
-        photoList.add(photo);
+        photoResponseList = new ArrayList<>();
+        PhotoResponse photoResponse = Mockito.mock(PhotoResponse.class);
+        doReturn("photoResponse").when(photoResponse).getPhotoReference();
+        photoResponseList.add(photoResponse);
 
         myPlaceDetailDataMutableLiveData.setValue(
-            new MyPlaceDetailData(
+            new MyPlaceDetailResponse(
                 new ArrayList<>(),
-                new Result(
-                    new Geometry(),
+                new ResultResponse(
+                    new GeometryResponse(),
                     "007",
                     "placeDetailDataResult",
-                    new OpeningHours(true),
-                    photoList,
+                    new OpeningHoursResponse(true),
+                    photoResponseList,
                     4.5,
                     "Seoul",
                     "website"
@@ -88,7 +87,9 @@ public class PlaceDetailViewModelTest {
         doReturn(lunchRestaurantListMutableLiveData).when(firebaseRepository).getLunchRestaurantListOfAllUsers();
         doReturn(likedRestaurantListMutableLiveData).when(firebaseRepository).getLikedRestaurantList();
 
-        doReturn()
+        FirebaseUser firebaseUser = Mockito.mock(FirebaseUser.class);
+        doReturn(firebaseUser).when(firebaseRepository).getCurrentUser();
+        doReturn("userId1").when(firebaseUser).getUid();
 
         doReturn(R.color.grey).when(application).getColor(R.color.grey);
         doReturn(R.color.yellow).when(application).getColor(R.color.yellow);
@@ -96,6 +97,9 @@ public class PlaceDetailViewModelTest {
         doReturn("international phone number not available").when(application).getString(R.string.international_phone_number_unavailable);
         doReturn("removed from the liked restaurant List").when(application).getString(R.string.removed_from_the_liked_restaurant_list);
         doReturn("added to liked restaurant list").when(application).getString(R.string.add_to_liked_restaurant_list);
+        doReturn("you will go to ").when(application).getString(R.string.you_will_go_to);
+        doReturn("you won\'t go to ").when(application).getString(R.string.you_will_not_go_to);
+        doReturn(" for lunch").when(application).getString(R.string.for_lunch);
 
         viewModel = new PlaceDetailViewModel(application, placeDetailDataRepository, firebaseRepository);
     }
@@ -108,7 +112,7 @@ public class PlaceDetailViewModelTest {
 
         //EXPECTED
         PlaceDetailViewState expectedViewState = new PlaceDetailViewState(
-            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
             "placeDetailDataResult",
             "Seoul",
             4.5f,
@@ -151,7 +155,7 @@ public class PlaceDetailViewModelTest {
             )
         );
         PlaceDetailViewState expectedViewState = new PlaceDetailViewState(
-            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
             "placeDetailDataResult",
             "Seoul",
             4.5f,
@@ -206,7 +210,7 @@ public class PlaceDetailViewModelTest {
         );
 
         PlaceDetailViewState expectedViewState = new PlaceDetailViewState(
-            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
             "placeDetailDataResult",
             "Seoul",
             4.5f,
@@ -223,7 +227,7 @@ public class PlaceDetailViewModelTest {
     }
 
     @Test
-    public void edge_case_user1_selects_placeId1_as_liked_restaurant () {
+    public void edge_case_user1_selects_placeId1_as_liked_restaurant() {
         // GIVEN
         viewModel.onPlaceIdFetched("placeId1");
 
@@ -240,7 +244,7 @@ public class PlaceDetailViewModelTest {
 
         // THEN
         PlaceDetailViewState expectedViewState = new PlaceDetailViewState(
-            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photo&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
             "placeDetailDataResult",
             "Seoul",
             4.5f,
@@ -257,19 +261,62 @@ public class PlaceDetailViewModelTest {
     }
 
     @Test
+    public void edge_case_rating_is_null_should_display_0 () {
+        // GIVEN
+        viewModel.onPlaceIdFetched("placeId1");
+
+        myPlaceDetailDataMutableLiveData.setValue(
+            new MyPlaceDetailResponse(
+                new ArrayList<>(),
+                new ResultResponse(
+                    new GeometryResponse(),
+                    "007",
+                    "placeDetailDataResult",
+                    new OpeningHoursResponse(true),
+                    photoResponseList,
+                    null,
+                    "Seoul",
+                    "website"
+                ),
+                "OK"
+            )
+        );
+
+        // WHEN
+        PlaceDetailViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getPlaceDetailActivityViewStateLiveData());
+
+        // THEN
+        PlaceDetailViewState expectedViewState = new PlaceDetailViewState(
+            "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=photoResponse&key=AIzaSyAe-yeU257vAO5EtWEyAO9Ofut-GsJjqeY",
+            "placeDetailDataResult",
+            "Seoul",
+            0,
+            "007",
+            "website",
+            new ArrayList<>(),
+            R.color.grey,
+            R.color.grey,
+            false,
+            false
+        );
+
+        assertEquals(expectedViewState, viewState);
+    }
+
+    @Test
     public void onButtonCallClicked_international_phoneNumber_unavailable() {
         // GIVEN
         viewModel.onPlaceIdFetched("placeId1");
 
         myPlaceDetailDataMutableLiveData.setValue(
-            new MyPlaceDetailData(
+            new MyPlaceDetailResponse(
                 new ArrayList<>(),
-                new Result(
-                    new Geometry(),
+                new ResultResponse(
+                    new GeometryResponse(),
                     null,
                     "placeDetailDataResult",
-                    new OpeningHours(true),
-                    photoList,
+                    new OpeningHoursResponse(true),
+                    photoResponseList,
                     4.5,
                     "Seoul",
                     null
@@ -294,14 +341,14 @@ public class PlaceDetailViewModelTest {
         viewModel.onPlaceIdFetched("placeId1");
 
         myPlaceDetailDataMutableLiveData.setValue(
-            new MyPlaceDetailData(
+            new MyPlaceDetailResponse(
                 new ArrayList<>(),
-                new Result(
-                    new Geometry(),
+                new ResultResponse(
+                    new GeometryResponse(),
                     "007",
                     "placeDetailDataResult",
-                    new OpeningHours(true),
-                    photoList,
+                    new OpeningHoursResponse(true),
+                    photoResponseList,
                     4.5,
                     "Seoul",
                     null
@@ -326,14 +373,14 @@ public class PlaceDetailViewModelTest {
         viewModel.onPlaceIdFetched("placeId1");
 
         myPlaceDetailDataMutableLiveData.setValue(
-            new MyPlaceDetailData(
+            new MyPlaceDetailResponse(
                 new ArrayList<>(),
-                new Result(
-                    new Geometry(),
+                new ResultResponse(
+                    new GeometryResponse(),
                     "007",
                     "placeDetailDataResult",
-                    new OpeningHours(true),
-                    photoList,
+                    new OpeningHoursResponse(true),
+                    photoResponseList,
                     4.5,
                     "Seoul",
                     "website"
@@ -371,14 +418,14 @@ public class PlaceDetailViewModelTest {
         viewModel.onPlaceIdFetched("placeId1");
 
         myPlaceDetailDataMutableLiveData.setValue(
-            new MyPlaceDetailData(
+            new MyPlaceDetailResponse(
                 new ArrayList<>(),
-                new Result(
-                    new Geometry(),
+                new ResultResponse(
+                    new GeometryResponse(),
                     "007",
                     "placeDetailDataResult",
-                    new OpeningHours(true),
-                    photoList,
+                    new OpeningHoursResponse(true),
+                    photoResponseList,
                     4.5,
                     "Seoul",
                     "website"
@@ -403,19 +450,19 @@ public class PlaceDetailViewModelTest {
     }
 
     @Test
-    public void onFloatingActionButtonClicked() {
+    public void onFloatingActionButtonClicked_not_selected_as_lunch_restaurant() {
         // GIVEN
         viewModel.onPlaceIdFetched("placeId1");
 
         myPlaceDetailDataMutableLiveData.setValue(
-            new MyPlaceDetailData(
+            new MyPlaceDetailResponse(
                 new ArrayList<>(),
-                new Result(
-                    new Geometry(),
+                new ResultResponse(
+                    new GeometryResponse(),
                     "007",
                     "placeDetailDataResult",
-                    new OpeningHours(true),
-                    photoList,
+                    new OpeningHoursResponse(true),
+                    photoResponseList,
                     4.5,
                     "Seoul",
                     "website"
@@ -426,20 +473,76 @@ public class PlaceDetailViewModelTest {
 
         // WHEN
         PlaceDetailViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getPlaceDetailActivityViewStateLiveData());
-        viewModel.onButtonLikeClicked(viewState);
+        viewModel.onFloatingActionButtonClicked(viewState);
+        String actualString = LiveDataTestUtils.getValueForTesting(viewModel.getToastMessageSingleLiveEvent());
 
         // THEN
         Mockito.verify(firebaseRepository).addOrRemoveLunchRestaurant(
             "placeId1",
-
+            "userId1",
+            "placeDetailDataResult",
+            LocalDate.now().toString(),
+            false
+        );
+        assertEquals(
+            "you will go to "
+                + "placeDetailDataResult"
+                + " for lunch",
+            actualString
         );
     }
 
+    @Test
+    public void onFloatingActionButtonClicked_selected_as_lunch_restaurant() {
+        // GIVEN
+        viewModel.onPlaceIdFetched("placeId1");
 
+        List<LunchRestaurant> lunchRestaurantList = new ArrayList<>();
+        lunchRestaurantList.add(new LunchRestaurant(
+                "placeId1",
+                "userId1",
+                "placeDetailDataResult",
+                LocalDate.now().toString()
+            )
+        );
+        lunchRestaurantListMutableLiveData.setValue(lunchRestaurantList);
 
+        myPlaceDetailDataMutableLiveData.setValue(
+            new MyPlaceDetailResponse(
+                new ArrayList<>(),
+                new ResultResponse(
+                    new GeometryResponse(),
+                    "007",
+                    "placeDetailDataResult",
+                    new OpeningHoursResponse(true),
+                    photoResponseList,
+                    4.5,
+                    "Seoul",
+                    "website"
+                ),
+                "OK"
+            )
+        );
 
+        // WHEN
+        PlaceDetailViewState viewState = LiveDataTestUtils.getValueForTesting(viewModel.getPlaceDetailActivityViewStateLiveData());
+        viewModel.onFloatingActionButtonClicked(viewState);
+        String actualString = LiveDataTestUtils.getValueForTesting(viewModel.getToastMessageSingleLiveEvent());
 
-
+        // THEN
+        Mockito.verify(firebaseRepository).addOrRemoveLunchRestaurant(
+            "placeId1",
+            "userId1",
+            "placeDetailDataResult",
+            LocalDate.now().toString(),
+            true
+        );
+        assertEquals(
+            "you won\'t go to "
+                + "placeDetailDataResult",
+            actualString
+        );
+    }
 
 
     //INPUTS

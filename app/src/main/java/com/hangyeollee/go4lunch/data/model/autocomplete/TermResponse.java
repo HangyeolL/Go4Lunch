@@ -3,7 +3,7 @@ package com.hangyeollee.go4lunch.data.model.autocomplete;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Term {
+public class TermResponse {
     @SerializedName("offset")
     @Expose
     private Integer offset;

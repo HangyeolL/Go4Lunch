@@ -18,7 +18,7 @@ import com.hangyeollee.go4lunch.R;
 import com.hangyeollee.go4lunch.data.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.data.model.User;
-import com.hangyeollee.go4lunch.data.model.placedetailpojo.MyPlaceDetailData;
+import com.hangyeollee.go4lunch.data.model.placedetail.MyPlaceDetailResponse;
 import com.hangyeollee.go4lunch.data.repository.FirebaseRepository;
 import com.hangyeollee.go4lunch.data.repository.PlaceDetailDataRepository;
 import com.hangyeollee.go4lunch.utils.SingleLiveEvent;
@@ -47,7 +47,7 @@ public class PlaceDetailViewModel extends ViewModel {
         this.firebaseRepository = firebaseRepository;
 
         @SuppressWarnings("Convert2MethodRef")
-        LiveData<MyPlaceDetailData> placeDetailLiveData = Transformations.switchMap(
+        LiveData<MyPlaceDetailResponse> placeDetailLiveData = Transformations.switchMap(
             placeIdMutableLiveData,
             placeId -> placeDetailDataRepository.getPlaceDetailLiveData(placeId)
         );
@@ -94,20 +94,20 @@ public class PlaceDetailViewModel extends ViewModel {
     }
 
     private void combine(
-        @Nullable MyPlaceDetailData myPlaceDetailData,
+        @Nullable MyPlaceDetailResponse myPlaceDetailResponseData,
         @Nullable List<User> userList,
         @Nullable List<LunchRestaurant> lunchRestaurantList,
         @Nullable List<LikedRestaurant> likedRestaurantList
     ) {
-        if (myPlaceDetailData == null || lunchRestaurantList == null || likedRestaurantList == null) {
+        if (myPlaceDetailResponseData == null || lunchRestaurantList == null || likedRestaurantList == null) {
             return;
         }
 
         String photoUrl;
         float rating;
 
-        if (myPlaceDetailData.getResult().getPhotos() != null) {
-            String photoReference = myPlaceDetailData.getResult().getPhotos().get(0).getPhotoReference();
+        if (myPlaceDetailResponseData.getResult().getPhotos() != null) {
+            String photoReference = myPlaceDetailResponseData.getResult().getPhotos().get(0).getPhotoReference();
 
             photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
                 + photoReference
@@ -117,10 +117,9 @@ public class PlaceDetailViewModel extends ViewModel {
             photoUrl = resourceToUri(context, R.drawable.ic_baseline_local_dining_24);
         }
 
-        if (myPlaceDetailData.getResult().getRating() != null) {
-            rating = myPlaceDetailData.getResult().getRating().floatValue();
+        if (myPlaceDetailResponseData.getResult().getRating() != null) {
+            rating = myPlaceDetailResponseData.getResult().getRating().floatValue();
         } else {
-            // TODO Hangyeol Test it!
             rating = 0;
         }
 
@@ -130,7 +129,7 @@ public class PlaceDetailViewModel extends ViewModel {
             if (userList != null) {
                 for (User user : userList) {
                     if (user.getId().equalsIgnoreCase(lunchRestaurant.getUserId())
-                        && lunchRestaurant.getRestaurantName().equalsIgnoreCase(myPlaceDetailData.getResult().getName())) {
+                        && lunchRestaurant.getRestaurantName().equalsIgnoreCase(myPlaceDetailResponseData.getResult().getName())) {
                         recyclerViewItemViewStateList.add(
                             new PlaceDetailItemViewState(
                                 user.getName(),
@@ -145,14 +144,14 @@ public class PlaceDetailViewModel extends ViewModel {
         boolean isSelectedAsLikedRestaurant = false;
 
         for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-            if (myPlaceDetailData.getResult().getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName())) {
+            if (myPlaceDetailResponseData.getResult().getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName())) {
                 isSelectedAsLunchRestaurant = true;
                 break;
             }
         }
 
         for (LikedRestaurant likedRestaurant : likedRestaurantList) {
-            if (myPlaceDetailData.getResult().getName().equalsIgnoreCase(likedRestaurant.getName())) {
+            if (myPlaceDetailResponseData.getResult().getName().equalsIgnoreCase(likedRestaurant.getName())) {
                 isSelectedAsLikedRestaurant = true;
                 break;
             }
@@ -160,11 +159,11 @@ public class PlaceDetailViewModel extends ViewModel {
 
         PlaceDetailViewState activityViewState = new PlaceDetailViewState(
             photoUrl,
-            myPlaceDetailData.getResult().getName(),
-            myPlaceDetailData.getResult().getVicinity(),
+            myPlaceDetailResponseData.getResult().getName(),
+            myPlaceDetailResponseData.getResult().getVicinity(),
             rating,
-            myPlaceDetailData.getResult().getInternationalPhoneNumber(),
-            myPlaceDetailData.getResult().getWebsite(),
+            myPlaceDetailResponseData.getResult().getInternationalPhoneNumber(),
+            myPlaceDetailResponseData.getResult().getWebsite(),
             recyclerViewItemViewStateList,
             isSelectedAsLikedRestaurant ? context.getColor(R.color.yellow) : context.getColor(R.color.grey),
             isSelectedAsLunchRestaurant ? R.color.orange : R.color.grey,

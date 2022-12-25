@@ -5,27 +5,25 @@ import androidx.annotation.VisibleForTesting;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import org.jetbrains.annotations.TestOnly;
-
 import java.util.List;
 
-public class MyAutoCompleteDataResponse {
+public class MyAutoCompleteResponse {
 
-    @SerializedName("predictions")
+    @SerializedName("predictionResponses")
     @Expose
-    private final List<Prediction> predictions;
+    private final List<PredictionResponse> predictionResponses;
     @SerializedName("status")
     @Expose
     private final String status;
 
     @VisibleForTesting
-    public MyAutoCompleteDataResponse(List<Prediction> predictions, String status) {
-        this.predictions = predictions;
+    public MyAutoCompleteResponse(List<PredictionResponse> predictionResponses, String status) {
+        this.predictionResponses = predictionResponses;
         this.status = status;
     }
 
-    public List<Prediction> getPredictions() {
-        return predictions;
+    public List<PredictionResponse> getPredictions() {
+        return predictionResponses;
     }
 
     public String getStatus() {

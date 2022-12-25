@@ -1,13 +1,11 @@
-package com.hangyeollee.go4lunch.data.model.neaerbyserachpojo;
+package com.hangyeollee.go4lunch.data.model.placedetail;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class Photo implements Serializable {
-
+public class PhotoResponse {
     @SerializedName("height")
     @Expose
     private Integer height;

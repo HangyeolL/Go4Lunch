@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.hangyeollee.go4lunch.BuildConfig;
 import com.hangyeollee.go4lunch.api.GoogleApi;
-import com.hangyeollee.go4lunch.data.model.placedetailpojo.MyPlaceDetailData;
+import com.hangyeollee.go4lunch.data.model.placedetail.MyPlaceDetailResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,18 +22,18 @@ public class PlaceDetailDataRepository {
         this.googleApi = googleApi;
     }
 
-    public LiveData<MyPlaceDetailData> getPlaceDetailLiveData(String placeId) {
-        MutableLiveData<MyPlaceDetailData> placeDetailMutableLiveData = new MutableLiveData<>();
+    public LiveData<MyPlaceDetailResponse> getPlaceDetailLiveData(String placeId) {
+        MutableLiveData<MyPlaceDetailResponse> placeDetailMutableLiveData = new MutableLiveData<>();
 
-        Call<MyPlaceDetailData> call = googleApi.getPlaceDetails(FIELDS, placeId, BuildConfig.PLACES_API_KEY);
-        call.enqueue(new Callback<MyPlaceDetailData>() {
+        Call<MyPlaceDetailResponse> call = googleApi.getPlaceDetails(FIELDS, placeId, BuildConfig.PLACES_API_KEY);
+        call.enqueue(new Callback<MyPlaceDetailResponse>() {
             @Override
-            public void onResponse(@NonNull Call<MyPlaceDetailData> call, @NonNull Response<MyPlaceDetailData> response) {
+            public void onResponse(@NonNull Call<MyPlaceDetailResponse> call, @NonNull Response<MyPlaceDetailResponse> response) {
                 placeDetailMutableLiveData.setValue(response.body());
             }
 
             @Override
-            public void onFailure(@NonNull Call<MyPlaceDetailData> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<MyPlaceDetailResponse> call, @NonNull Throwable t) {
                 t.printStackTrace();
                 placeDetailMutableLiveData.setValue(null);
             }
