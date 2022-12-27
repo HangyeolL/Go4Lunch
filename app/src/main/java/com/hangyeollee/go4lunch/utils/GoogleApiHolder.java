@@ -7,7 +7,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MyRetrofitBuilder {
+public class GoogleApiHolder {
 
     private static final String GOOGLE_NEARBY_SEARCH_URL = "https://maps.googleapis.com/maps/api/place/";
 
@@ -17,18 +17,18 @@ public class MyRetrofitBuilder {
         //to see the HTTP request in the logcat
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build();
 
-        if(INSTANCE == null) {
+        if (INSTANCE == null) {
             INSTANCE = new Retrofit.Builder()
-                    .baseUrl(GOOGLE_NEARBY_SEARCH_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(client)
-                    .build();
+                .baseUrl(GOOGLE_NEARBY_SEARCH_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build();
         }
         return INSTANCE;
     }
 
     public static GoogleApi getGoogleApi() {
-       return getRetrofit().create(GoogleApi.class);
+        return getRetrofit().create(GoogleApi.class);
     }
 
 }

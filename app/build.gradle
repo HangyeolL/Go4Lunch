@@ -170,6 +170,23 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
             '**/*ViewModelFactory.*',
             '**/*Entity.*',
             '**/*Response.*',
+
+            // Repositories
+            '**/*FirebaseRepository*.*',
+            '**/*LocationRepository*.*',
+            '**/*NearbySearchDataRepository*.*',
+            '**/*PlaceDetailDataRepository*.*',
+
+            // Utils
+            '**/*NotificationWorker.*',
+            '**/*UtilBox.*',
+            '**/*BooleanSharedPreferencesLiveData.*',
+            '**/*DistanceCalculator.*',
+            '**/*GoogleApiHolder.*',
+
+            // MVC APIs...
+            '**/*LogInViewModel*.*',
+
             '**/*ViewState*.*',
             '**/*AppDatabase*.*',
             '**/BuildConfigResolver.*',

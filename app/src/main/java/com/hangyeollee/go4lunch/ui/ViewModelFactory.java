@@ -21,7 +21,7 @@ import com.hangyeollee.go4lunch.data.repository.NearbySearchDataRepository;
 import com.hangyeollee.go4lunch.data.repository.PlaceDetailDataRepository;
 import com.hangyeollee.go4lunch.data.repository.SettingRepository;
 import com.hangyeollee.go4lunch.utils.DistanceCalculator;
-import com.hangyeollee.go4lunch.utils.MyRetrofitBuilder;
+import com.hangyeollee.go4lunch.utils.GoogleApiHolder;
 import com.hangyeollee.go4lunch.ui.dispatcher.DispatcherViewModel;
 import com.hangyeollee.go4lunch.ui.login.LogInViewModel;
 import com.hangyeollee.go4lunch.ui.list.ListViewModel;
@@ -67,7 +67,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private ViewModelFactory() {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        GoogleApi googleApi = MyRetrofitBuilder.getGoogleApi();
+        GoogleApi googleApi = GoogleApiHolder.getGoogleApi();
         clock = Clock.systemDefaultZone();
         distanceCalculator = new DistanceCalculator();
         context = MainApplication.getInstance();

@@ -25,14 +25,13 @@ public class MainApplication extends Application {
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            NotificationChannel channel1 = new NotificationChannel
-                            (CHANNEL_ID, sInstance.getString(R.string.channel_name), NotificationManager.IMPORTANCE_DEFAULT);
-            channel1.setDescription(sInstance.getString(R.string.channel_description));
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, sInstance.getString(R.string.channel_name), NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription(sInstance.getString(R.string.channel_description));
 
             // Register the channel1 with the system; you can't change the importance
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel1);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 

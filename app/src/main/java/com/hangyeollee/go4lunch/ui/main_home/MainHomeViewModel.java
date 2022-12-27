@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
@@ -136,6 +137,7 @@ public class MainHomeViewModel extends ViewModel {
     /**
      * EVENTS
      */
+    @NonNull
     public void onUserLoggedIn() {
         firebaseRepository.saveUserInFirestore();
 

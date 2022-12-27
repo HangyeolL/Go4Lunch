@@ -1,6 +1,8 @@
 package com.hangyeollee.go4lunch.ui.main_home;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -155,11 +157,9 @@ public class MainHomeViewModelTest {
         assertEquals(expectedViewState, viewState);
     }
 
-    @Ignore //TODO NINO check
     @Test
     public void onUserLoggedIn_notification_is_enabled() {
         //GIVEN
-        PeriodicWorkRequest workRequest = Mockito.mock(PeriodicWorkRequest.class);
         isNotificationEnabledBooleanLiveData.setValue(true);
 
         //WHEN
@@ -167,9 +167,9 @@ public class MainHomeViewModelTest {
 
         //THEN
         Mockito.verify(workManager).enqueueUniquePeriodicWork(
-            "REMINDER_REQUEST",
-            ExistingPeriodicWorkPolicy.REPLACE,
-            workRequest
+            eq("REMINDER_REQUEST"),
+            eq(ExistingPeriodicWorkPolicy.REPLACE),
+            any()
         );
         Mockito.verify(firebaseRepository).saveUserInFirestore();
     }
