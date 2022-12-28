@@ -11,17 +11,17 @@ public class MyPlaceDetailResponse {
 
     @SerializedName("html_attributions")
     @Expose
-    private List<Object> htmlAttributions = null;
-    @SerializedName("resultResponse")
+    private List<Object> htmlAttributions;
+    @SerializedName("result")
     @Expose
-    private ResultResponse resultResponse;
+    private ResultResponse result;
     @SerializedName("status")
     @Expose
     private String status;
 
-    public MyPlaceDetailResponse(List<Object> htmlAttributions, ResultResponse resultResponse, String status) {
+    public MyPlaceDetailResponse(List<Object> htmlAttributions, ResultResponse result, String status) {
         this.htmlAttributions = htmlAttributions;
-        this.resultResponse = resultResponse;
+        this.result = result;
         this.status = status;
     }
 
@@ -36,11 +36,11 @@ public class MyPlaceDetailResponse {
     }
 
     public ResultResponse getResult() {
-        return resultResponse;
+        return result;
     }
 
-    public void setResult(ResultResponse resultResponse) {
-        this.resultResponse = resultResponse;
+    public void setResult(ResultResponse result) {
+        this.result = result;
     }
 
     public String getStatus() {

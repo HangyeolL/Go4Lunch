@@ -10,9 +10,9 @@ import java.util.List;
 
 public class ResultResponse {
 
-    @SerializedName("geometryResponse")
+    @SerializedName("geometry")
     @Expose
-    private GeometryResponse geometryResponse;
+    private GeometryResponse geometry;
     @SerializedName("international_phone_number")
     @Expose
     private String internationalPhoneNumber;
@@ -21,10 +21,10 @@ public class ResultResponse {
     private String name;
     @SerializedName("opening_hours")
     @Expose
-    private OpeningHoursResponse openingHoursResponse;
-    @SerializedName("photoResponses")
+    private OpeningHoursResponse openingHours;
+    @SerializedName("photos")
     @Expose
-    private List<PhotoResponse> photoResponses = null;
+    private List<PhotoResponse> photos;
     @SerializedName("rating")
     @Expose
     private Double rating;
@@ -36,23 +36,23 @@ public class ResultResponse {
     private String website;
 
     @TestOnly
-    public ResultResponse(GeometryResponse geometryResponse, String internationalPhoneNumber, String name, OpeningHoursResponse openingHoursResponse, List<PhotoResponse> photoResponses, Double rating, String vicinity, String website) {
-        this.geometryResponse = geometryResponse;
+    public ResultResponse(GeometryResponse geometry, String internationalPhoneNumber, String name, OpeningHoursResponse openingHours, List<PhotoResponse> photos, Double rating, String vicinity, String website) {
+        this.geometry = geometry;
         this.internationalPhoneNumber = internationalPhoneNumber;
         this.name = name;
-        this.openingHoursResponse = openingHoursResponse;
-        this.photoResponses = photoResponses;
+        this.openingHours = openingHours;
+        this.photos = photos;
         this.rating = rating;
         this.vicinity = vicinity;
         this.website = website;
     }
 
     public GeometryResponse getGeometry() {
-        return geometryResponse;
+        return geometry;
     }
 
     public void setGeometry(GeometryResponse geometryResponse) {
-        this.geometryResponse = geometryResponse;
+        this.geometry = geometryResponse;
     }
 
     public String getInternationalPhoneNumber() {
@@ -72,19 +72,19 @@ public class ResultResponse {
     }
 
     public OpeningHoursResponse getOpeningHours() {
-        return openingHoursResponse;
+        return openingHours;
     }
 
     public void setOpeningHours(OpeningHoursResponse openingHoursResponse) {
-        this.openingHoursResponse = openingHoursResponse;
+        this.openingHours = openingHoursResponse;
     }
 
     public List<PhotoResponse> getPhotos() {
-        return photoResponses;
+        return photos;
     }
 
-    public void setPhotos(List<PhotoResponse> photoResponses) {
-        this.photoResponses = photoResponses;
+    public void setPhotos(List<PhotoResponse> photos) {
+        this.photos = photos;
     }
 
     public Double getRating() {

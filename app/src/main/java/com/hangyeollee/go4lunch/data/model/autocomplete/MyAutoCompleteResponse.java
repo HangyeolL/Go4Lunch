@@ -9,21 +9,21 @@ import java.util.List;
 
 public class MyAutoCompleteResponse {
 
-    @SerializedName("predictionResponses")
+    @SerializedName("predictions")
     @Expose
-    private final List<PredictionResponse> predictionResponses;
+    private final List<PredictionResponse> predictions;
     @SerializedName("status")
     @Expose
     private final String status;
 
     @VisibleForTesting
-    public MyAutoCompleteResponse(List<PredictionResponse> predictionResponses, String status) {
-        this.predictionResponses = predictionResponses;
+    public MyAutoCompleteResponse(List<PredictionResponse> predictions, String status) {
+        this.predictions = predictions;
         this.status = status;
     }
 
     public List<PredictionResponse> getPredictions() {
-        return predictionResponses;
+        return predictions;
     }
 
     public String getStatus() {

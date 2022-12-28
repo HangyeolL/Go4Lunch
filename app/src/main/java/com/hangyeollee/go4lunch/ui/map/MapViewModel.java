@@ -124,11 +124,13 @@ public class MapViewModel extends ViewModel {
 
             if (shouldAppear) {
                 boolean isSelected = false;
-                for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-                    if (resultResponse.getPlaceId().equalsIgnoreCase(lunchRestaurant.getRestaurantId())
-                        && resultResponse.getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName())) {
-                        isSelected = true;
-                        break;
+                if (lunchRestaurantList != null) {
+                    for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                        if (resultResponse.getPlaceId().equalsIgnoreCase(lunchRestaurant.getRestaurantId())
+                            && resultResponse.getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName())) {
+                            isSelected = true;
+                            break;
+                        }
                     }
                 }
 

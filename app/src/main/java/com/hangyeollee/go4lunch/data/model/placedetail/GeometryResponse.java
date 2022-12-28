@@ -5,16 +5,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class GeometryResponse {
 
-    @SerializedName("locationResponse")
+    @SerializedName("location")
     @Expose
-    private LocationResponse locationResponse;
+    private LocationResponse location;
 
     public LocationResponse getLocation() {
-        return locationResponse;
+        return location;
     }
 
-    public void setLocation(LocationResponse locationResponse) {
-        this.locationResponse = locationResponse;
+    public void setLocation(LocationResponse location) {
+        this.location = location;
     }
 
 }

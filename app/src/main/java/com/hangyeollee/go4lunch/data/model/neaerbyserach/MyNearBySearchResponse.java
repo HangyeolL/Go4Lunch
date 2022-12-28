@@ -10,22 +10,22 @@ import java.util.List;
 public class MyNearBySearchResponse {
     @SerializedName("html_attributions")
     @Expose
-    private List<Object> htmlAttributions = null;
+    private List<Object> htmlAttributions;
     @SerializedName("next_page_token")
     @Expose
     private String nextPageToken;
-    @SerializedName("resultResponses")
+    @SerializedName("results")
     @Expose
-    private List<ResultResponse> resultResponses = null;
+    private List<ResultResponse> results;
     @SerializedName("status")
     @Expose
     private String status;
 
     @TestOnly
-    public MyNearBySearchResponse(List<Object> htmlAttributions, String nextPageToken, List<ResultResponse> resultResponses, String status) {
+    public MyNearBySearchResponse(List<Object> htmlAttributions, String nextPageToken, List<ResultResponse> results, String status) {
         this.htmlAttributions = htmlAttributions;
         this.nextPageToken = nextPageToken;
-        this.resultResponses = resultResponses;
+        this.results = results;
         this.status = status;
     }
 
@@ -46,11 +46,11 @@ public class MyNearBySearchResponse {
     }
 
     public List<ResultResponse> getResults() {
-        return resultResponses;
+        return results;
     }
 
     public void setResults(List<ResultResponse> resultResponses) {
-        this.resultResponses = resultResponses;
+        this.results = resultResponses;
     }
 
     public String getStatus() {

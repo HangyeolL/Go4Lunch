@@ -94,20 +94,20 @@ public class PlaceDetailViewModel extends ViewModel {
     }
 
     private void combine(
-        @Nullable MyPlaceDetailResponse myPlaceDetailResponseData,
+        @Nullable MyPlaceDetailResponse myPlaceDetailResponse,
         @Nullable List<User> userList,
         @Nullable List<LunchRestaurant> lunchRestaurantList,
         @Nullable List<LikedRestaurant> likedRestaurantList
     ) {
-        if (myPlaceDetailResponseData == null || lunchRestaurantList == null || likedRestaurantList == null) {
+        if (myPlaceDetailResponse == null) {
             return;
         }
 
         String photoUrl;
         float rating;
 
-        if (myPlaceDetailResponseData.getResult().getPhotos() != null) {
-            String photoReference = myPlaceDetailResponseData.getResult().getPhotos().get(0).getPhotoReference();
+        if (myPlaceDetailResponse.getResult().getPhotos() != null) {
+            String photoReference = myPlaceDetailResponse.getResult().getPhotos().get(0).getPhotoReference();
 
             photoUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference="
                 + photoReference
@@ -117,53 +117,60 @@ public class PlaceDetailViewModel extends ViewModel {
             photoUrl = resourceToUri(context, R.drawable.ic_baseline_local_dining_24);
         }
 
-        if (myPlaceDetailResponseData.getResult().getRating() != null) {
-            rating = myPlaceDetailResponseData.getResult().getRating().floatValue();
+        if (myPlaceDetailResponse.getResult().getRating() != null) {
+            rating = myPlaceDetailResponse.getResult().getRating().floatValue();
         } else {
             rating = 0;
         }
 
         List<PlaceDetailItemViewState> recyclerViewItemViewStateList = new ArrayList<>();
 
-        for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-            if (userList != null) {
-                for (User user : userList) {
-                    if (user.getId().equalsIgnoreCase(lunchRestaurant.getUserId())
-                        && lunchRestaurant.getRestaurantName().equalsIgnoreCase(myPlaceDetailResponseData.getResult().getName())) {
-                        recyclerViewItemViewStateList.add(
-                            new PlaceDetailItemViewState(
-                                user.getName(),
-                                user.getPhotoUrl())
-                        );
+        if (lunchRestaurantList != null) {
+            for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                if (userList != null) {
+                    for (User user : userList) {
+                        if (user.getId().equalsIgnoreCase(lunchRestaurant.getUserId())
+                            && lunchRestaurant.getRestaurantName().equalsIgnoreCase(myPlaceDetailResponse.getResult().getName())) {
+                            recyclerViewItemViewStateList.add(
+                                new PlaceDetailItemViewState(
+                                    user.getName(),
+                                    user.getPhotoUrl())
+                            );
+                        }
                     }
                 }
             }
         }
 
+
         boolean isSelectedAsLunchRestaurant = false;
         boolean isSelectedAsLikedRestaurant = false;
 
-        for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-            if (myPlaceDetailResponseData.getResult().getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName())) {
-                isSelectedAsLunchRestaurant = true;
-                break;
+        if (lunchRestaurantList != null) {
+            for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                if (myPlaceDetailResponse.getResult().getName().equalsIgnoreCase(lunchRestaurant.getRestaurantName())) {
+                    isSelectedAsLunchRestaurant = true;
+                    break;
+                }
             }
         }
 
-        for (LikedRestaurant likedRestaurant : likedRestaurantList) {
-            if (myPlaceDetailResponseData.getResult().getName().equalsIgnoreCase(likedRestaurant.getName())) {
-                isSelectedAsLikedRestaurant = true;
-                break;
+        if (likedRestaurantList != null) {
+            for (LikedRestaurant likedRestaurant : likedRestaurantList) {
+                if (myPlaceDetailResponse.getResult().getName().equalsIgnoreCase(likedRestaurant.getName())) {
+                    isSelectedAsLikedRestaurant = true;
+                    break;
+                }
             }
         }
 
         PlaceDetailViewState activityViewState = new PlaceDetailViewState(
             photoUrl,
-            myPlaceDetailResponseData.getResult().getName(),
-            myPlaceDetailResponseData.getResult().getVicinity(),
+            myPlaceDetailResponse.getResult().getName(),
+            myPlaceDetailResponse.getResult().getVicinity(),
             rating,
-            myPlaceDetailResponseData.getResult().getInternationalPhoneNumber(),
-            myPlaceDetailResponseData.getResult().getWebsite(),
+            myPlaceDetailResponse.getResult().getInternationalPhoneNumber(),
+            myPlaceDetailResponse.getResult().getWebsite(),
             recyclerViewItemViewStateList,
             isSelectedAsLikedRestaurant ? context.getColor(R.color.yellow) : context.getColor(R.color.grey),
             isSelectedAsLunchRestaurant ? R.color.orange : R.color.grey,

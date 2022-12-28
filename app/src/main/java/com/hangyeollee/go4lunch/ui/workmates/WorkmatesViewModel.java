@@ -47,7 +47,7 @@ public class WorkmatesViewModel extends ViewModel {
     }
 
     private void combine(@Nullable List<User> userList, @Nullable List<LunchRestaurant> lunchRestaurantList, @Nullable String userInput) {
-        if (userList == null || lunchRestaurantList == null) {
+        if (userList == null) {
             return;
         }
 
@@ -55,28 +55,30 @@ public class WorkmatesViewModel extends ViewModel {
 
         List<String> userIdsEatingToday = new ArrayList<>();
 
-        for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
-            User matchingUser = null;
+        if (lunchRestaurantList != null) {
+            for (LunchRestaurant lunchRestaurant : lunchRestaurantList) {
+                User matchingUser = null;
 
-            for (User user : userList) {
-                if (user.getId().equalsIgnoreCase(lunchRestaurant.getUserId())) {
-                    matchingUser = user;
-                    break;
+                for (User user : userList) {
+                    if (user.getId().equalsIgnoreCase(lunchRestaurant.getUserId())) {
+                        matchingUser = user;
+                        break;
+                    }
                 }
-            }
 
-            if (matchingUser != null) {
-                userIdsEatingToday.add(matchingUser.getId());
+                if (matchingUser != null) {
+                    userIdsEatingToday.add(matchingUser.getId());
 
-                if (userInput == null || matchingUser.getName().contains(userInput) || lunchRestaurant.getRestaurantName().contains(userInput)) {
-                    recyclerViewItemViewStateList.add(
-                        new WorkmatesItemViewState(
-                            matchingUser.getPhotoUrl(),
-                            matchingUser.getName(),
-                            lunchRestaurant.getRestaurantName(),
-                            lunchRestaurant.getRestaurantId()
-                        )
-                    );
+                    if (userInput == null || matchingUser.getName().contains(userInput) || lunchRestaurant.getRestaurantName().contains(userInput)) {
+                        recyclerViewItemViewStateList.add(
+                            new WorkmatesItemViewState(
+                                matchingUser.getPhotoUrl(),
+                                matchingUser.getName(),
+                                lunchRestaurant.getRestaurantName(),
+                                lunchRestaurant.getRestaurantId()
+                            )
+                        );
+                    }
                 }
             }
         }

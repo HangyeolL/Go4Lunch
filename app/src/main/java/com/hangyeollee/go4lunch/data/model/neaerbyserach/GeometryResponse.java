@@ -7,32 +7,32 @@ import org.jetbrains.annotations.TestOnly;
 
 public class GeometryResponse {
 
-    @SerializedName("locationResponse")
+    @SerializedName("location")
     @Expose
-    private LocationResponse locationResponse;
-    @SerializedName("viewportResponse")
+    private LocationResponse location;
+    @SerializedName("viewport")
     @Expose
-    private ViewportResponse viewportResponse;
+    private ViewportResponse viewport;
 
     @TestOnly
-    public GeometryResponse(LocationResponse locationResponse) {
-        this.locationResponse = locationResponse;
+    public GeometryResponse(LocationResponse location) {
+        this.location = location;
     }
 
     public LocationResponse getLocation() {
-        return locationResponse;
+        return location;
     }
 
     public void setLocation(LocationResponse locationResponse) {
-        this.locationResponse = locationResponse;
+        this.location = locationResponse;
     }
 
     public ViewportResponse getViewport() {
-        return viewportResponse;
+        return viewport;
     }
 
     public void setViewport(ViewportResponse viewportResponse) {
-        this.viewportResponse = viewportResponse;
+        this.viewport = viewportResponse;
     }
 
 }

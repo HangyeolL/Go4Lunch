@@ -11,7 +11,7 @@ public class StructuredFormattingResponse {
     private String mainText;
     @SerializedName("main_text_matched_substrings")
     @Expose
-    private List<MainTextMatchedSubstringResponse> mainTextMatchedSubstringResponses = null;
+    private List<MainTextMatchedSubstringResponse> mainTextMatchedSubstringResponses;
     @SerializedName("secondary_text")
     @Expose
     private String secondaryText;

@@ -1,23 +1,19 @@
 package com.hangyeollee.go4lunch.data.model.neaerbyserach;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import org.jetbrains.annotations.TestOnly;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ResultResponse {
     @SerializedName("business_status")
     @Expose
     private String businessStatus;
-    @SerializedName("geometryResponse")
+    @SerializedName("geometry")
     @Expose
-    private GeometryResponse geometryResponse;
+    private GeometryResponse geometry;
     @SerializedName("icon")
     @Expose
     private String icon;
@@ -32,16 +28,16 @@ public class ResultResponse {
     private String name;
     @SerializedName("opening_hours")
     @Expose
-    private OpeningHoursResponse openingHoursResponse;
-    @SerializedName("photoResponses")
+    private OpeningHoursResponse openingHours;
+    @SerializedName("photos")
     @Expose
-    private List<PhotoResponse> photoResponses;
+    private List<PhotoResponse> photos;
     @SerializedName("place_id")
     @Expose
     private String placeId;
     @SerializedName("plus_code")
     @Expose
-    private PlusCodeResponse plusCodeResponse;
+    private PlusCodeResponse plusCode;
     @SerializedName("price_level")
     @Expose
     private Integer priceLevel;
@@ -68,11 +64,11 @@ public class ResultResponse {
     private Boolean permanentlyClosed;
 
     @TestOnly
-    public ResultResponse(GeometryResponse geometryResponse, String name, OpeningHoursResponse openingHoursResponse, List<PhotoResponse> photoResponses, String placeId, Double rating, String vicinity) {
-        this.geometryResponse = geometryResponse;
+    public ResultResponse(GeometryResponse geometry, String name, OpeningHoursResponse openingHours, List<PhotoResponse> photos, String placeId, Double rating, String vicinity) {
+        this.geometry = geometry;
         this.name = name;
-        this.openingHoursResponse = openingHoursResponse;
-        this.photoResponses = photoResponses;
+        this.openingHours = openingHours;
+        this.photos = photos;
         this.placeId = placeId;
         this.rating = rating;
         this.vicinity = vicinity;
@@ -87,11 +83,11 @@ public class ResultResponse {
     }
 
     public GeometryResponse getGeometry() {
-        return geometryResponse;
+        return geometry;
     }
 
-    public void setGeometry(GeometryResponse geometryResponse) {
-        this.geometryResponse = geometryResponse;
+    public void setGeometry(GeometryResponse geometry) {
+        this.geometry = geometry;
     }
 
     public String getIcon() {
@@ -127,19 +123,19 @@ public class ResultResponse {
     }
 
     public OpeningHoursResponse getOpeningHours() {
-        return openingHoursResponse;
+        return openingHours;
     }
 
-    public void setOpeningHours(OpeningHoursResponse openingHoursResponse) {
-        this.openingHoursResponse = openingHoursResponse;
+    public void setOpeningHours(OpeningHoursResponse openingHours) {
+        this.openingHours = openingHours;
     }
 
     public List<PhotoResponse> getPhotos() {
-        return photoResponses;
+        return photos;
     }
 
-    public void setPhotos(List<PhotoResponse> photoResponses) {
-        this.photoResponses = photoResponses;
+    public void setPhotos(List<PhotoResponse> photos) {
+        this.photos = photos;
     }
 
     public String getPlaceId() {
@@ -151,11 +147,11 @@ public class ResultResponse {
     }
 
     public PlusCodeResponse getPlusCode() {
-        return plusCodeResponse;
+        return plusCode;
     }
 
-    public void setPlusCode(PlusCodeResponse plusCodeResponse) {
-        this.plusCodeResponse = plusCodeResponse;
+    public void setPlusCode(PlusCodeResponse plusCode) {
+        this.plusCode = plusCode;
     }
 
     public Integer getPriceLevel() {
