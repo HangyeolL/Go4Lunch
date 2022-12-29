@@ -15,7 +15,6 @@ import com.hangyeollee.go4lunch.data.model.LikedRestaurant;
 import com.hangyeollee.go4lunch.data.model.LunchRestaurant;
 import com.hangyeollee.go4lunch.data.model.User;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,8 +46,8 @@ public class FirebaseRepository {
         return firestoreDatabase.collection("users");
     }
 
-    public CollectionReference getDateCollection() {
-        return firestoreDatabase.collection(LocalDate.now().toString());
+    public CollectionReference getLunchRestaurantsCollection() {
+        return firestoreDatabase.collection("lunchRestaurants");
     }
 
     public void saveUserInFirestore() {
@@ -83,7 +82,7 @@ public class FirebaseRepository {
     }
 
     public LiveData<List<LunchRestaurant>> getLunchRestaurantListOfAllUsers() {
-        getDateCollection().addSnapshotListener(
+        getLunchRestaurantsCollection().addSnapshotListener(
                 (querySnapshot, error) -> {
                     if (error != null) {
                         Log.w("lunchRestauCollection", "Listen failed.", error);
@@ -122,7 +121,7 @@ public class FirebaseRepository {
 
     public void addOrRemoveLunchRestaurant(String restaurantId, String userId, String restaurantName, String date, boolean isSelected) {
        if (isSelected) {
-           getDateCollection()
+           getLunchRestaurantsCollection()
                    .document(getCurrentUser().getUid())
                    .delete()
                    .addOnCompleteListener(task -> {
@@ -131,7 +130,7 @@ public class FirebaseRepository {
                                    "restaurantId = [" + restaurantId + "], " +
                                    "isSelected = [" + isSelected + "]");
                        } else {
-                           Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with FAILURE : " +
+                           Log.d("Hangyeol", "addOrRemoveLunchRestaurant() called with FAILURE : " +
                                    "restaurantId = [" + restaurantId + "], " +
                                    "isSelected = [" + isSelected + "]");
                            task.getException().printStackTrace();
@@ -140,7 +139,7 @@ public class FirebaseRepository {
        } else {
            LunchRestaurant lunchRestaurant = new LunchRestaurant(restaurantId, userId, restaurantName, date);
 
-           getDateCollection()
+           getLunchRestaurantsCollection()
                    .document(getCurrentUser().getUid())
                    .set(lunchRestaurant)
                    .addOnCompleteListener(task -> {
@@ -149,7 +148,7 @@ public class FirebaseRepository {
                                    "restaurantId = [" + restaurantId + "], " +
                                    "isSelected = [" + isSelected + "]");
                        } else {
-                           Log.d("Hangyeol", "addOrRemoveLikedRestaurant() called with FAILURE : " +
+                           Log.d("Hangyeol", "addOrRemoveLunchRestaurant() called with FAILURE : " +
                                    "restaurantId = [" + restaurantId + "], " +
                                    "isSelected = [" + isSelected + "]");
                            task.getException().printStackTrace();
